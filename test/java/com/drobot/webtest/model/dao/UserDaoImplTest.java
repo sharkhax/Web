@@ -4,7 +4,6 @@ import com.drobot.web.exception.ConnectionPoolException;
 import com.drobot.web.exception.DaoException;
 import com.drobot.web.model.connection.ConnectionPool;
 import com.drobot.web.model.dao.UserDao;
-import com.drobot.web.model.dao.impl.UserDaoImpl;
 import org.testng.annotations.Test;
 
 public class UserDaoImplTest {

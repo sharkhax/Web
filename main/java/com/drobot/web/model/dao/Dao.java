@@ -21,10 +21,6 @@ public interface Dao<E extends Entity> {
 
     Optional<E> findById(int id) throws DaoException;
 
-    List<E> findBy(String value, String column, String sortBy) throws DaoException;
-
-    List<E> findBy(String value, String column) throws DaoException;
-
     boolean update(E entity) throws DaoException;
 
     default void close(Statement statement) {

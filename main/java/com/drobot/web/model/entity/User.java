@@ -8,25 +8,17 @@ public class User extends Entity {
 
     private String login;
     private String email;
-    private String encPassword;
+    private final String encPassword;
     private Role role;
-    private int status;
+    private byte status;
 
-    public User(int id, String login, String email, String encPassword, Role role, int status) {
+    public User(int id, String login, String email, Role role, byte status) {
         super(id);
         this.login = login;
         this.email = email;
-        this.encPassword = encPassword;
+        this.encPassword = "";
         this.role = role;
         this.status = status;
-    }
-
-    public User(int userId, String login, String email, String encPassword, Role role) {
-        super(userId);
-        this.login = login;
-        this.email = email;
-        this.encPassword = encPassword;
-        this.role = role;
     }
 
     public User(String login, String email, String encPassword, Role role) {
@@ -56,10 +48,6 @@ public class User extends Entity {
         return encPassword;
     }
 
-    public void setEncPassword(String encPassword) {
-        this.encPassword = encPassword;
-    }
-
     public Role getRole() {
         return role;
     }
@@ -68,11 +56,11 @@ public class User extends Entity {
         this.role = role;
     }
 
-    public int getStatus() {
+    public byte getStatus() {
         return status;
     }
 
-    public void setStatus(int status) {
+    public void setStatus(byte status) {
         this.status = status;
     }
 

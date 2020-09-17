@@ -1,11 +1,12 @@
 package com.drobot.web.model.dao.impl;
 
 import com.drobot.web.exception.ConnectionPoolException;
-import com.drobot.web.model.connection.ConnectionPool;
-import com.drobot.web.model.dao.ColumnName;
-import com.drobot.web.model.dao.UserDao;
-import com.drobot.web.model.entity.User;
 import com.drobot.web.exception.DaoException;
+import com.drobot.web.model.connection.ConnectionPool;
+import com.drobot.web.model.dao.UserDao;
+import com.drobot.web.model.entity.LoginInfo;
+import com.drobot.web.model.entity.User;
+import com.drobot.web.model.util.Encrypter;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -14,7 +15,6 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -22,41 +22,50 @@ import java.util.Optional;
 public class UserDaoImpl implements UserDao {
 
     private static final Logger LOGGER = LogManager.getLogger(UserDaoImpl.class);
+    private static final char SEMICOLON = ';';
     private static final String ADD_STATEMENT =
-            "INSERT INTO hospital.user_table(login, email, password, role, status) VALUES(?, ?, ?, ?, ?, ?);";
-    private static final String REMOVE_STATEMENT = "DELETE FROM hospital.user_table WHERE userId = ?;";
-    private static final String CONTAINS_STATEMENT = "SELECT userId FROM hospital.user_table " +
-            "WHERE(login = ? AND email = ? AND password = ? AND role = ? AND status = ?);";
-    private static final StringBuilder FIND_ALL_STATEMENT = new StringBuilder(
-            "SELECT userId, login, email, password, role, status FROM hospital.user_table").append(
-            "WHERE (login = ? AND email ? AND password = ? AND role = ? AND status = ?) ORDER BY ");
-    private static final String FIND_BY_ID_STATEMENT =
-            "SELECT userId, login, email, password, role, status FROM hospital.user_table WHERE userId = ?";
+            "INSERT INTO hospital.users(login, email, password, role) VALUES(?, ?, ?, ?);";
+    private static final String CONTAINS_ID_STATEMENT =
+            "SELECT COUNT(*) as label FROM hospital.users WHERE user_id = ?;";
     private static final String CONTAINS_EMAIL_STATEMENT =
-            "SELECT userId FROM hospital.user_table WHERE (email = ?)";
+            "SELECT COUNT(*) as label FROM hospital.users WHERE email = ?;";
     private static final String CONTAINS_LOGIN_STATEMENT =
-            "SELECT userId FROM hospital.user_table WHERE (login = ?)";
-    private static final String FIND_BY_STATEMENT_PART1 =
-            "SELECT userId, login, email, password, role, status FROM hospital.user_table WHERE ";
-    private static final String FIND_BY_STATEMENT_PART2 = " = ? ORDER BY ";
+            "SELECT COUNT(*) as label FROM hospital.users WHERE login = ?;";
+    private static final String DELETE_STATEMENT =
+            "DELETE FROM hospital.users WHERE user_id = ?;";
+    private static final String FIND_ALL_STATEMENT =
+            "SELECT user_id, login, email, role, user_status FROM hospital.users ORDER BY ";
+    private static final String FIND_BY_ID_STATEMENT =
+            "SELECT user_id, login, email, role, user_status FROM hospital.users WHERE user_id = ?;";
+    private static final String FIND_BY_LOGIN_STATEMENT =
+            "SELECT user_id, login, email, role, user_status FROM hospital.users WHERE login = ?;";
+    private static final String FIND_BY_EMAIL_STATEMENT =
+            "SELECT user_id, login, email, role, user_status FROM hospital.users WHERE email = ?;";
+    private static final String FIND_BY_ROLE_STATEMENT =
+            "SELECT user_id, login, email, role, user_status FROM hospital.users WHERE role = ? ORDER BY ";
+    private static final String FIND_BY_STATUS_STATEMENT =
+            "SELECT user_id, login, email, role, user_status FROM hospital.users WHERE user_status = ? ORDER BY ";
     private static final String UPDATE_STATEMENT =
-            "UPDATE hospital.user_table SET login = ?, email = ?, password = ?, role = ?, status = ? WHERE userId = ?;";
-    private static final String SEMICOLON = ";";
+            "UPDATE hospital.users SET login = ?, email = ?, role = ?, user_status = ? WHERE user_id = ?;";
+    private static final String DEFINE_ROLE_STATEMENT =
+            "SELECT password, role, user_status FROM hospital.users WHERE login = ?;";
 
     @Override
-    public boolean add(User user) throws DaoException {
+    public boolean exists(int userId) throws DaoException {
+        boolean result;
         Connection connection = null;
         PreparedStatement statement = null;
-        boolean result = false;
         try {
             connection = ConnectionPool.INSTANCE.getConnection();
-            if (!userContains(user, connection)) {
-                statement = connection.prepareStatement(ADD_STATEMENT);
-                fillStatement(user, statement);
-                LOGGER.log(Level.INFO, "User has been add");
-                result = true;
+            statement = connection.prepareStatement(CONTAINS_ID_STATEMENT);
+            statement.setInt(1, userId);
+            ResultSet resultSet = statement.executeQuery();
+            resultSet.next();
+            result = resultSet.getInt(1) != 0;
+            if (result) {
+                LOGGER.log(Level.DEBUG, "User with such id exists");
             } else {
-                LOGGER.log(Level.DEBUG, "User already exists");
+                LOGGER.log(Level.DEBUG, "User with such id does not exist");
             }
         } catch (SQLException | ConnectionPoolException e) {
             throw new DaoException(e);
@@ -68,21 +77,135 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public boolean remove(int id) throws DaoException {
+    public boolean existsEmail(String email) throws DaoException {
+        boolean result = exists(email, CONTAINS_EMAIL_STATEMENT);
+        ;
+        if (result) {
+            LOGGER.log(Level.DEBUG, "User with such email exists");
+        } else {
+            LOGGER.log(Level.DEBUG, "User with such email does not exist");
+        }
+        return result;
+    }
+
+    @Override
+    public boolean existsLogin(String login) throws DaoException {
+        boolean result = exists(login, CONTAINS_LOGIN_STATEMENT);
+        if (result) {
+            LOGGER.log(Level.DEBUG, "User with such login exists");
+        } else {
+            LOGGER.log(Level.DEBUG, "User with such login does not exist");
+        }
+        return result;
+    }
+
+    @Override
+    public Optional<User> findByLogin(String login) throws DaoException {
+        return findBy(login, FIND_BY_LOGIN_STATEMENT);
+    }
+
+    @Override
+    public Optional<User> findByEmail(String email) throws DaoException {
+        return findBy(email, FIND_BY_EMAIL_STATEMENT);
+    }
+
+    @Override
+    public List<User> findByRole(User.Role role, String sortBy) throws DaoException {
+        return findByAndSort(role.toString(), sortBy, FIND_BY_ROLE_STATEMENT);
+    }
+
+    @Override
+    public List<User> findByStatus(byte status, String sortBy) throws DaoException {
+        List<User> result;
         Connection connection = null;
         PreparedStatement statement = null;
-        boolean result = false;
         try {
             connection = ConnectionPool.INSTANCE.getConnection();
-            Optional<User> optional = findById(id, connection);
-            if (optional.isPresent()) {
-                statement = connection.prepareStatement(REMOVE_STATEMENT);
-                statement.setInt(1, id);
+            String sql = FIND_BY_STATUS_STATEMENT + sortBy + SEMICOLON;
+            statement = connection.prepareStatement(sql);
+            statement.setByte(1, status);
+            ResultSet resultSet = statement.executeQuery();
+            result = createUserListFromResultSet(resultSet);
+        } catch (SQLException | ConnectionPoolException e) {
+            throw new DaoException(e);
+        } finally {
+            close(statement);
+            close(connection);
+        }
+        return result;
+    }
+
+    @Override
+    public Optional<LoginInfo> checkPassword(String login, String password) throws DaoException {
+        Optional<LoginInfo> result = Optional.empty();
+        Connection connection = null;
+        PreparedStatement statement = null;
+        try {
+            if (existsLogin(login)) {
+                connection = ConnectionPool.INSTANCE.getConnection();
+                statement = connection.prepareStatement(DEFINE_ROLE_STATEMENT);
+                ResultSet resultSet = statement.executeQuery();
+                resultSet.next();
+                String actualEncPassword = resultSet.getString(1);
+                if (Encrypter.check(password, actualEncPassword)) {
+                    String stringRole = resultSet.getString(2);
+                    User.Role role = User.Role.valueOf(stringRole);
+                    byte status = resultSet.getByte(3);
+                    LoginInfo loginInfo = new LoginInfo(role, status);
+                    result = Optional.of(loginInfo);
+                    LOGGER.log(Level.DEBUG, "Password is correct, login info has been created");
+                } else {
+                    LOGGER.log(Level.DEBUG, "Password is not correct");
+                }
+            }
+        } catch (SQLException | ConnectionPoolException e) {
+            throw new DaoException(e);
+        } finally {
+            close(statement);
+            close(connection);
+        }
+        return result;
+    }
+
+    @Override
+    public boolean add(User user) throws DaoException {
+        boolean result = false;
+        Connection connection = null;
+        PreparedStatement statement = null;
+        try {
+            String login = user.getLogin();
+            String email = user.getEmail();
+            if (!existsLogin(login) && !existsEmail(email)) {
+                connection = ConnectionPool.INSTANCE.getConnection();
+                statement = connection.prepareStatement(ADD_STATEMENT);
+                fillStatement(user, statement);
+                result = true;
+                LOGGER.log(Level.DEBUG, "User has been successfully added");
+            } else {
+                LOGGER.log(Level.DEBUG, "Cannot add user: such email or login already exist");
+            }
+        } catch (SQLException | ConnectionPoolException e) {
+            throw new DaoException(e);
+        } finally {
+            close(statement);
+            close(connection);
+        }
+        return result;
+    }
+
+    @Override
+    public boolean remove(int userId) throws DaoException {
+        boolean result = false;
+        Connection connection = null;
+        PreparedStatement statement = null;
+        try {
+            if (exists(userId)) {
+                connection = ConnectionPool.INSTANCE.getConnection();
+                statement = connection.prepareStatement(DELETE_STATEMENT);
+                statement.setInt(1, userId);
                 statement.execute();
                 result = true;
-                LOGGER.log(Level.INFO, "User id " + id + " was removed");
-            } else {
-                LOGGER.log(Level.DEBUG, "No user with such id to be removed: " + id);
+                LOGGER.log(Level.DEBUG, "User has been successfully removed");
             }
         } catch (SQLException | ConnectionPoolException e) {
             throw new DaoException(e);
@@ -95,49 +218,13 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public List<User> findAll(String sortBy) throws DaoException {
-        Connection connection = null;
-        Statement statement = null;
         List<User> result;
-        try {
-            connection = ConnectionPool.INSTANCE.getConnection();
-            String sql = FIND_ALL_STATEMENT.append(sortBy).append(";").toString();
-            statement = connection.createStatement();
-            ResultSet resultSet = statement.executeQuery(sql);
-            result = createUserListFromResultSet(resultSet);
-        } catch (SQLException | ConnectionPoolException e) {
-            throw new DaoException(e);
-        } finally {
-            close(statement);
-            close(connection);
-        }
-        return result;
-    }
-
-    @Override
-    public Optional<User> findById(int id) throws DaoException {
-        Connection connection = null;
-        Optional<User> result;
-        try {
-            connection = ConnectionPool.INSTANCE.getConnection();
-            result = findById(id, connection);
-        } catch (ConnectionPoolException e) {
-            throw new DaoException(e);
-        } finally {
-            close(connection);
-        }
-        return result;
-    }
-
-    @Override
-    public List<User> findBy(String value, String column, String sortBy) throws DaoException {
         Connection connection = null;
         PreparedStatement statement = null;
-        List<User> result;
         try {
             connection = ConnectionPool.INSTANCE.getConnection();
-            String sql = FIND_BY_STATEMENT_PART1 + column + FIND_BY_STATEMENT_PART2 + sortBy + ";";
+            String sql = FIND_ALL_STATEMENT + sortBy + SEMICOLON;
             statement = connection.prepareStatement(sql);
-            statement.setString(1, value);
             ResultSet resultSet = statement.executeQuery();
             result = createUserListFromResultSet(resultSet);
         } catch (SQLException | ConnectionPoolException e) {
@@ -150,160 +237,158 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public List<User> findBy(String value, String column) throws DaoException {
-        return findBy(value, column, ColumnName.USER_ID);
-    }
-
-    @Override
-    public boolean update(User user) throws DaoException {
-        Connection connection = null;
-        PreparedStatement statement = null;
-        boolean result = false;
-        try {
-            connection = ConnectionPool.INSTANCE.getConnection();
-            int userId = user.getId();
-            statement = connection.prepareStatement(UPDATE_STATEMENT);
-            fillStatement(user, statement);
-            statement.setInt(6, userId);
-            statement.execute();
-            result = true;
-            LOGGER.log(Level.INFO, "User id " + userId + " was updated");
-        } catch (SQLException | ConnectionPoolException e) {
-            throw new DaoException(e);
-        } finally {
-            close(statement);
-            close(connection);
-        }
-        return result;
-    }
-
-    @Override
-    public boolean exists(User user) throws DaoException {
-        Connection connection = null;
-        boolean result;
-        try {
-            connection = ConnectionPool.INSTANCE.getConnection();
-            result = userContains(user, connection);
-        } catch (ConnectionPoolException e) {
-            throw new DaoException(e);
-        } finally {
-            close(connection);
-        }
-        return result;
-    }
-
-    @Override
-    public boolean existsEmail(String email) throws DaoException {
-        return userContains(email, CONTAINS_EMAIL_STATEMENT);
-    }
-
-    @Override
-    public boolean existsLogin(String login) throws DaoException {
-        return userContains(login, CONTAINS_LOGIN_STATEMENT);
-    }
-
-    private void fillStatement(User user, PreparedStatement statement) throws DaoException {
-        String login = user.getLogin();
-        String email = user.getEmail();
-        String password = user.getEncPassword();
-        User.Role role = user.getRole();
-        int status = user.getStatus();
-        try {
-            statement.setString(1, login);
-            statement.setString(2, email);
-            statement.setString(3, password);
-            statement.setString(4, role.toString());
-            statement.setString(5, String.valueOf(status));
-        } catch (SQLException e) {
-            throw new DaoException(e);
-        }
-    }
-
-    private boolean userContains(User user, Connection connection) throws DaoException {
-        PreparedStatement statement = null;
-        boolean result;
-        try {
-            statement = connection.prepareStatement(CONTAINS_STATEMENT);
-            fillStatement(user, statement);
-            ResultSet resultSet = statement.executeQuery();
-            resultSet.next();
-            result = resultSet.getRow() != 0;
-        } catch (SQLException e) {
-            throw new DaoException(e);
-        } finally {
-            close(statement);
-        }
-        if (result) {
-            LOGGER.log(Level.DEBUG, "User is contained");
-        } else {
-            LOGGER.log(Level.DEBUG, "User is not contained");
-        }
-        return result;
-    }
-
-    private boolean userContains(String value, String sql) throws DaoException {
-        Connection connection = null;
-        PreparedStatement statement = null;
-        boolean result;
-        try {
-            connection = ConnectionPool.INSTANCE.getConnection();
-            statement = connection.prepareStatement(sql);
-            statement.setString(1, value);
-            ResultSet resultSet = statement.executeQuery();
-            resultSet.next();
-            result = resultSet.getRow() != 0;
-        } catch (SQLException | ConnectionPoolException e) {
-            throw new DaoException(e);
-        } finally {
-            close(statement);
-            close(connection);
-        }
-        if (result) {
-            LOGGER.log(Level.DEBUG, "User is contained");
-        } else {
-            LOGGER.log(Level.DEBUG, "User is not contained");
-        }
-        return result;
-    }
-
-    private List<User> createUserListFromResultSet(ResultSet resultSet) throws DaoException {
-        List<User> result = new ArrayList<>();
-        try {
-            while (resultSet.next()) {
-                int userId = resultSet.getInt(1);
-                String login = resultSet.getString(2);
-                String email = resultSet.getString(3);
-                String password = resultSet.getString(4);
-                User.Role role = User.Role.valueOf(resultSet.getString(5));
-                int status = resultSet.getInt(6);
-                User user = new User(userId, login, email, password, role, status);
-                result.add(user);
-            }
-        } catch (SQLException e) {
-            throw new DaoException(e);
-        }
-        return result;
-    }
-
-    private Optional<User> findById(int id, Connection connection) throws DaoException {
-        PreparedStatement statement = null;
+    public Optional<User> findById(int userId) throws DaoException {
         Optional<User> result = Optional.empty();
+        Connection connection = null;
+        PreparedStatement statement = null;
         try {
+            connection = ConnectionPool.INSTANCE.getConnection();
             statement = connection.prepareStatement(FIND_BY_ID_STATEMENT);
-            statement.setInt(1, id);
+            statement.setInt(1, userId);
             ResultSet resultSet = statement.executeQuery();
             List<User> userList = createUserListFromResultSet(resultSet);
             if (!userList.isEmpty()) {
                 User user = userList.get(0);
-                result = Optional.of(user);
-                LOGGER.log(Level.DEBUG, "User id: " + id + " has been found");
-            } else {
-                LOGGER.log(Level.DEBUG, "User id: " + id + " hasn't been found");
+                result = Optional.ofNullable(user);
             }
-        } catch (SQLException e) {
+        } catch (SQLException | ConnectionPoolException e) {
             throw new DaoException(e);
         } finally {
             close(statement);
+            close(connection);
+        }
+        return result;
+    }
+
+    @Override
+    public boolean update(User user) throws DaoException {
+        boolean result;
+        Connection connection = null;
+        PreparedStatement statement = null;
+        try {
+            connection = ConnectionPool.INSTANCE.getConnection();
+            statement = connection.prepareStatement(UPDATE_STATEMENT);
+            String login = user.getLogin();
+            String email = user.getEmail();
+            String role = user.getRole().toString();
+            byte status = user.getStatus();
+            int userId = user.getId();
+            statement.setString(1, login);
+            statement.setString(2, email);
+            statement.setString(3, role);
+            statement.setByte(4, status);
+            statement.setInt(5, userId);
+            statement.execute();
+            result = true;
+            LOGGER.log(Level.DEBUG, "User has been updated");
+        } catch (SQLException | ConnectionPoolException e) {
+            throw new DaoException(e);
+        } finally {
+            close(statement);
+            close(connection);
+        }
+        return result;
+    }
+
+    @Override
+    public boolean updatePassword(int userId, String newEncPassword) throws DaoException {
+        return false;
+    }
+
+    private void fillStatement(User user, PreparedStatement statement) throws SQLException {
+        if (statement != null) {
+            String login = user.getLogin();
+            String email = user.getEmail();
+            String encPassword = user.getEncPassword();
+            User.Role role = user.getRole();
+            statement.setString(1, login);
+            statement.setString(2, email);
+            statement.setString(3, encPassword);
+            statement.setString(4, role.toString());
+            LOGGER.log(Level.DEBUG, "Statement has been filled");
+        } else {
+            LOGGER.log(Level.ERROR, "Cannot fill null statement");
+        }
+    }
+
+    private boolean exists(String value, String sql) throws DaoException {
+        boolean result;
+        Connection connection = null;
+        PreparedStatement statement = null;
+        try {
+            connection = ConnectionPool.INSTANCE.getConnection();
+            statement = connection.prepareStatement(sql);
+            statement.setString(1, value);
+            ResultSet resultSet = statement.executeQuery();
+            resultSet.next();
+            result = resultSet.getInt(1) != 0;
+        } catch (SQLException | ConnectionPoolException e) {
+            throw new DaoException(e);
+        } finally {
+            close(statement);
+            close(connection);
+        }
+        return result;
+    }
+
+    private List<User> createUserListFromResultSet(ResultSet resultSet) throws SQLException {
+        List<User> result = new ArrayList<>();
+        if (resultSet != null) {
+            while (resultSet.next()) {
+                int userId = resultSet.getInt(1);
+                String login = resultSet.getString(2);
+                String email = resultSet.getString(3);
+                String stringRole = resultSet.getString(4);
+                byte status = resultSet.getByte(5);
+                User.Role role = User.Role.valueOf(stringRole);
+                User user = new User(userId, login, email, role, status);
+                result.add(user);
+            }
+            LOGGER.log(Level.DEBUG, result.size() + " users have been found");
+        } else {
+            LOGGER.log(Level.ERROR, "Result set is null");
+        }
+        return result;
+    }
+
+    private Optional<User> findBy(String value, String sql) throws DaoException {
+        Optional<User> result = Optional.empty();
+        Connection connection = null;
+        PreparedStatement statement = null;
+        try {
+            connection = ConnectionPool.INSTANCE.getConnection();
+            statement = connection.prepareStatement(sql);
+            statement.setString(1, value);
+            ResultSet resultSet = statement.executeQuery();
+            List<User> userList = createUserListFromResultSet(resultSet);
+            if (!userList.isEmpty()) {
+                result = Optional.ofNullable(userList.get(0));
+            }
+        } catch (SQLException | ConnectionPoolException e) {
+            throw new DaoException(e);
+        } finally {
+            close(statement);
+            close(connection);
+        }
+        return result;
+    }
+
+    private List<User> findByAndSort(String value, String sortBy, String sql) throws DaoException {
+        List<User> result;
+        Connection connection = null;
+        PreparedStatement statement = null;
+        try {
+            connection = ConnectionPool.INSTANCE.getConnection();
+            sql = sql + sortBy + SEMICOLON;
+            statement = connection.prepareStatement(sql);
+            statement.setString(1, value);
+            ResultSet resultSet = statement.executeQuery();
+            result = createUserListFromResultSet(resultSet);
+        } catch (SQLException | ConnectionPoolException e) {
+            throw new DaoException(e);
+        } finally {
+            close(statement);
+            close(connection);
         }
         return result;
     }

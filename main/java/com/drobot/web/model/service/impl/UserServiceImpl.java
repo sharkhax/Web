@@ -2,18 +2,15 @@ package com.drobot.web.model.service.impl;
 
 import com.drobot.web.exception.DaoException;
 import com.drobot.web.exception.ServiceException;
-import com.drobot.web.model.dao.ColumnName;
 import com.drobot.web.model.dao.UserDao;
 import com.drobot.web.model.dao.impl.UserDaoImpl;
 import com.drobot.web.model.entity.User;
 import com.drobot.web.model.service.UserService;
 import com.drobot.web.model.util.Encrypter;
 import com.drobot.web.model.validator.UserValidator;
-import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -29,9 +26,7 @@ public class UserServiceImpl implements UserService {
         try {
             if (userValidator.isLoginValid(login)
                     && userValidator.isEmailValid(email)
-                    && userValidator.isPasswordValid(password)
-                    && !dao.existsLogin(login)
-                    && !dao.existsEmail(email)) {
+                    && userValidator.isPasswordValid(password)) {
                 String encryptedPassword = Encrypter.encrypt(password);
                 User user = new User(login, email, encryptedPassword, role);
                 result = dao.add(user);
@@ -54,21 +49,23 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> findBy(String value, String column) throws ServiceException {
-        List<User> result = new ArrayList<>();
-        try {
-            if (column.equals(ColumnName.USER_LOGIN)
-                    || column.equals(ColumnName.USER_EMAIL)
-                    || column.equals(ColumnName.USER_ROLE)
-                    || column.equals(ColumnName.USER_STATUS)) {
-                result = dao.findBy(value, column);
-            } else {
-                LOGGER.log(Level.ERROR, "Column is not supported to find by");
-            }
-        } catch (DaoException e) {
-            throw new ServiceException(e);
-        }
-        return result;
+    public Optional<User> findByLogin(String login) throws ServiceException {
+        return Optional.empty();
+    }
+
+    @Override
+    public Optional<User> findByEmail(String email) throws ServiceException {
+        return Optional.empty();
+    }
+
+    @Override
+    public List<User> findByRole(User.Role role) throws ServiceException {
+        return null;
+    }
+
+    @Override
+    public List<User> findByStatus(byte status) throws ServiceException {
+        return null;
     }
 
     @Override
@@ -99,54 +96,12 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public boolean checkPassword(String login, String password) throws ServiceException {
-        boolean result = false;
-        try {
-            if (userValidator.isLoginValid(login)
-                    && userValidator.isPasswordValid(password)) {
-                List<User> userList = dao.findBy(login, ColumnName.USER_LOGIN);
-                if (!userList.isEmpty()) {
-                    User user = userList.get(0);
-                    String actualPassword = user.getEncPassword();
-                    result = Encrypter.check(password, actualPassword);
-                    if (result) {
-                        LOGGER.log(Level.DEBUG, "Password is correct");
-                    } else {
-                        LOGGER.log(Level.DEBUG, "Password is incorrect");
-                    }
-                } else {
-                    LOGGER.log(Level.DEBUG, "Login is incorrect");
-                }
-            }
-        } catch (DaoException e) {
-            throw new ServiceException(e);
-        }
-        return result;
+        return false;
     }
 
     @Override
     public Optional<User.Role> defineRole(String login, String password) throws ServiceException {
-        Optional<User.Role> result = Optional.empty();
-        try {
-            if (userValidator.isLoginValid(login)
-                    && userValidator.isPasswordValid(password)) {
-                List<User> userList = dao.findBy(login, ColumnName.USER_LOGIN);
-                if (!userList.isEmpty()) {
-                    User user = userList.get(0);
-                    String actualPassword = user.getEncPassword();
-                    if (Encrypter.check(password, actualPassword)) {
-                        LOGGER.log(Level.DEBUG, "Password is correct");
-                        User.Role role = user.getRole();
-                        result = Optional.of(role);
-                        LOGGER.log(Level.DEBUG, "Role has been defined");
-                    }
-                } else {
-                    LOGGER.log(Level.DEBUG, "Login is incorrect");
-                }
-            }
-        } catch (DaoException e) {
-            throw new ServiceException(e);
-        }
-        return result;
+        return Optional.empty();
     }
 
     @Override
@@ -193,9 +148,7 @@ public class UserServiceImpl implements UserService {
                 Optional<User> optional = dao.findById(userId);
                 if (optional.isPresent()) {
                     String encryptedPassword = Encrypter.encrypt(newPassword);
-                    User user = optional.get();
-                    user.setEncPassword(encryptedPassword);
-                    result = dao.update(user);
+                    result = dao.updatePassword(userId, encryptedPassword);
                 }
             }
         } catch (DaoException e) {
@@ -221,7 +174,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean updateStatus(int userId, int newStatus) throws ServiceException {
+    public boolean updateStatus(int userId, byte newStatus) throws ServiceException {
         boolean result = false;
         try {
             Optional<User> optional = dao.findById(userId);

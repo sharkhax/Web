@@ -1,7 +1,6 @@
 package com.drobot.web.model.connection;
 
 import com.drobot.web.exception.ConnectionPoolException;
-import com.drobot.web.exception.ConnectionPoolRuntimeException;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -40,7 +39,7 @@ public enum ConnectionPool {
             LOGGER.log(Level.INFO, "Connection pool has been filled");
         } catch (ClassNotFoundException | SQLException e) {
             LOGGER.log(Level.FATAL, "Error during connection pool creating");
-            throw new ConnectionPoolRuntimeException(e);
+            throw new RuntimeException("Error during connection pool creating", e);
         }
     }
 
@@ -63,7 +62,7 @@ public enum ConnectionPool {
             freeConnections.offer((ProxyConnection) connection);
             LOGGER.log(Level.DEBUG, "Connection has been released");
         } else {
-            LOGGER.log(Level.WARN, "Invalid connection to release");
+            LOGGER.log(Level.ERROR, "Invalid connection to release");
         }
     }
 
@@ -74,10 +73,11 @@ public enum ConnectionPool {
                 proxyConnection.reallyClose();
             }
             LOGGER.log(Level.INFO, "Connection pool has been destroyed");
-            deregisterDrivers();
         } catch (InterruptedException | SQLException e) {
             LOGGER.log(Level.ERROR, e);
             throw new ConnectionPoolException(e);
+        } finally {
+            deregisterDrivers();
         }
     }
 
