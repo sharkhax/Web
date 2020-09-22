@@ -2,14 +2,17 @@ package com.drobot.web.model.dao.impl;
 
 import com.drobot.web.exception.ConnectionPoolException;
 import com.drobot.web.exception.DaoException;
-import com.drobot.web.model.connection.ConnectionPool;
+import com.drobot.web.model.pool.ConnectionPool;
 import com.drobot.web.model.dao.UserDao;
-import com.drobot.web.model.entity.LoginInfo;
 import com.drobot.web.model.entity.User;
 import com.drobot.web.model.util.Encrypter;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+
+import static com.drobot.web.model.entity.Entity.Status.ACTIVE;
+import static com.drobot.web.model.entity.Entity.Status.BLOCKED;
+import static com.drobot.web.model.entity.Entity.Status.UNREMOVABLE;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -49,6 +52,10 @@ public class UserDaoImpl implements UserDao {
             "UPDATE hospital.users SET login = ?, email = ?, role = ?, user_status = ? WHERE user_id = ?;";
     private static final String DEFINE_ROLE_STATEMENT =
             "SELECT password, role, user_status FROM hospital.users WHERE login = ?;";
+    private static final String GET_STATUS_STATEMENT =
+            "SELECT user_status FROM hospital.users WHERE user_id = ?;";
+    private static final String UPDATE_PASSWORD_STATEMENT =
+            "UPDATE hospital.users SET password = ? WHERE user_id = ?;";
 
     @Override
     public boolean exists(int userId) throws DaoException {
@@ -62,11 +69,8 @@ public class UserDaoImpl implements UserDao {
             ResultSet resultSet = statement.executeQuery();
             resultSet.next();
             result = resultSet.getInt(1) != 0;
-            if (result) {
-                LOGGER.log(Level.DEBUG, "User with such id exists");
-            } else {
-                LOGGER.log(Level.DEBUG, "User with such id does not exist");
-            }
+            String log = result ? "User with such id exists" : "User with such id does not exist";
+            LOGGER.log(Level.DEBUG, log);
         } catch (SQLException | ConnectionPoolException e) {
             throw new DaoException(e);
         } finally {
@@ -79,23 +83,16 @@ public class UserDaoImpl implements UserDao {
     @Override
     public boolean existsEmail(String email) throws DaoException {
         boolean result = exists(email, CONTAINS_EMAIL_STATEMENT);
-        ;
-        if (result) {
-            LOGGER.log(Level.DEBUG, "User with such email exists");
-        } else {
-            LOGGER.log(Level.DEBUG, "User with such email does not exist");
-        }
+        String log = result ? "User with such email exists" : "User with such email does not exist";
+        LOGGER.log(Level.DEBUG, log);
         return result;
     }
 
     @Override
     public boolean existsLogin(String login) throws DaoException {
         boolean result = exists(login, CONTAINS_LOGIN_STATEMENT);
-        if (result) {
-            LOGGER.log(Level.DEBUG, "User with such login exists");
-        } else {
-            LOGGER.log(Level.DEBUG, "User with such login does not exist");
-        }
+        String log = result ? "User with such login exists" : "User with such login does not exist";
+        LOGGER.log(Level.DEBUG, log);
         return result;
     }
 
@@ -115,7 +112,7 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public List<User> findByStatus(byte status, String sortBy) throws DaoException {
+    public List<User> findByStatus(boolean isActive, String sortBy) throws DaoException {
         List<User> result;
         Connection connection = null;
         PreparedStatement statement = null;
@@ -123,6 +120,7 @@ public class UserDaoImpl implements UserDao {
             connection = ConnectionPool.INSTANCE.getConnection();
             String sql = FIND_BY_STATUS_STATEMENT + sortBy + SEMICOLON;
             statement = connection.prepareStatement(sql);
+            byte status = isActive ? ACTIVE.getStatusId() : BLOCKED.getStatusId();
             statement.setByte(1, status);
             ResultSet resultSet = statement.executeQuery();
             result = createUserListFromResultSet(resultSet);
@@ -136,14 +134,15 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public Optional<LoginInfo> checkPassword(String login, String password) throws DaoException {
-        Optional<LoginInfo> result = Optional.empty();
+    public Optional<User> checkPassword(String login, String password) throws DaoException {
+        Optional<User> result;
         Connection connection = null;
         PreparedStatement statement = null;
         try {
             if (existsLogin(login)) {
                 connection = ConnectionPool.INSTANCE.getConnection();
                 statement = connection.prepareStatement(DEFINE_ROLE_STATEMENT);
+                statement.setString(1, login);
                 ResultSet resultSet = statement.executeQuery();
                 resultSet.next();
                 String actualEncPassword = resultSet.getString(1);
@@ -151,12 +150,17 @@ public class UserDaoImpl implements UserDao {
                     String stringRole = resultSet.getString(2);
                     User.Role role = User.Role.valueOf(stringRole);
                     byte status = resultSet.getByte(3);
-                    LoginInfo loginInfo = new LoginInfo(role, status);
-                    result = Optional.of(loginInfo);
+                    boolean isActive = status == ACTIVE.getStatusId()
+                            || status == UNREMOVABLE.getStatusId();
+                    User user = new User(role, isActive);
+                    result = Optional.of(user);
                     LOGGER.log(Level.DEBUG, "Password is correct, login info has been created");
                 } else {
                     LOGGER.log(Level.DEBUG, "Password is not correct");
+                    result = Optional.empty();
                 }
+            } else {
+                result = Optional.empty();
             }
         } catch (SQLException | ConnectionPoolException e) {
             throw new DaoException(e);
@@ -168,7 +172,13 @@ public class UserDaoImpl implements UserDao {
     }
 
     @Override
-    public boolean add(User user) throws DaoException {
+    public boolean add(User entity) {
+        LOGGER.log(Level.ERROR, "It is not allowed to use this method to add a new user");
+        throw new UnsupportedOperationException("It is not allowed to use this method to add a new user");
+    }
+
+    @Override
+    public boolean add(User user, String encPassword) throws DaoException {
         boolean result = false;
         Connection connection = null;
         PreparedStatement statement = null;
@@ -178,7 +188,7 @@ public class UserDaoImpl implements UserDao {
             if (!existsLogin(login) && !existsEmail(email)) {
                 connection = ConnectionPool.INSTANCE.getConnection();
                 statement = connection.prepareStatement(ADD_STATEMENT);
-                fillStatement(user, statement);
+                fillStatement(user, encPassword, statement);
                 result = true;
                 LOGGER.log(Level.DEBUG, "User has been successfully added");
             } else {
@@ -199,13 +209,18 @@ public class UserDaoImpl implements UserDao {
         Connection connection = null;
         PreparedStatement statement = null;
         try {
-            if (exists(userId)) {
-                connection = ConnectionPool.INSTANCE.getConnection();
-                statement = connection.prepareStatement(DELETE_STATEMENT);
-                statement.setInt(1, userId);
-                statement.execute();
-                result = true;
-                LOGGER.log(Level.DEBUG, "User has been successfully removed");
+            connection = ConnectionPool.INSTANCE.getConnection();
+            Optional<Byte> optionalStatus = findAndGetStatus(userId, connection);
+            if (optionalStatus.isPresent()) {
+                if (optionalStatus.get() != UNREMOVABLE.getStatusId()) {
+                    statement = connection.prepareStatement(DELETE_STATEMENT);
+                    statement.setInt(1, userId);
+                    statement.execute();
+                    result = true;
+                    LOGGER.log(Level.DEBUG, "User has been successfully removed");
+                } else {
+                    LOGGER.log(Level.DEBUG, "User status is unremovable");
+                }
             }
         } catch (SQLException | ConnectionPoolException e) {
             throw new DaoException(e);
@@ -238,7 +253,7 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public Optional<User> findById(int userId) throws DaoException {
-        Optional<User> result = Optional.empty();
+        Optional<User> result;
         Connection connection = null;
         PreparedStatement statement = null;
         try {
@@ -250,6 +265,8 @@ public class UserDaoImpl implements UserDao {
             if (!userList.isEmpty()) {
                 User user = userList.get(0);
                 result = Optional.ofNullable(user);
+            } else {
+                result = Optional.empty();
             }
         } catch (SQLException | ConnectionPoolException e) {
             throw new DaoException(e);
@@ -271,7 +288,8 @@ public class UserDaoImpl implements UserDao {
             String login = user.getLogin();
             String email = user.getEmail();
             String role = user.getRole().toString();
-            byte status = user.getStatus();
+            boolean isActive = user.isActive();
+            byte status = isActive ? ACTIVE.getStatusId() : BLOCKED.getStatusId();
             int userId = user.getId();
             statement.setString(1, login);
             statement.setString(2, email);
@@ -292,14 +310,32 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public boolean updatePassword(int userId, String newEncPassword) throws DaoException {
-        return false;
+        boolean result = false;
+        Connection connection = null;
+        PreparedStatement statement = null;
+        try {
+            if (exists(userId)) {
+                connection = ConnectionPool.INSTANCE.getConnection();
+                statement = connection.prepareStatement(UPDATE_PASSWORD_STATEMENT);
+                statement.setString(1, newEncPassword);
+                statement.setInt(2, userId);
+                statement.execute();
+                result = true;
+                LOGGER.log(Level.DEBUG, "Password has been updated");
+            }
+        } catch (SQLException | ConnectionPoolException e) {
+            throw new DaoException(e);
+        } finally {
+            close(statement);
+            close(connection);
+        }
+        return result;
     }
 
-    private void fillStatement(User user, PreparedStatement statement) throws SQLException {
+    private void fillStatement(User user, String encPassword, PreparedStatement statement) throws SQLException {
         if (statement != null) {
             String login = user.getLogin();
             String email = user.getEmail();
-            String encPassword = user.getEncPassword();
             User.Role role = user.getRole();
             statement.setString(1, login);
             statement.setString(2, email);
@@ -339,7 +375,7 @@ public class UserDaoImpl implements UserDao {
                 String login = resultSet.getString(2);
                 String email = resultSet.getString(3);
                 String stringRole = resultSet.getString(4);
-                byte status = resultSet.getByte(5);
+                boolean status = resultSet.getByte(5) == ACTIVE.getStatusId();
                 User.Role role = User.Role.valueOf(stringRole);
                 User user = new User(userId, login, email, role, status);
                 result.add(user);
@@ -389,6 +425,32 @@ public class UserDaoImpl implements UserDao {
         } finally {
             close(statement);
             close(connection);
+        }
+        return result;
+    }
+
+    private Optional<Byte> findAndGetStatus(int userId, Connection connection) throws SQLException {
+        Optional<Byte> result;
+        if (connection != null) {
+            PreparedStatement statement = null;
+            try {
+                statement = connection.prepareStatement(GET_STATUS_STATEMENT);
+                statement.setInt(1, userId);
+                ResultSet resultSet = statement.executeQuery();
+                if (resultSet.next()) {
+                    Byte status = resultSet.getByte(1);
+                    result = Optional.of(status);
+                    LOGGER.log(Level.DEBUG, "User has been found, status: " + status);
+                } else {
+                    result = Optional.empty();
+                    LOGGER.log(Level.DEBUG, "User hasn't been found");
+                }
+            } finally {
+                close(statement);
+            }
+        } else {
+            LOGGER.log(Level.ERROR, "Connection is null");
+            result = Optional.empty();
         }
         return result;
     }

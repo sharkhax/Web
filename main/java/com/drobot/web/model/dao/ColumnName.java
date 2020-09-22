@@ -1,6 +1,10 @@
 package com.drobot.web.model.dao;
 
 public final class ColumnName {
+
+    private ColumnName() {
+    }
+
     /**
      * Users' table
      */

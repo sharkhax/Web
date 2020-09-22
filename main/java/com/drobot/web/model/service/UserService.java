@@ -15,19 +15,15 @@ public interface UserService {
 
     Optional<User> findByEmail(String email) throws ServiceException;
 
-    List<User> findByRole(User.Role role) throws ServiceException;
+    List<User> findByRole(User.Role role, String sortBy) throws ServiceException;
 
-    List<User> findByStatus(byte status) throws ServiceException;
-
-  //  List<User> findBy(String value, String column) throws ServiceException;
+    List<User> findByStatus(boolean isActive, String sortBy) throws ServiceException;
 
     boolean existsLogin(String login) throws ServiceException;
 
     boolean existsEmail(String email) throws ServiceException;
 
-    boolean checkPassword(String login, String password) throws ServiceException;
-
-    Optional<User.Role> defineRole(String login, String password) throws ServiceException;
+    Optional<User> signIn(String login, String password) throws ServiceException;
 
     boolean updateLogin(int userId, String newLogin) throws ServiceException;
 
@@ -37,5 +33,5 @@ public interface UserService {
 
     boolean updateRole(int userId, User.Role newRole) throws ServiceException;
 
-    boolean updateStatus(int userId, byte newStatus) throws ServiceException;
+    boolean updateStatus(int userId, boolean newStatus) throws ServiceException;
 }

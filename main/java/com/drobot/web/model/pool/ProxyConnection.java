@@ -1,4 +1,4 @@
-package com.drobot.web.model.connection;
+package com.drobot.web.model.pool;
 
 import java.sql.*;
 import java.util.Map;

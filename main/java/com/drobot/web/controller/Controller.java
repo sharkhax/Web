@@ -3,10 +3,9 @@ package com.drobot.web.controller;
 import com.drobot.web.controller.command.ActionCommand;
 import com.drobot.web.controller.command.CommandProvider;
 import com.drobot.web.controller.command.JspPath;
-import com.drobot.web.controller.command.RequestParameter;
 import com.drobot.web.exception.CommandException;
 import com.drobot.web.exception.ConnectionPoolException;
-import com.drobot.web.model.connection.ConnectionPool;
+import com.drobot.web.model.pool.ConnectionPool;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -24,7 +23,6 @@ import java.util.Optional;
 public class Controller extends HttpServlet {
 
     private static final Logger LOGGER = LogManager.getLogger(Controller.class);
-    private static final String NULL_PAGE_MSG = "Null page";
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
@@ -38,24 +36,18 @@ public class Controller extends HttpServlet {
 
     private void processRequest(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        CommandProvider provider = new CommandProvider();
-        Optional<ActionCommand> optionalCommand = provider.defineCommand(request);
-        String page = null;
+        Optional<ActionCommand> optionalCommand = CommandProvider.defineCommand(request);
+        String page;
         RequestDispatcher dispatcher;
         try {
-            if (optionalCommand.isPresent()) {
-                ActionCommand command = optionalCommand.get();
-                page = command.execute(request);
-            }
-            if (page == null) {
-                page = JspPath.LOGIN_PAGE;
-                request.setAttribute(RequestParameter.NULL_PAGE, NULL_PAGE_MSG);
-            }
+            ActionCommand command = optionalCommand.orElseThrow();
+            page = command.execute(request);
             dispatcher = getServletContext().getRequestDispatcher(page);
             dispatcher.forward(request, response);
         } catch (CommandException e) {
             LOGGER.log(Level.ERROR, "Redirecting to the error page", e);
-            // TODO: 05.09.2020 err page
+            dispatcher = getServletContext().getRequestDispatcher(JspPath.ERROR);
+            dispatcher.forward(request, response);
         }
     }
 

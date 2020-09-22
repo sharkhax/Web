@@ -12,18 +12,15 @@ public class UserValidator {
 
     private static final Logger LOGGER = LogManager.getLogger(UserValidator.class);
     private static final String PASSWORD_REGEX = "[\\w_~!-]{5,16}";
-    private static final String LOGIN_REGEX1 = "[\\w-.]{5,16}";
-    private static final String LOGIN_REGEX2 = "[a-zA-Z\\-._]+";
+    private static final String LOGIN_REGEX1 = "[\\w-.]{5,16}"; // здесь проверка на длину и разрешенные символы
+    private static final String LOGIN_REGEX2 = "[a-zA-Z\\-._]+"; // не может состоять только из цифр
 
     public boolean isPasswordValid(String password) {
         Pattern pattern = Pattern.compile(PASSWORD_REGEX);
         Matcher matcher = pattern.matcher(password);
         boolean result = matcher.matches();
-        if (result) {
-            LOGGER.log(Level.DEBUG, "Password is valid");
-        } else {
-            LOGGER.log(Level.DEBUG, "Password isn't valid");
-        }
+        String log = result ? "Password is valid" : "Password isn't valid";
+        LOGGER.log(Level.DEBUG, log);
         return result;
     }
 
@@ -36,22 +33,16 @@ public class UserValidator {
             matcher = pattern.matcher(login);
             result = matcher.find();
         }
-        if (result) {
-            LOGGER.log(Level.DEBUG, "Login is valid");
-        } else {
-            LOGGER.log(Level.DEBUG, "Login isn't valid");
-        }
+        String log = result ? "Login is valid" : "Login isn't valid";
+        LOGGER.log(Level.DEBUG, log);
         return result;
     }
 
     public boolean isEmailValid(String email) {
         EmailValidator validator = EmailValidator.getInstance();
         boolean result = validator.isValid(email);
-        if (result) {
-            LOGGER.log(Level.DEBUG, "Email is valid");
-        } else {
-            LOGGER.log(Level.DEBUG, "Email isn't valid");
-        }
+        String log = result ? "Email is valid" : "Email isn't valid";
+        LOGGER.log(Level.DEBUG, log);
         return result;
     }
 }

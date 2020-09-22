@@ -14,7 +14,7 @@ public class LogoutCommand implements ActionCommand {
 
     @Override
     public String execute(HttpServletRequest request) {
-        String page = JspPath.LOGIN_PAGE;
+        String page = JspPath.LOGIN;
         request.getSession().invalidate();
         LOGGER.log(Level.DEBUG, "Logged out");
         return page;

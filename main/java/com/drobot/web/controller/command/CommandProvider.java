@@ -12,10 +12,13 @@ public class CommandProvider {
     private static final Logger LOGGER = LogManager.getLogger(CommandProvider.class);
     private static final String WRONG_ACTION_MSG = "Error: wrong action";
 
-    public Optional<ActionCommand> defineCommand(HttpServletRequest request) {
-        Optional<ActionCommand> result = Optional.empty();
+    private CommandProvider() {
+    }
+
+    public static Optional<ActionCommand> defineCommand(HttpServletRequest request) {
+        Optional<ActionCommand> result;
         String stringCommand = request.getParameter(RequestParameter.COMMAND);
-        if (stringCommand != null && !stringCommand.isBlank() && !stringCommand.isEmpty()) {
+        if (stringCommand != null && !stringCommand.isBlank()) {
             try {
                 CommandType commandType = CommandType.valueOf(stringCommand.toUpperCase());
                 ActionCommand command = commandType.getCommand();
@@ -24,9 +27,11 @@ public class CommandProvider {
             } catch (IllegalArgumentException e) {
                 request.setAttribute(RequestParameter.WRONG_ACTION, WRONG_ACTION_MSG);
                 LOGGER.log(Level.WARN, "Unsupported command");
+                result = Optional.empty();
             }
         } else {
             LOGGER.log(Level.WARN, "Command is null or empty");
+            result = Optional.empty();
         }
         return result;
     }

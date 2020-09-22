@@ -8,24 +8,28 @@ public class User extends Entity {
 
     private String login;
     private String email;
-    private final String encPassword;
     private Role role;
-    private byte status;
+    private boolean isActive;
 
-    public User(int id, String login, String email, Role role, byte status) {
+    public User(int id, String login, String email, Role role, boolean isActive) {
         super(id);
         this.login = login;
         this.email = email;
-        this.encPassword = "";
         this.role = role;
-        this.status = status;
+        this.isActive = isActive;
     }
 
-    public User(String login, String email, String encPassword, Role role) {
+    public User(String login, String email, Role role) {
         this.login = login;
         this.email = email;
-        this.encPassword = encPassword;
         this.role = role;
+    }
+
+    public User(Role role, boolean isActive) {
+        this.login = "";
+        this.email = "";
+        this.role = role;
+        this.isActive = isActive;
     }
 
     public String getLogin() {
@@ -44,10 +48,6 @@ public class User extends Entity {
         this.email = email;
     }
 
-    public String getEncPassword() {
-        return encPassword;
-    }
-
     public Role getRole() {
         return role;
     }
@@ -56,12 +56,12 @@ public class User extends Entity {
         this.role = role;
     }
 
-    public byte getStatus() {
-        return status;
+    public boolean isActive() {
+        return isActive;
     }
 
-    public void setStatus(byte status) {
-        this.status = status;
+    public void setActive(boolean active) {
+        this.isActive = active;
     }
 
     @Override
@@ -76,31 +76,44 @@ public class User extends Entity {
             return false;
         }
         User user = (User) o;
-        if (!login.equals(user.login)) {
+        if (isActive != user.isActive) {
             return false;
         }
-        if (!email.equals(user.email)) {
+        if (login != null) {
+            if (login.equals(user.login)) {
+                return false;
+            }
+        } else if (user.login != null) {
             return false;
         }
-        return encPassword.equals(user.encPassword);
+        if (email != null) {
+            if (!email.equals(user.email)) {
+                return false;
+            }
+        } else if (user.email != null) {
+            return false;
+        }
+        return role == user.role;
     }
 
     @Override
     public int hashCode() {
         int result = super.hashCode();
-        result = 31 * result + login.hashCode();
-        result = 31 * result + email.hashCode();
-        result = 31 * result + encPassword.hashCode();
+        result = 31 * result + (login != null ? login.hashCode() : 0);
+        result = 31 * result + (email != null ? email.hashCode() : 0);
+        result = 31 * result + (role != null ? role.hashCode() : 0);
+        result = 31 * result + (isActive ? 1 : 0);
         return result;
     }
 
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("User{");
-        sb.append("userId='").append(getId()).append('\'');
+        sb.append("userId=").append(getId());
         sb.append(", login='").append(login).append('\'');
         sb.append(", email='").append(email).append('\'');
-        sb.append(", encPassword='").append(encPassword).append('\'');
+        sb.append(", role=").append(role);
+        sb.append(", isActive=").append(isActive);
         sb.append('}');
         return sb.toString();
     }

@@ -1,4 +1,4 @@
-package com.drobot.web.model.connection;
+package com.drobot.web.model.pool;
 
 import com.drobot.web.exception.ConnectionPoolException;
 import org.apache.logging.log4j.Level;
@@ -14,7 +14,7 @@ import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
 
-public enum ConnectionPool {
+public enum ConnectionPool { // FIXME: 17.09.2020 ресурсы
     INSTANCE;
 
     private final Logger LOGGER = LogManager.getLogger(ConnectionPool.class);
@@ -22,25 +22,36 @@ public enum ConnectionPool {
     private static final String URL = "jdbc:mysql://localhost:3306";
     private static final String USERNAME = "root";
     private static final String PASSWORD = "root";
-    private BlockingQueue<ProxyConnection> freeConnections;
-    private Queue<ProxyConnection> givenConnections;
+    private final BlockingQueue<ProxyConnection> freeConnections;
+    private final Queue<ProxyConnection> givenConnections;
     private static final int DEFAULT_POOL_SIZE = 8;
+    private static final int FATAL_CONNECTION_ERROR_NUMBER = 3;
 
     ConnectionPool() {
         try {
             Class.forName(DRIVER);
-            freeConnections = new LinkedBlockingDeque<>(DEFAULT_POOL_SIZE);
-            givenConnections = new ArrayDeque<>(DEFAULT_POOL_SIZE);
-            for (int i = 0; i < DEFAULT_POOL_SIZE; i++) {
+        } catch (ClassNotFoundException e) {
+            LOGGER.log(Level.FATAL, "Error during driver registration", e);
+            throw new RuntimeException("Error during driver registration", e);
+        }
+        freeConnections = new LinkedBlockingDeque<>(DEFAULT_POOL_SIZE);
+        givenConnections = new ArrayDeque<>(DEFAULT_POOL_SIZE);
+        int errorCounter = 0;
+        for (int i = 0; i < DEFAULT_POOL_SIZE; i++) {
+            try {
                 Connection connection = DriverManager.getConnection(URL, USERNAME, PASSWORD);
                 ProxyConnection proxyConnection = new ProxyConnection(connection);
                 freeConnections.offer(proxyConnection);
+            } catch (SQLException e) {
+                LOGGER.log(Level.ERROR, "Error during connection creating");
+                errorCounter++;
             }
-            LOGGER.log(Level.INFO, "Connection pool has been filled");
-        } catch (ClassNotFoundException | SQLException e) {
-            LOGGER.log(Level.FATAL, "Error during connection pool creating");
-            throw new RuntimeException("Error during connection pool creating", e);
         }
+        if (errorCounter >= FATAL_CONNECTION_ERROR_NUMBER) {
+            LOGGER.log(Level.FATAL, errorCounter + " connection hasn't been created");
+            throw new RuntimeException(errorCounter + " connection hasn't been created");
+        }
+        LOGGER.log(Level.INFO, "Connection pool has been filled");
     }
 
     public Connection getConnection() throws ConnectionPoolException {
