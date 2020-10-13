@@ -21,7 +21,6 @@ import java.util.Optional;
         UrlPattern.MAIN_PAGE,
         UrlPattern.LOGIN_PAGE,
         UrlPattern.USER_REGISTRATION,
-        UrlPattern.EMPLOYEE_REGISTRATION,
         UrlPattern.EMPLOYEE_LIST,
         UrlPattern.RECORD_LIST,
         UrlPattern.USER_LIST})

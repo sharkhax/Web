@@ -15,6 +15,25 @@
 
 <jsp:include page="background.jsp"/>
 <%@ include file="header.jsp"%>
+
+<div class="main-menu">
+    <div class="list-group">
+        <form action="mainController" method="post">
+            <input type="hidden" name="command" value="redirect_command">
+            <button class="list-group-item list-group-item-action list-group-custom" type="submit" name="r_page" value="/mainPage/records">
+                <span style="alignment: center"><fmt:message key="main.recordListButton"/></span>
+            </button>
+            <button class="list-group-item list-group-item-action list-group-custom" type="submit" name="r_page" value="/settings">
+                <span style="alignment: center"><fmt:message key="main.personalSettingsButton"/></span>
+            </button>
+            <button class="list-group-item list-group-item-action list-group-custom" type="submit" name="r_page"
+                    value="/mainPage/employeeRegistration">
+                <span style="alignment: center"><fmt:message key="main.registerEmployeeButton"/></span>
+            </button>
+        </form>
+    </div>
+</div>
+
 <%@ include file="footer.jsp"%>
 
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"

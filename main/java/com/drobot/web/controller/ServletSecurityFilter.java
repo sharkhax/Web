@@ -17,7 +17,6 @@ import java.util.Optional;
         UrlPattern.MAIN_PAGE,
         UrlPattern.LOGIN_PAGE,
         UrlPattern.USER_REGISTRATION,
-        UrlPattern.EMPLOYEE_REGISTRATION,
         UrlPattern.EMPLOYEE_LIST,
         UrlPattern.RECORD_LIST,
         UrlPattern.USER_LIST},
@@ -38,7 +37,6 @@ public class ServletSecurityFilter extends AbstractSecurityFilter {
             case UrlPattern.MAIN_PAGE -> doCaseMainPage(request, response, session);
             case UrlPattern.LOGIN_PAGE -> doCaseLoginPage(request, response, session);
             case UrlPattern.USER_REGISTRATION -> doCaseUserRegistration(request, response, session);
-            case UrlPattern.EMPLOYEE_REGISTRATION -> doCaseEmployeeRegistration(request, response, session);
             case UrlPattern.EMPLOYEE_LIST -> doCaseEmployeeList(request, response, session);
             case UrlPattern.USER_LIST -> doCaseUserList(request, response, session);
             case UrlPattern.RECORD_LIST -> doCaseRecordList(request, response, session);
@@ -117,23 +115,6 @@ public class ServletSecurityFilter extends AbstractSecurityFilter {
             LOGGER.log(Level.DEBUG, "User has an access to the page, forwarding");
             page = JspPath.USER_REGISTRATION;
             session.setAttribute(RequestParameter.CURRENT_PAGE, UrlPattern.USER_REGISTRATION);
-            forward(request, response, page);
-        } else {
-            LOGGER.log(Level.DEBUG, "User doesn't have an access to the page, redirecting to its main");
-            page = UrlPattern.MAIN_PAGE;
-            session.setAttribute(RequestParameter.CURRENT_PAGE, page);
-            redirect(response, page);
-        }
-    }
-
-    private void doCaseEmployeeRegistration(HttpServletRequest request, HttpServletResponse response,
-                                            HttpSession session) throws IOException, ServletException {
-        String userRole = (String) session.getAttribute(RequestParameter.USER_ROLE);
-        String page;
-        if (userRole.equals(RequestParameter.ADMIN_ROLE)) { // todo общий метод
-            LOGGER.log(Level.DEBUG, "User has an access to the page, forwarding");
-            page = JspPath.EMPLOYEE_REGISTRATION;
-            session.setAttribute(RequestParameter.CURRENT_PAGE, UrlPattern.EMPLOYEE_REGISTRATION);
             forward(request, response, page);
         } else {
             LOGGER.log(Level.DEBUG, "User doesn't have an access to the page, redirecting to its main");

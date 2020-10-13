@@ -10,7 +10,6 @@ public final class UrlPattern {
     public static final String LOGIN_PAGE = "/loginPage";
     public static final String ERROR_PAGE = "/errorPage";
     public static final String USER_REGISTRATION = "/mainPage/userRegistration";
-    public static final String EMPLOYEE_REGISTRATION = "/mainPage/employeeRegistration";
     public static final String USER_LIST = "/mainPage/users";
     public static final String EMPLOYEE_LIST = "/mainPage/employees";
     public static final String RECORD_LIST = "/mainPage/records";

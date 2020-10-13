@@ -31,9 +31,8 @@
             <button class="list-group-item list-group-item-action list-group-custom" type="submit" name="r_page" value="/mainPage/userRegistration">
                 <span style="alignment: center"><fmt:message key="main.registerUserButton"/></span>
             </button>
-            <button class="list-group-item list-group-item-action list-group-custom" type="submit" name="r_page"
-                    value="/mainPage/employeeRegistration">
-                <span style="alignment: center"><fmt:message key="main.registerEmployeeButton"/></span>
+            <button class="list-group-item list-group-item-action list-group-custom" type="submit" name="r_page" value="/settings">
+                <span style="alignment: center"><fmt:message key="main.personalSettingsButton"/></span>
             </button>
         </form>
     </div>
