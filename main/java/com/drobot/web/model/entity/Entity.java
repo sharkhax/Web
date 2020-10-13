@@ -3,22 +3,36 @@ package com.drobot.web.model.entity;
 public abstract class Entity {
 
     public enum Status {
-        ACTIVE((byte) 0),
-        BLOCKED((byte) 1),
-        VACATION((byte) 2),
-        ARCHIVE((byte) 3),
-        WAITING_FOR_CURING((byte) 4),
-        WAITING_FOR_DECISION((byte) 5),
-        UNREMOVABLE((byte) 127);
+        ACTIVE(0),
+        BLOCKED(1),
+        VACATION(2),
+        ARCHIVE(3),
+        WAITING_FOR_CURING(4),
+        WAITING_FOR_DECISION(5),
+        UNREMOVABLE(127);
 
-        private final byte statusId;
+        private final int statusId;
 
-        Status(byte statusId) {
+        Status(int statusId) {
             this.statusId = statusId;
         }
 
-        public byte getStatusId() {
+        public int getStatusId() {
             return statusId;
+        }
+
+        public static Status defineStatus(int statusId) throws IllegalArgumentException {
+            Status[] values = Status.values();
+            Status result = null;
+            for (Status status : values) {
+                if (status.statusId == statusId) {
+                    result = status;
+                }
+            }
+            if (result == null) {
+                throw new IllegalArgumentException("There is no status with id " + statusId);
+            }
+            return result;
         }
     }
 

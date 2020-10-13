@@ -51,6 +51,33 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public List<User> findAll(String sortBy) throws ServiceException {
+        List<User> result;
+        try {
+            if (checkSortingTag(sortBy)) {
+                result = userDao.findAll(sortBy);
+            } else {
+                LOGGER.log(Level.ERROR, "Unsupported sorting tag");
+                result = List.of();
+            }
+        } catch (DaoException e) {
+            throw new ServiceException(e);
+        }
+        return result;
+    }
+
+    @Override
+    public Optional<User> findById(int userId) throws ServiceException {
+        Optional<User> result;
+        try {
+            result = userDao.findById(userId);
+        } catch (DaoException e) {
+            throw new ServiceException(e);
+        }
+        return result;
+    }
+
+    @Override
     public Optional<User> findByLogin(String login) throws ServiceException {
         Optional<User> result;
         UserValidator userValidator = new UserValidator();

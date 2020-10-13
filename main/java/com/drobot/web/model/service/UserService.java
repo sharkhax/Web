@@ -11,6 +11,10 @@ public interface UserService {
 
     boolean remove(int userId) throws ServiceException;
 
+    List<User> findAll(String sortBy) throws ServiceException;
+
+    Optional<User> findById(int userId) throws ServiceException;
+
     Optional<User> findByLogin(String login) throws ServiceException;
 
     Optional<User> findByEmail(String email) throws ServiceException;

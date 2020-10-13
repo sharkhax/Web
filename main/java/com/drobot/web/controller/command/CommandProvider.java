@@ -1,5 +1,6 @@
 package com.drobot.web.controller.command;
 
+import com.drobot.web.controller.RequestParameter;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -10,7 +11,6 @@ import java.util.Optional;
 public class CommandProvider {
 
     private static final Logger LOGGER = LogManager.getLogger(CommandProvider.class);
-    private static final String WRONG_ACTION_MSG = "Error: wrong action";
 
     private CommandProvider() {
     }
@@ -23,9 +23,8 @@ public class CommandProvider {
                 CommandType commandType = CommandType.valueOf(stringCommand.toUpperCase());
                 ActionCommand command = commandType.getCommand();
                 result = Optional.of(command);
-                LOGGER.log(Level.DEBUG, "Command has been defined");
+                LOGGER.log(Level.DEBUG, "Command has been defined: " + commandType);
             } catch (IllegalArgumentException e) {
-                request.setAttribute(RequestParameter.WRONG_ACTION, WRONG_ACTION_MSG);
                 LOGGER.log(Level.WARN, "Unsupported command");
                 result = Optional.empty();
             }

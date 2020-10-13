@@ -2,6 +2,7 @@ package com.drobot.web.model.dao.impl;
 
 import com.drobot.web.exception.ConnectionPoolException;
 import com.drobot.web.exception.DaoException;
+import com.drobot.web.model.entity.Entity;
 import com.drobot.web.model.pool.ConnectionPool;
 import com.drobot.web.model.dao.UserDao;
 import com.drobot.web.model.entity.User;
@@ -9,10 +10,6 @@ import com.drobot.web.model.util.Encrypter;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-
-import static com.drobot.web.model.entity.Entity.Status.ACTIVE;
-import static com.drobot.web.model.entity.Entity.Status.BLOCKED;
-import static com.drobot.web.model.entity.Entity.Status.UNREMOVABLE;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -22,10 +19,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class UserDaoImpl implements UserDao {
+import static com.drobot.web.model.dao.ColumnName.SEMICOLON;
+
+public class UserDaoImpl implements UserDao { // FIXME: 23.09.2020 statuses
 
     private static final Logger LOGGER = LogManager.getLogger(UserDaoImpl.class);
-    private static final char SEMICOLON = ';';
     private static final String ADD_STATEMENT =
             "INSERT INTO hospital.users(login, email, password, role) VALUES(?, ?, ?, ?);";
     private static final String CONTAINS_ID_STATEMENT =
@@ -37,23 +35,31 @@ public class UserDaoImpl implements UserDao {
     private static final String DELETE_STATEMENT =
             "DELETE FROM hospital.users WHERE user_id = ?;";
     private static final String FIND_ALL_STATEMENT =
-            "SELECT user_id, login, email, role, user_status FROM hospital.users ORDER BY ";
+            "SELECT user_id, login, email, role, status_name FROM hospital.users " +
+                    "INNER JOIN hospital.statuses ON user_status = status_id ORDER BY ";
     private static final String FIND_BY_ID_STATEMENT =
-            "SELECT user_id, login, email, role, user_status FROM hospital.users WHERE user_id = ?;";
+            "SELECT user_id, login, email, role, status_name FROM hospital.users " +
+                    "INNER JOIN hospital.statuses ON user_status = status_id WHERE user_id = ?;";
     private static final String FIND_BY_LOGIN_STATEMENT =
-            "SELECT user_id, login, email, role, user_status FROM hospital.users WHERE login = ?;";
+            "SELECT user_id, login, email, role, status_name FROM hospital.users " +
+                    "INNER JOIN hospital.statuses ON user_status = status_id WHERE login = ?;";
     private static final String FIND_BY_EMAIL_STATEMENT =
-            "SELECT user_id, login, email, role, user_status FROM hospital.users WHERE email = ?;";
+            "SELECT user_id, login, email, role, status_name FROM hospital.users " +
+                    "INNER JOIN hospital.statuses ON user_status = status_id WHERE email = ?;";
     private static final String FIND_BY_ROLE_STATEMENT =
-            "SELECT user_id, login, email, role, user_status FROM hospital.users WHERE role = ? ORDER BY ";
+            "SELECT user_id, login, email, role, status_name FROM hospital.users " +
+                    "INNER JOIN hospital.statuses ON user_status = status_id WHERE role = ? ORDER BY ";
     private static final String FIND_BY_STATUS_STATEMENT =
-            "SELECT user_id, login, email, role, user_status FROM hospital.users WHERE user_status = ? ORDER BY ";
+            "SELECT user_id, login, email, role, status_name FROM hospital.users " +
+                    "INNER JOIN hospital.statuses ON user_status = status_id WHERE user_status = ? ORDER BY ";
     private static final String UPDATE_STATEMENT =
             "UPDATE hospital.users SET login = ?, email = ?, role = ?, user_status = ? WHERE user_id = ?;";
     private static final String DEFINE_ROLE_STATEMENT =
-            "SELECT password, role, user_status FROM hospital.users WHERE login = ?;";
+            "SELECT password, role, status_name FROM hospital.users INNER JOIN hospital.statuses ON user_status = status_id" +
+                    " WHERE login = ?;";
     private static final String GET_STATUS_STATEMENT =
-            "SELECT user_status FROM hospital.users WHERE user_id = ?;";
+            "SELECT status_name FROM hospital.users INNER JOIN hospital.statuses ON user_status = status_id" +
+                    " WHERE user_id = ?;";
     private static final String UPDATE_PASSWORD_STATEMENT =
             "UPDATE hospital.users SET password = ? WHERE user_id = ?;";
 
@@ -120,7 +126,8 @@ public class UserDaoImpl implements UserDao {
             connection = ConnectionPool.INSTANCE.getConnection();
             String sql = FIND_BY_STATUS_STATEMENT + sortBy + SEMICOLON;
             statement = connection.prepareStatement(sql);
-            byte status = isActive ? ACTIVE.getStatusId() : BLOCKED.getStatusId();
+            byte status = (byte) (isActive ? Entity.Status.ACTIVE.getStatusId()
+                            : Entity.Status.BLOCKED.getStatusId());
             statement.setByte(1, status);
             ResultSet resultSet = statement.executeQuery();
             result = createUserListFromResultSet(resultSet);
@@ -149,9 +156,10 @@ public class UserDaoImpl implements UserDao {
                 if (Encrypter.check(password, actualEncPassword)) {
                     String stringRole = resultSet.getString(2);
                     User.Role role = User.Role.valueOf(stringRole);
-                    byte status = resultSet.getByte(3);
-                    boolean isActive = status == ACTIVE.getStatusId()
-                            || status == UNREMOVABLE.getStatusId();
+                    String stringStatus = resultSet.getString(3);
+                    Entity.Status status = Entity.Status.valueOf(stringStatus);
+                    boolean isActive = status == Entity.Status.ACTIVE
+                            || status == Entity.Status.UNREMOVABLE;
                     User user = new User(role, isActive);
                     result = Optional.of(user);
                     LOGGER.log(Level.DEBUG, "Password is correct, login info has been created");
@@ -189,6 +197,7 @@ public class UserDaoImpl implements UserDao {
                 connection = ConnectionPool.INSTANCE.getConnection();
                 statement = connection.prepareStatement(ADD_STATEMENT);
                 fillStatement(user, encPassword, statement);
+                statement.execute();
                 result = true;
                 LOGGER.log(Level.DEBUG, "User has been successfully added");
             } else {
@@ -210,9 +219,9 @@ public class UserDaoImpl implements UserDao {
         PreparedStatement statement = null;
         try {
             connection = ConnectionPool.INSTANCE.getConnection();
-            Optional<Byte> optionalStatus = findAndGetStatus(userId, connection);
+            Optional<Entity.Status> optionalStatus = findAndGetStatus(userId, connection);
             if (optionalStatus.isPresent()) {
-                if (optionalStatus.get() != UNREMOVABLE.getStatusId()) {
+                if (optionalStatus.get() != Entity.Status.UNREMOVABLE) {
                     statement = connection.prepareStatement(DELETE_STATEMENT);
                     statement.setInt(1, userId);
                     statement.execute();
@@ -289,7 +298,8 @@ public class UserDaoImpl implements UserDao {
             String email = user.getEmail();
             String role = user.getRole().toString();
             boolean isActive = user.isActive();
-            byte status = isActive ? ACTIVE.getStatusId() : BLOCKED.getStatusId();
+            byte status = (byte) (isActive ? Entity.Status.ACTIVE.getStatusId()
+                    : Entity.Status.BLOCKED.getStatusId());
             int userId = user.getId();
             statement.setString(1, login);
             statement.setString(2, email);
@@ -375,9 +385,11 @@ public class UserDaoImpl implements UserDao {
                 String login = resultSet.getString(2);
                 String email = resultSet.getString(3);
                 String stringRole = resultSet.getString(4);
-                boolean status = resultSet.getByte(5) == ACTIVE.getStatusId();
+                String stringStatus = resultSet.getString(5);
+                Entity.Status status = Entity.Status.valueOf(stringStatus);
+                boolean isActive = status.getStatusId() == Entity.Status.ACTIVE.getStatusId();
                 User.Role role = User.Role.valueOf(stringRole);
-                User user = new User(userId, login, email, role, status);
+                User user = new User(userId, login, email, role, isActive);
                 result.add(user);
             }
             LOGGER.log(Level.DEBUG, result.size() + " users have been found");
@@ -429,8 +441,9 @@ public class UserDaoImpl implements UserDao {
         return result;
     }
 
-    private Optional<Byte> findAndGetStatus(int userId, Connection connection) throws SQLException {
-        Optional<Byte> result;
+    private Optional<Entity.Status> findAndGetStatus(int userId, Connection connection)
+            throws SQLException {
+        Optional<Entity.Status> result;
         if (connection != null) {
             PreparedStatement statement = null;
             try {
@@ -438,7 +451,8 @@ public class UserDaoImpl implements UserDao {
                 statement.setInt(1, userId);
                 ResultSet resultSet = statement.executeQuery();
                 if (resultSet.next()) {
-                    Byte status = resultSet.getByte(1);
+                    String stringStatus = resultSet.getString(1);
+                    Entity.Status status = Entity.Status.valueOf(stringStatus);
                     result = Optional.of(status);
                     LOGGER.log(Level.DEBUG, "User has been found, status: " + status);
                 } else {

@@ -1,8 +1,8 @@
 package com.drobot.web.controller.command.impl;
 
-import com.drobot.web.controller.command.ActionCommand;
-import com.drobot.web.controller.command.JspPath;
-import com.drobot.web.controller.command.RequestParameter;
+import com.drobot.web.controller.RequestParameter;
+import com.drobot.web.controller.UrlPattern;
+import com.drobot.web.controller.command.*;
 import com.drobot.web.exception.CommandException;
 import com.drobot.web.exception.ServiceException;
 import com.drobot.web.model.entity.User;
@@ -13,13 +13,15 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
+@CommandAccessLevel({AccessType.GUEST})
 public class LoginCommand implements ActionCommand {
 
     private static final Logger LOGGER = LogManager.getLogger(LoginCommand.class);
-    private static final String WRONG_LOGIN_PASSWORD_MSG = "Incorrect login or password";
-    private static final String USER_BLOCKED_MSG = "You have been banned. Contact to administrator";
     private final UserService userService = new UserServiceImpl();
 
     @Override
@@ -32,6 +34,7 @@ public class LoginCommand implements ActionCommand {
         } catch (ServiceException e) {
             throw new CommandException(e);
         }
+        HttpSession session = request.getSession();
         String page;
         if (optional.isPresent()) {
             User user = optional.get();
@@ -39,15 +42,18 @@ public class LoginCommand implements ActionCommand {
                 User.Role role = user.getRole();
                 switch (role) {
                     case ADMIN -> {
-                        page = JspPath.ADMIN_MAIN;
+                        session.setAttribute(RequestParameter.USER_ROLE,
+                                RequestParameter.ADMIN_ROLE);
                         LOGGER.log(Level.DEBUG, "Logged in as " + role.toString());
                     }
                     case DOCTOR -> {
-                        page = JspPath.DOCTOR_MAIN;
+                        session.setAttribute(RequestParameter.USER_ROLE,
+                                RequestParameter.DOCTOR_ROLE);
                         LOGGER.log(Level.DEBUG, "Logged in as " + role.toString());
                     }
                     case ASSISTANT -> {
-                        page = JspPath.ASSISTANT_MAIN;
+                        session.setAttribute(RequestParameter.USER_ROLE,
+                                RequestParameter.ASSISTANT_ROLE);
                         LOGGER.log(Level.DEBUG, "Logged in as " + role.toString());
                     }
                     default -> {
@@ -55,14 +61,19 @@ public class LoginCommand implements ActionCommand {
                         throw new CommandException("Unsupported role");
                     }
                 }
+                page = UrlPattern.MAIN_PAGE;
+                session.setAttribute(RequestParameter.CURRENT_PAGE, UrlPattern.MAIN_PAGE);
+                Map<String, String> loginInfo = new HashMap<>();
+                loginInfo.put(RequestParameter.LOGIN, login);
+                session.setAttribute(RequestParameter.LOGIN_INFO, loginInfo);
             } else {
-                request.setAttribute(RequestParameter.USER_BLOCKED, USER_BLOCKED_MSG);
-                page = JspPath.LOGIN;
+                session.setAttribute(RequestParameter.USER_BLOCKED, true);
+                page = UrlPattern.LOGIN_PAGE;
                 LOGGER.log(Level.DEBUG, "User is blocked");
             }
         } else {
-            request.setAttribute(RequestParameter.WRONG_LOGIN_PASSWORD, WRONG_LOGIN_PASSWORD_MSG);
-            page = JspPath.LOGIN;
+            session.setAttribute(RequestParameter.WRONG_LOGIN_PASSWORD, true);
+            page = UrlPattern.LOGIN_PAGE;
         }
         return page;
     }

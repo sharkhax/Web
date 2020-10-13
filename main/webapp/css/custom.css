@@ -1,0 +1,38 @@
+.changingLang {
+    position: relative;
+    top: 52px;
+    left: 48px;
+}
+
+.changingLangLogin {
+    position: relative;
+    bottom: 54px;
+    left: 124px;
+}
+
+.loginForm {
+    position: relative;
+    top: 270px;
+    left: 410px;
+}
+
+.loginMessages {
+    position: relative;
+    bottom: 40px;
+}
+
+.main-menu {
+    position: relative;
+    top: 100px;
+    width: 300px;
+    margin: 0 auto;
+}
+
+.list-group-custom {
+    width: 90%;
+    color: #495057;
+    text-align: center;
+    background-color: #ffffffb5;
+    font-weight: bold;
+    font-family: "Times New Roman", sans-serif;
+}

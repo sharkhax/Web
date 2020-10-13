@@ -1,13 +1,18 @@
 package com.drobot.web.controller.command.impl;
 
+import com.drobot.web.controller.RequestParameter;
+import com.drobot.web.controller.command.AccessType;
 import com.drobot.web.controller.command.ActionCommand;
-import com.drobot.web.controller.command.JspPath;
+import com.drobot.web.controller.command.CommandAccessLevel;
+import com.drobot.web.controller.JspPath;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
+@CommandAccessLevel({AccessType.ADMIN, AccessType.DOCTOR, AccessType.ASSISTANT})
 public class LogoutCommand implements ActionCommand {
 
     private static final Logger LOGGER = LogManager.getLogger(LogoutCommand.class);
@@ -15,7 +20,11 @@ public class LogoutCommand implements ActionCommand {
     @Override
     public String execute(HttpServletRequest request) {
         String page = JspPath.LOGIN;
-        request.getSession().invalidate();
+        HttpSession session = request.getSession();
+        Object currentLocale = session.getAttribute(RequestParameter.CURRENT_LOCALE);
+        session.invalidate();
+        session = request.getSession();
+        session.setAttribute(RequestParameter.CURRENT_LOCALE, currentLocale);
         LOGGER.log(Level.DEBUG, "Logged out");
         return page;
     }

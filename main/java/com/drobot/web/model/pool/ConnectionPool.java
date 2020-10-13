@@ -43,13 +43,13 @@ public enum ConnectionPool { // FIXME: 17.09.2020 ресурсы
                 ProxyConnection proxyConnection = new ProxyConnection(connection);
                 freeConnections.offer(proxyConnection);
             } catch (SQLException e) {
-                LOGGER.log(Level.ERROR, "Error during connection creating");
+                LOGGER.log(Level.ERROR, "Error during connection creating", e);
                 errorCounter++;
             }
         }
         if (errorCounter >= FATAL_CONNECTION_ERROR_NUMBER) {
-            LOGGER.log(Level.FATAL, errorCounter + " connection hasn't been created");
-            throw new RuntimeException(errorCounter + " connection hasn't been created");
+            LOGGER.log(Level.FATAL, errorCounter + " connection(s) hasn't been created");
+            throw new RuntimeException(errorCounter + " connection(s) hasn't been created");
         }
         LOGGER.log(Level.INFO, "Connection pool has been filled");
     }
