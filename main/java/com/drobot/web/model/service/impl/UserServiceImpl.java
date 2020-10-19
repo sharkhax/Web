@@ -1,11 +1,14 @@
 package com.drobot.web.model.service.impl;
 
+import com.drobot.web.controller.RequestParameter;
 import com.drobot.web.exception.DaoException;
 import com.drobot.web.exception.ServiceException;
 import com.drobot.web.model.dao.ColumnName;
 import com.drobot.web.model.dao.UserDao;
 import com.drobot.web.model.dao.impl.UserDaoImpl;
+import com.drobot.web.model.entity.Employee;
 import com.drobot.web.model.entity.User;
+import com.drobot.web.model.service.UserMapService;
 import com.drobot.web.model.service.UserService;
 import com.drobot.web.model.util.Encrypter;
 import com.drobot.web.model.validator.UserValidator;
@@ -14,21 +17,49 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
-public class UserServiceImpl implements UserService {
+public enum UserServiceImpl implements UserService {
 
-    private static final Logger LOGGER = LogManager.getLogger(UserServiceImpl.class);
+    INSTANCE;
+
+    private final Logger LOGGER = LogManager.getLogger(UserServiceImpl.class);
     private final UserDao userDao = new UserDaoImpl();
+
+    @Override
+    public Optional<User> create(Map<String, String> fields) {
+        Optional<User> result;
+        UserMapService userMapService = UserMapService.INSTANCE;
+        if (userMapService.checkLogin(fields)
+                && userMapService.checkEmail(fields)
+                && userMapService.checkPassword(fields)
+                && userMapService.checkRole(fields)) {
+            String login = fields.get(RequestParameter.LOGIN);
+            String email = fields.get(RequestParameter.EMAIL);
+            String stringPosition = fields.get(RequestParameter.POSITION);
+            User.Role role;
+            switch (stringPosition) {
+                case RequestParameter.DOCTOR -> role = User.Role.DOCTOR;
+                case RequestParameter.ASSISTANT -> role = User.Role.ASSISTANT;
+                default -> throw new EnumConstantNotPresentException(User.Role.class, stringPosition.toUpperCase());
+            }
+            User user = new User(login, email, role);
+            result = Optional.of(user);
+        } else {
+            result = Optional.empty();
+            LOGGER.log(Level.DEBUG, "Some fields are invalid or absent");
+        }
+        return result;
+    }
 
     @Override
     public boolean add(String login, String email, String password, User.Role role) throws ServiceException {
         boolean result = false;
-        UserValidator userValidator = new UserValidator();
         try {
-            if (userValidator.isLoginValid(login)
-                    && userValidator.isEmailValid(email)
-                    && userValidator.isPasswordValid(password)) {
+            if (UserValidator.isLoginValid(login)
+                    && UserValidator.isEmailValid(email)
+                    && UserValidator.isPasswordValid(password)) {
                 String encryptedPassword = Encrypter.encrypt(password);
                 User user = new User(login, email, role);
                 result = userDao.add(user, encryptedPassword);
@@ -80,8 +111,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public Optional<User> findByLogin(String login) throws ServiceException {
         Optional<User> result;
-        UserValidator userValidator = new UserValidator();
-        if (userValidator.isLoginValid(login)) {
+        if (UserValidator.isLoginValid(login)) {
             try {
                 result = userDao.findByLogin(login);
             } catch (DaoException e) {
@@ -96,9 +126,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public Optional<User> findByEmail(String email) throws ServiceException {
         Optional<User> result;
-        UserValidator userValidator = new UserValidator();
         try {
-            if (userValidator.isEmailValid(email)) {
+            if (UserValidator.isEmailValid(email)) {
                 result = userDao.findByEmail(email);
             } else {
                 result = Optional.empty();
@@ -144,9 +173,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean existsLogin(String login) throws ServiceException {
         boolean result = false;
-        UserValidator userValidator = new UserValidator();
         try {
-            if (userValidator.isLoginValid(login)) {
+            if (UserValidator.isLoginValid(login)) {
                 result = userDao.existsLogin(login);
             }
         } catch (DaoException e) {
@@ -158,9 +186,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean existsEmail(String email) throws ServiceException {
         boolean result = false;
-        UserValidator userValidator = new UserValidator();
         try {
-            if (userValidator.isEmailValid(email)) {
+            if (UserValidator.isEmailValid(email)) {
                 result = userDao.existsEmail(email);
             }
         } catch (DaoException e) {
@@ -172,10 +199,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public Optional<User> signIn(String login, String password) throws ServiceException {
         Optional<User> result;
-        UserValidator userValidator = new UserValidator();
         try {
-            if (userValidator.isLoginValid(login)
-                    && userValidator.isPasswordValid(password)) {
+            if (UserValidator.isLoginValid(login)
+                    && UserValidator.isPasswordValid(password)) {
                 result = userDao.checkPassword(login, password);
             } else {
                 result = Optional.empty();
@@ -189,9 +215,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean updateLogin(int userId, String newLogin) throws ServiceException {
         boolean result = false;
-        UserValidator userValidator = new UserValidator();
         try {
-            if (userValidator.isLoginValid(newLogin)) {
+            if (UserValidator.isLoginValid(newLogin)) {
                 Optional<User> optional = userDao.findById(userId);
                 if (optional.isPresent()) {
                     User user = optional.get();
@@ -212,9 +237,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean updateEmail(int userId, String newEmail) throws ServiceException {
         boolean result = false;
-        UserValidator userValidator = new UserValidator();
         try {
-            if (userValidator.isEmailValid(newEmail)) {
+            if (UserValidator.isEmailValid(newEmail)) {
                 Optional<User> optional = userDao.findById(userId);
                 if (optional.isPresent()) {
                     User user = optional.get();
@@ -235,9 +259,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean updatePassword(int userId, String newPassword) throws ServiceException {
         boolean result = false;
-        UserValidator userValidator = new UserValidator();
         try {
-            if (userValidator.isPasswordValid(newPassword)) {
+            if (UserValidator.isPasswordValid(newPassword)) {
                 Optional<User> optional = userDao.findById(userId);
                 if (optional.isPresent()) {
                     String encryptedPassword = Encrypter.encrypt(newPassword);

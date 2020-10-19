@@ -11,6 +11,9 @@ public class User extends Entity {
     private Role role;
     private boolean isActive;
 
+    public User() {
+    }
+
     public User(int id, String login, String email, Role role, boolean isActive) {
         super(id);
         this.login = login;
@@ -25,7 +28,8 @@ public class User extends Entity {
         this.role = role;
     }
 
-    public User(Role role, boolean isActive) {
+    public User(int userId, Role role, boolean isActive) {
+        super(userId);
         this.login = "";
         this.email = "";
         this.role = role;

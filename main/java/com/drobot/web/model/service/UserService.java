@@ -6,7 +6,7 @@ import com.drobot.web.model.entity.User;
 import java.util.List;
 import java.util.Optional;
 
-public interface UserService {
+public interface UserService extends Creatable<User> {
     boolean add(String login, String email, String password, User.Role role) throws ServiceException;
 
     boolean remove(int userId) throws ServiceException;
@@ -33,7 +33,7 @@ public interface UserService {
 
     boolean updateEmail(int userId, String newEmail) throws ServiceException;
 
-    boolean updatePassword(int userId, String newEmail) throws ServiceException;
+    boolean updatePassword(int userId, String newPassword) throws ServiceException;
 
     boolean updateRole(int userId, User.Role newRole) throws ServiceException;
 

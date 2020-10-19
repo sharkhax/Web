@@ -4,6 +4,7 @@ import com.drobot.web.model.entity.User;
 import com.drobot.web.exception.DaoException;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public interface UserDao extends Dao<User> {

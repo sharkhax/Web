@@ -29,5 +29,4 @@ public final class ColumnName {
     public static final String EMPLOYEE_HIRE_DATE = "hire_date";
     public static final String EMPLOYEE_DISMISS_DATE = "dismiss_date";
     public static final String EMPLOYEE_STATUS = "employee_status";
-    public static final String EMPLOYEE_ACCOUNT_ID = "user_id_fk";
 }

@@ -14,27 +14,35 @@
 <c:set var="is_main_page" value="true" scope="page"/>
 
 <jsp:include page="background.jsp"/>
-<%@ include file="header.jsp"%>
+<%@ include file="header.jsp" %>
 
 <div class="main-menu">
     <div class="list-group">
         <form action="mainController" method="post">
             <input type="hidden" name="command" value="redirect_command">
-            <button class="list-group-item list-group-item-action list-group-custom" type="submit" name="r_page" value="/mainPage/records">
+            <button class="list-group-item list-group-item-action list-group-custom" type="submit" name="r_page"
+                    value="/mainPage/records" style="width: 90%;
+    color: #495057;
+    text-align: center;
+    background-color: #ffffffb5;
+    font-weight: bold;
+    font-family: 'Times New Roman', sans-serif">
                 <span style="alignment: center"><fmt:message key="main.recordListButton"/></span>
             </button>
-            <button class="list-group-item list-group-item-action list-group-custom" type="submit" name="r_page" value="/settings">
-                <span style="alignment: center"><fmt:message key="main.personalSettingsButton"/></span>
-            </button>
             <button class="list-group-item list-group-item-action list-group-custom" type="submit" name="r_page"
-                    value="/mainPage/employeeRegistration">
-                <span style="alignment: center"><fmt:message key="main.registerEmployeeButton"/></span>
+                    value="/settings" style="width: 90%;
+    color: #495057;
+    text-align: center;
+    background-color: #ffffffb5;
+    font-weight: bold;
+    font-family: 'Times New Roman', sans-serif">
+                <span style="alignment: center"><fmt:message key="main.personalSettingsButton"/></span>
             </button>
         </form>
     </div>
 </div>
 
-<%@ include file="footer.jsp"%>
+<%@ include file="footer.jsp" %>
 
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
         integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"

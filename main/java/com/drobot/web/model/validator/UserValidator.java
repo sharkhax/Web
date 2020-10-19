@@ -11,11 +11,11 @@ import java.util.regex.Pattern;
 public class UserValidator {
 
     private static final Logger LOGGER = LogManager.getLogger(UserValidator.class);
-    private static final String PASSWORD_REGEX = "[\\w_~!-]{5,16}";
+    private static final String PASSWORD_REGEX = "[\\w~!-]{5,16}";
     private static final String LOGIN_REGEX1 = "[\\w-.]{5,16}"; // здесь проверка на длину и разрешенные символы
     private static final String LOGIN_REGEX2 = "[a-zA-Z\\-._]+"; // не может состоять только из цифр
 
-    public boolean isPasswordValid(String password) {
+    public static boolean isPasswordValid(String password) {
         Pattern pattern = Pattern.compile(PASSWORD_REGEX);
         Matcher matcher = pattern.matcher(password);
         boolean result = matcher.matches();
@@ -24,7 +24,7 @@ public class UserValidator {
         return result;
     }
 
-    public boolean isLoginValid(String login) {
+    public static boolean isLoginValid(String login) {
         boolean result = false;
         Pattern pattern = Pattern.compile(LOGIN_REGEX1);
         Matcher matcher = pattern.matcher(login);
@@ -38,7 +38,7 @@ public class UserValidator {
         return result;
     }
 
-    public boolean isEmailValid(String email) {
+    public static boolean isEmailValid(String email) {
         EmailValidator validator = EmailValidator.getInstance();
         boolean result = validator.isValid(email);
         String log = result ? "Email is valid" : "Email isn't valid";

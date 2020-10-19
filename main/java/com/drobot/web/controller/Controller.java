@@ -17,13 +17,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Optional;
 
-@WebServlet(urlPatterns = {UrlPattern.MAIN_CONTROLLER,
-        UrlPattern.MAIN_PAGE,
-        UrlPattern.LOGIN_PAGE,
-        UrlPattern.USER_REGISTRATION,
-        UrlPattern.EMPLOYEE_LIST,
-        UrlPattern.RECORD_LIST,
-        UrlPattern.USER_LIST})
+@WebServlet(urlPatterns = {UrlPattern.MAIN_CONTROLLER})
 public class Controller extends HttpServlet {
 
     private static final Logger LOGGER = LogManager.getLogger(Controller.class);
@@ -48,7 +42,7 @@ public class Controller extends HttpServlet {
             response.sendRedirect(request.getContextPath() + page);
         } catch (CommandException e) {
             LOGGER.log(Level.ERROR, "Redirecting to the error page", e);
-            response.sendRedirect(request.getContextPath() + UrlPattern.ERROR_PAGE);
+            throw new ServletException(e);
         }
     }
 
@@ -59,6 +53,5 @@ public class Controller extends HttpServlet {
         } catch (ConnectionPoolException e) {
             LOGGER.log(Level.ERROR, e);
         }
-        super.destroy();
     }
 }

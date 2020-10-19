@@ -5,7 +5,6 @@ import com.drobot.web.exception.DaoException;
 import com.drobot.web.model.dao.EmployeeDao;
 import com.drobot.web.model.entity.Employee;
 import com.drobot.web.model.entity.Entity;
-import com.drobot.web.model.entity.User;
 import com.drobot.web.model.pool.ConnectionPool;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -28,22 +27,49 @@ public class EmployeeDaoImpl implements EmployeeDao {
             "SELECT COUNT(*) as label FROM hospital.employees WHERE employee_id = ?;";
     private static final String ADD_STATEMENT =
             "INSERT INTO hospital.employees(employee_name, employee_surname, employee_age, " +
-                    "employee_gender, position, hire_date, user_id_fk) VALUES(?, ?, ?, ?, ?, ?, ?);";
+                    "employee_gender, position, hire_date) VALUES(?, ?, ?, ?, ?, ?);";
     private static final String SET_STATUS_TO_ARCHIVE_STATEMENT =
             "UPDATE hospital.employees SET employee_status = " + Entity.Status.ARCHIVE.getStatusId()
                     + " WHERE employee_id = ?;";
     private static final String FIND_ALL_STATEMENT =
             "SELECT employee_id, employee_name, employee_surname, employee_age, employee_gender, position, " +
-                    "hire_date, dismiss_date, status_name, user_id_fk FROM hospital.employees " +
+                    "hire_date, dismiss_date, status_name FROM hospital.employees " +
                     "INNER JOIN hospital.statuses ON employee_status = status_id ORDER BY ";
     private static final String FIND_BY_ID_STATEMENT =
             "SELECT employee_id, employee_name, employee_surname, employee_age, employee_gender, position, " +
-                    "hire_date, dismiss_date, status_name, user_id_fk FROM hospital.employees " +
+                    "hire_date, dismiss_date, status_name FROM hospital.employees " +
                     "INNER JOIN hospital.statuses ON employee_status = status_id WHERE employee_id = ?;";
     private static final String UPDATE_STATEMENT =
             "UPDATE hospital.employees SET employee_name = ?, employee_surname = ?, employee_age = ?, " +
-                    "employee_gender = ?, position = ?, hire_date = ?, dismiss_date = ?, employee_status = ?, " +
-                    "user_id_fk = ? WHERE employee_id = ?;";
+                    "employee_gender = ?, position = ?, hire_date = ?, dismiss_date = ?, employee_status = ? " +
+                    "WHERE employee_id = ?;";
+    private static final String EXISTS_NAME_STATEMENT =
+            "SELECT COUNT(*) as label FROM hospital.employees WHERE employee_name = ? AND employee_surname = ?;";
+
+    @Override
+    public boolean exists(String name, String surname) throws DaoException {
+        boolean result = false;
+        Connection connection = null;
+        PreparedStatement statement = null;
+        try {
+            connection = ConnectionPool.INSTANCE.getConnection();
+            statement = connection.prepareStatement(EXISTS_NAME_STATEMENT);
+            statement.setString(1, name);
+            statement.setString(2, surname);
+            ResultSet resultSet = statement.executeQuery();
+            resultSet.next();
+            result = resultSet.getInt("label") != 0;
+            String log = result ? "Employee " + name + " " + surname + " exists"
+                    : "Employee " + name + " " + surname + " does not exist";
+            LOGGER.log(Level.DEBUG, log);
+        } catch (SQLException | ConnectionPoolException e) {
+            throw new DaoException(e);
+        } finally {
+            close(statement);
+            close(connection);
+        }
+        return result;
+    }
 
     @Override
     public List<Employee> findByName(String name, String surname, String sortBy) throws DaoException {
@@ -77,11 +103,6 @@ public class EmployeeDaoImpl implements EmployeeDao {
 
     @Override
     public Optional<Employee> findByUserId(int userId) throws DaoException {
-        return Optional.empty();
-    }
-
-    @Override
-    public Optional<User> findUserAccount(int employeeId) throws DaoException {
         return Optional.empty();
     }
 
@@ -212,7 +233,7 @@ public class EmployeeDaoImpl implements EmployeeDao {
             statement.setInt(1, employeeId);
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
-                result = resultSet.getInt("label") == 0;
+                result = resultSet.getInt("label") != 0;
             }
             String log = result ? "Employee id " + employeeId + " exists"
                     : "Employee id " + employeeId + " does not exist";
@@ -231,14 +252,12 @@ public class EmployeeDaoImpl implements EmployeeDao {
             String gender = String.valueOf(employee.getGender());
             String position = employee.getPosition().toString();
             long hireDateMillis = employee.getHireDateMillis();
-            int userAccountId = employee.getUserAccountId();
             statement.setString(1, name);
             statement.setString(2, surname);
             statement.setByte(3, age);
             statement.setString(4, gender);
             statement.setString(5, position);
             statement.setLong(6, hireDateMillis);
-            statement.setInt(7, userAccountId);
             LOGGER.log(Level.DEBUG, "Statement has been filled");
         } else {
             LOGGER.log(Level.ERROR, "Statement is null, can't be filled");
@@ -256,7 +275,6 @@ public class EmployeeDaoImpl implements EmployeeDao {
             long hireDateMillis = employee.getHireDateMillis();
             long dismissDateMillis = employee.getDismissDateMillis();
             byte status = (byte) employee.getStatus().getStatusId();
-            int userAccountId = employee.getUserAccountId();
             statement.setString(1, name);
             statement.setString(2, surname);
             statement.setByte(3, age);
@@ -265,8 +283,7 @@ public class EmployeeDaoImpl implements EmployeeDao {
             statement.setLong(6, hireDateMillis);
             statement.setLong(7, dismissDateMillis);
             statement.setByte(8, status);
-            statement.setInt(9, userAccountId);
-            statement.setInt(10, employeeId);
+            statement.setInt(9, employeeId);
             LOGGER.log(Level.DEBUG, "Statement has been filled");
         } else {
             LOGGER.log(Level.ERROR, "Statement is null, can't be filled");
@@ -285,12 +302,11 @@ public class EmployeeDaoImpl implements EmployeeDao {
             long hireDateMillis = resultSet.getLong(7);
             long dismissDateMillis = resultSet.getLong(8);
             String stringStatus = resultSet.getString(9);
-            int userId = resultSet.getInt(10);
             Employee.Position position = Employee.Position.valueOf(stringPosition);
             Entity.Status status = Entity.Status.valueOf(stringStatus);
             Employee employee =
                     new Employee(id, name, surname, age, gender, position,
-                            hireDateMillis, dismissDateMillis, status, userId);
+                            hireDateMillis, dismissDateMillis, status);
             result.add(employee);
         }
         return result;

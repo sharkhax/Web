@@ -1,26 +1,26 @@
 package com.drobot.web.model.validator;
 
+import com.drobot.web.model.util.DateConverter;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.time.Instant;
 import java.time.LocalDate;
-import java.time.temporal.ChronoField;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class EmployeeValidator {
 
     private static final Logger LOGGER = LogManager.getLogger(EmployeeValidator.class);
-    private static final String NAME_REGEX = "";
+    private static final String NAME_REGEX = "[a-zA-Z-']{2,45}";
     private static final int MIN_AGE = 18;
     private static final int MAX_AGE = 99;
     private static final char[] AVAILABLE_GENDERS = {'M', 'F'};
     private static final String MIN_HIRE_DATE = "2020-07-01";
     private static final String MIN_DISMISS_DATE = "2020-07-02";
 
-    public boolean isNameValid(String name) {
+    public static boolean isNameValid(String name) {
         boolean result = false;
         if (name != null) {
             Pattern pattern = Pattern.compile(NAME_REGEX);
@@ -34,14 +34,14 @@ public class EmployeeValidator {
         return result;
     }
 
-    public boolean isAgeValid(int age) {
+    public static boolean isAgeValid(int age) {
         boolean result = age >= MIN_AGE && age <= MAX_AGE;
         String log = result ? "Age " + age + " is valid" : "Age " + age + " is not valid";
         LOGGER.log(Level.DEBUG, log);
         return result;
     }
 
-    public boolean isAgeValid(String stringAge) {
+    public static boolean isAgeValid(String stringAge) {
         boolean result = false;
         try {
             int age = Integer.parseInt(stringAge);
@@ -52,7 +52,7 @@ public class EmployeeValidator {
         return result;
     }
 
-    public boolean isGenderValid(char gender) {
+    public static boolean isGenderValid(char gender) {
         gender = Character.toUpperCase(gender);
         boolean result = false;
         for (char actualGender : AVAILABLE_GENDERS) {
@@ -66,7 +66,7 @@ public class EmployeeValidator {
         return result;
     }
 
-    public boolean isGenderValid(String stringGender) {
+    public static boolean isGenderValid(String stringGender) {
         boolean result = false;
         if (stringGender != null && stringGender.length() == 1) {
             result = isGenderValid(stringGender.charAt(0));
@@ -76,14 +76,14 @@ public class EmployeeValidator {
         return result;
     }
 
-    public boolean isHireDateValid(long hireDateMillis) {
+    public static boolean isHireDateValid(long hireDateMillis) {
         boolean result = isDateValid(hireDateMillis, MIN_HIRE_DATE);
         String log = result ? "Hire date is valid" : "Hire date is not valid";
         LOGGER.log(Level.DEBUG, log);
         return result;
     }
 
-    public boolean isHireDateValid(String stringHireDate) {
+    public static boolean isHireDateValid(String stringHireDate) {
         boolean result = false;
         try {
             long hireDateMillis = Integer.parseInt(stringHireDate);
@@ -94,7 +94,7 @@ public class EmployeeValidator {
         return result;
     }
 
-    public boolean isDismissDateValid(long dismissDateMillis, long hireDateMillis) {
+    public static boolean isDismissDateValid(long dismissDateMillis, long hireDateMillis) {
         boolean result = isDateValid(dismissDateMillis, MIN_DISMISS_DATE)
                 && dismissDateMillis > hireDateMillis;
         String log = result ? "Dismiss date is valid" : "Dismiss date is not valid";
@@ -102,7 +102,7 @@ public class EmployeeValidator {
         return result;
     }
 
-    public boolean isDismissDateValid(String stringDismissDate, long hireDateMillis) {
+    public static boolean isDismissDateValid(String stringDismissDate, long hireDateMillis) {
         boolean result = false;
         try {
             long dismissDateMillis = Integer.parseInt(stringDismissDate);
@@ -113,12 +113,12 @@ public class EmployeeValidator {
         return result;
     }
 
-    private boolean isDateValid(long dateMillis, String minDateString) {
+    private static boolean isDateValid(long dateMillis, String minDateString) {
         boolean result;
-        LocalDate minDate = LocalDate.parse(minDateString);
-        long minDateMillis = minDate.getLong(ChronoField.INSTANT_SECONDS);
+        long minDateDays = LocalDate.parse(minDateString).toEpochDay();
+        long minDateMillis = DateConverter.daysToMillis(minDateDays);
         result = dateMillis > minDateMillis
-                && dateMillis < Instant.now().getLong(ChronoField.INSTANT_SECONDS);
+                && dateMillis < Instant.now().toEpochMilli();
         return result;
     }
 }

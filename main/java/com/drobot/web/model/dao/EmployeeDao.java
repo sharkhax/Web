@@ -9,6 +9,9 @@ import java.util.List;
 import java.util.Optional;
 
 public interface EmployeeDao extends Dao<Employee> {
+
+    boolean exists(String name, String surname) throws DaoException;
+
     List<Employee> findByName(String name, String surname, String sortBy) throws DaoException;
 
     List<Employee> findByAge(int age, String sortBy) throws DaoException;
@@ -22,6 +25,4 @@ public interface EmployeeDao extends Dao<Employee> {
     List<Employee> findByStatus(Entity.Status status, String sortBy) throws DaoException;
 
     Optional<Employee> findByUserId(int userId) throws DaoException;
-
-    Optional<User> findUserAccount(int employeeId) throws DaoException;
 }

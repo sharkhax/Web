@@ -5,7 +5,7 @@
          version="4.0">
     <error-page>
         <error-code>404</error-code>
-        <location>/jsp/error.jsp</location>
+        <location>/jsp/error404.jsp</location>
     </error-page>
     <error-page>
         <error-code>403</error-code>
@@ -18,4 +18,53 @@
     <session-config>
         <session-timeout>30</session-timeout>
     </session-config>
+
+    <filter>
+        <filter-name>disableUrlSessionFilter</filter-name>
+        <filter-class>com.drobot.web.controller.filter.DisableUrlSessionFilter</filter-class>
+    </filter>
+    <filter>
+        <filter-name>servletSecurityCommonFilter</filter-name>
+        <filter-class>com.drobot.web.controller.filter.ServletSecurityCommonFilter</filter-class>
+    </filter>
+    <filter>
+        <filter-name>servletSecurityEmployeeFilter</filter-name>
+        <filter-class>com.drobot.web.controller.filter.ServletSecurityEmployeeFilter</filter-class>
+    </filter>
+    <filter>
+        <filter-name>jspSecurityFilter</filter-name>
+        <filter-class>com.drobot.web.controller.filter.JspSecurityFilter</filter-class>
+    </filter>
+    <filter>
+        <filter-name>servletSecurityAdminFilter</filter-name>
+        <filter-class>com.drobot.web.controller.filter.ServletSecurityAdminFilter</filter-class>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>disableUrlSessionFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>servletSecurityCommonFilter</filter-name>
+        <url-pattern>/mainController</url-pattern>
+        <url-pattern>/loginPage</url-pattern>
+        <url-pattern>/mainPage</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>servletSecurityEmployeeFilter</filter-name>
+        <url-pattern>/mainPage/records</url-pattern>
+        <url-pattern>/settings</url-pattern>
+        <url-pattern>/settings/*</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>servletSecurityAdminFilter</filter-name>
+        <url-pattern>/mainPage/users</url-pattern>
+        <url-pattern>/mainPage/employees</url-pattern>
+        <url-pattern>/mainPage/userRegistration</url-pattern>
+        <url-pattern>/mainPage/userRegistration/*</url-pattern>
+    </filter-mapping>
+    <filter-mapping>
+        <filter-name>jspSecurityFilter</filter-name>
+        <url-pattern>/jsp/*</url-pattern>
+    </filter-mapping>
 </web-app>

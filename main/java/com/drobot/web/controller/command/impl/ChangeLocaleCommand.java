@@ -19,9 +19,10 @@ public class ChangeLocaleCommand implements ActionCommand {
     @Override
     public String execute(HttpServletRequest request) throws CommandException {
         HttpSession session = request.getSession();
-        String page = (String) session.getAttribute(RequestParameter.CURRENT_PAGE);
         String newLocale = request.getParameter(RequestParameter.CURRENT_LOCALE);
+        String page;
         if (newLocale != null) {
+            page = (String) session.getAttribute(RequestParameter.CURRENT_PAGE);
             session.setAttribute(RequestParameter.CURRENT_LOCALE, newLocale);
             LOGGER.log(Level.DEBUG, "Locale was changed");
         } else {

@@ -17,14 +17,14 @@
         <input type="hidden" name="command" value="login"/>
         <div class="form-group">
             <div class="col-2">
-                <label for="login"><span style="color: white; font-size: 14pt; font-weight: bold "><fmt:message
+                <label for="login"><span style="font-family: 'Times New Roman', sans-serif; font-weight: bold "><fmt:message
                         key="login.login"/></span></label>
                 <input type="text" name="login" class="form-control" id="login" aria-describedby="login" required>
             </div>
         </div>
         <div class="form-group">
             <div class="col-2">
-                <label for="password"><span style="color: white; font-size: 14pt; font-weight: bold "><fmt:message
+                <label for="password"><span style="font-family: 'Times New Roman', sans-serif; font-weight: bold "><fmt:message
                         key="login.password"/></span></label>
                 <input type="password" name="password" class="form-control" id="password" required>
                 <br/>

@@ -17,6 +17,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import static com.drobot.web.model.dao.ColumnName.SEMICOLON;
@@ -55,7 +56,7 @@ public class UserDaoImpl implements UserDao { // FIXME: 23.09.2020 statuses
     private static final String UPDATE_STATEMENT =
             "UPDATE hospital.users SET login = ?, email = ?, role = ?, user_status = ? WHERE user_id = ?;";
     private static final String DEFINE_ROLE_STATEMENT =
-            "SELECT password, role, status_name FROM hospital.users INNER JOIN hospital.statuses ON user_status = status_id" +
+            "SELECT user_id, password, role, status_name FROM hospital.users INNER JOIN hospital.statuses ON user_status = status_id" +
                     " WHERE login = ?;";
     private static final String GET_STATUS_STATEMENT =
             "SELECT status_name FROM hospital.users INNER JOIN hospital.statuses ON user_status = status_id" +
@@ -152,15 +153,16 @@ public class UserDaoImpl implements UserDao { // FIXME: 23.09.2020 statuses
                 statement.setString(1, login);
                 ResultSet resultSet = statement.executeQuery();
                 resultSet.next();
-                String actualEncPassword = resultSet.getString(1);
+                int userId = resultSet.getInt(1);
+                String actualEncPassword = resultSet.getString(2);
                 if (Encrypter.check(password, actualEncPassword)) {
-                    String stringRole = resultSet.getString(2);
+                    String stringRole = resultSet.getString(3);
                     User.Role role = User.Role.valueOf(stringRole);
-                    String stringStatus = resultSet.getString(3);
+                    String stringStatus = resultSet.getString(4);
                     Entity.Status status = Entity.Status.valueOf(stringStatus);
                     boolean isActive = status == Entity.Status.ACTIVE
                             || status == Entity.Status.UNREMOVABLE;
-                    User user = new User(role, isActive);
+                    User user = new User(userId, role, isActive);
                     result = Optional.of(user);
                     LOGGER.log(Level.DEBUG, "Password is correct, login info has been created");
                 } else {

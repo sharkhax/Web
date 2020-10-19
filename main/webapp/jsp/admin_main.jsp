@@ -19,19 +19,49 @@
     <div class="list-group">
         <form action="mainController" method="post">
             <input type="hidden" name="command" value="redirect_command">
-            <button class="list-group-item list-group-item-action list-group-custom" type="submit" name="r_page" value="/mainPage/users">
+            <button class="list-group-item list-group-item-action" type="submit" name="r_page" value="/mainPage/users"
+                    style="width: 90%;
+    color: #495057;
+    text-align: center;
+    background-color: #ffffffb5;
+    font-weight: bold;
+    font-family: 'Times New Roman', sans-serif">
                 <span style=""><fmt:message key="main.userListButton"/></span>
             </button>
-            <button class="list-group-item list-group-item-action list-group-custom" type="submit" name="r_page" value="/mainPage/employees">
+            <button class="list-group-item list-group-item-action list-group-custom" type="submit" name="r_page"
+                    value="/mainPage/employees" style="width: 90%;
+    color: #495057;
+    text-align: center;
+    background-color: #ffffffb5;
+    font-weight: bold;
+    font-family: 'Times New Roman', sans-serif">
                 <span style="alignment: center"><fmt:message key="main.employeeListButton"/></span>
             </button>
-            <button class="list-group-item list-group-item-action list-group-custom" type="submit" name="r_page" value="/mainPage/records">
+            <button class="list-group-item list-group-item-action list-group-custom" type="submit" name="r_page"
+                    value="/mainPage/records" style="width: 90%;
+    color: #495057;
+    text-align: center;
+    background-color: #ffffffb5;
+    font-weight: bold;
+    font-family: 'Times New Roman', sans-serif">
                 <span style="alignment: center"><fmt:message key="main.recordListButton"/></span>
             </button>
-            <button class="list-group-item list-group-item-action list-group-custom" type="submit" name="r_page" value="/mainPage/userRegistration">
+            <button class="list-group-item list-group-item-action list-group-custom" type="submit" name="r_page"
+                    value="/mainPage/userRegistration" style="width: 90%;
+    color: #495057;
+    text-align: center;
+    background-color: #ffffffb5;
+    font-weight: bold;
+    font-family: 'Times New Roman', sans-serif">
                 <span style="alignment: center"><fmt:message key="main.registerUserButton"/></span>
             </button>
-            <button class="list-group-item list-group-item-action list-group-custom" type="submit" name="r_page" value="/settings">
+            <button class="list-group-item list-group-item-action list-group-custom" type="submit" name="r_page"
+                    value="/settings" style="width: 90%;
+    color: #495057;
+    text-align: center;
+    background-color: #ffffffb5;
+    font-weight: bold;
+    font-family: 'Times New Roman', sans-serif">
                 <span style="alignment: center"><fmt:message key="main.personalSettingsButton"/></span>
             </button>
         </form>

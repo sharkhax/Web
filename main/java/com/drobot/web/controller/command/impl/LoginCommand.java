@@ -22,7 +22,7 @@ import java.util.Optional;
 public class LoginCommand implements ActionCommand {
 
     private static final Logger LOGGER = LogManager.getLogger(LoginCommand.class);
-    private final UserService userService = new UserServiceImpl();
+    private final UserService userService = UserServiceImpl.INSTANCE;
 
     @Override
     public String execute(HttpServletRequest request) throws CommandException {
@@ -65,6 +65,8 @@ public class LoginCommand implements ActionCommand {
                 session.setAttribute(RequestParameter.CURRENT_PAGE, UrlPattern.MAIN_PAGE);
                 Map<String, String> loginInfo = new HashMap<>();
                 loginInfo.put(RequestParameter.LOGIN, login);
+                int userId = user.getId();
+                loginInfo.put(RequestParameter.USER_ID, String.valueOf(userId));
                 session.setAttribute(RequestParameter.LOGIN_INFO, loginInfo);
             } else {
                 session.setAttribute(RequestParameter.USER_BLOCKED, true);

@@ -1,4 +1,6 @@
-package com.drobot.web.controller;
+package com.drobot.web.controller.filter;
+
+import com.drobot.web.controller.UrlPattern;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -10,7 +12,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
-@WebFilter(urlPatterns = {"/jsp/*"})
 public class JspSecurityFilter extends AbstractSecurityFilter {
 
     @Override

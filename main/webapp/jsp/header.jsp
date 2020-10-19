@@ -40,7 +40,7 @@
                 </a>
                 <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                     <form action="${pageContext.request.contextPath}/mainController" method="post">
-                        <input type="hidden" name="command" value="change_locale">
+                        <input type="hidden" name="command" value="change_locale"/>
                         <c:choose>
                             <c:when test="${currentLocale eq 'ru_BY'}">
                                 <button type="submit" class="dropdown-item" name="currentLocale" value="en_EN">English
@@ -61,7 +61,7 @@
                 </div>
             </li>
         </ul>
-        <form action="mainController" method="post" class="form-inline my-2 my-lg-0">
+        <form action="${pageContext.request.contextPath}/mainController" method="post" class="form-inline my-2 my-lg-0">
             <input type="hidden" name="command" value="logout">
             <span class="nav-link"><fmt:message key="header.loggedAs"/> ${login_info.login}.    </span>
             <button class="btn btn-outline-success my-2 my-sm-0" type="submit"><fmt:message
