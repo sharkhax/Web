@@ -63,21 +63,21 @@ public class ServletSecurityCommonFilter extends AbstractSecurityFilter {
     private void doCaseMainPage(HttpServletRequest request, HttpServletResponse response,
                                 HttpSession session) throws IOException, ServletException {
         String userRole = (String) session.getAttribute(RequestParameter.USER_ROLE);
-        String page = defineMainPage(userRole);
-        session.setAttribute(RequestParameter.CURRENT_PAGE, page);
-        if (!page.equals(JspPath.LOGIN)) {
-            forward(request, response, page);
-        } else {
+        if (userRole == null || userRole.equals(RequestParameter.GUEST_ROLE)) {
             redirect(response, UrlPattern.LOGIN_PAGE);
+        } else {
+            String page = JspPath.MAIN;
+            session.setAttribute(RequestParameter.CURRENT_PAGE, page);
+            forward(request, response, page);
         }
     }
 
     private void doCaseLoginPage(HttpServletRequest request, HttpServletResponse response,
                                  HttpSession session) throws IOException, ServletException {
         String userRole = (String) session.getAttribute(RequestParameter.USER_ROLE);
-        String page = defineMainPage(userRole);
-        session.setAttribute(RequestParameter.CURRENT_PAGE, page);
-        if (page.equals(JspPath.LOGIN)) {
+        if (userRole == null || userRole.equals(RequestParameter.GUEST_ROLE)) {
+            String page = JspPath.LOGIN;
+            session.setAttribute(RequestParameter.CURRENT_PAGE, page);
             forward(request, response, page);
         } else {
             redirect(response, UrlPattern.MAIN_PAGE);

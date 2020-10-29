@@ -20,30 +20,39 @@ import java.util.Optional;
 
 import static com.drobot.web.model.dao.ColumnName.SEMICOLON;
 
-public class EmployeeDaoImpl implements EmployeeDao {
+public enum EmployeeDaoImpl implements EmployeeDao {
 
-    private static final Logger LOGGER = LogManager.getLogger(EmployeeDaoImpl.class);
-    private static final String EXISTS_STATEMENT =
+    INSTANCE;
+
+    private final Logger LOGGER = LogManager.getLogger(EmployeeDaoImpl.class);
+    private final String EXISTS_STATEMENT =
             "SELECT COUNT(*) as label FROM hospital.employees WHERE employee_id = ?;";
-    private static final String ADD_STATEMENT =
+    private final String ADD_STATEMENT =
             "INSERT INTO hospital.employees(employee_name, employee_surname, employee_age, " +
                     "employee_gender, position, hire_date) VALUES(?, ?, ?, ?, ?, ?);";
-    private static final String SET_STATUS_TO_ARCHIVE_STATEMENT =
+    private final String SET_STATUS_TO_ARCHIVE_STATEMENT =
             "UPDATE hospital.employees SET employee_status = " + Entity.Status.ARCHIVE.getStatusId()
                     + " WHERE employee_id = ?;";
-    private static final String FIND_ALL_STATEMENT =
+    private final String FIND_ALL_STATEMENT =
             "SELECT employee_id, employee_name, employee_surname, employee_age, employee_gender, position, " +
-                    "hire_date, dismiss_date, status_name FROM hospital.employees " +
-                    "INNER JOIN hospital.statuses ON employee_status = status_id ORDER BY ";
-    private static final String FIND_BY_ID_STATEMENT =
+                    "hire_date, dismiss_date, status_name, inter_user_id FROM hospital.employees " +
+                    "INNER JOIN hospital.statuses ON employee_status = status_id " +
+                    "INNER JOIN hospital.user_employee ON employee_id = inter_employee_id ORDER BY ";
+    private final StringBuilder FIND_ALL_LIMIT_STATEMENT = new StringBuilder(
+            "SELECT employee_id, employee_name, employee_surname, employee_age, employee_gender, position, ")
+                    .append("hire_date, dismiss_date, status_name, inter_user_id FROM hospital.employees ")
+                    .append("INNER JOIN hospital.statuses ON employee_status = status_id ")
+                    .append("INNER JOIN hospital.user_employee ON employee_id = inter_employee_id ORDER BY  LIMIT ?, ?;");
+    private final String FIND_BY_ID_STATEMENT =
             "SELECT employee_id, employee_name, employee_surname, employee_age, employee_gender, position, " +
-                    "hire_date, dismiss_date, status_name FROM hospital.employees " +
-                    "INNER JOIN hospital.statuses ON employee_status = status_id WHERE employee_id = ?;";
-    private static final String UPDATE_STATEMENT =
+                    "hire_date, dismiss_date, status_name, inter_user_id FROM hospital.employees " +
+                    "INNER JOIN hospital.statuses ON employee_status = status_id " +
+                    "INNER JOIN hospital.user_employee ON employee_id = inter_employee_id WHERE employee_id = ?;";
+    private final String UPDATE_STATEMENT =
             "UPDATE hospital.employees SET employee_name = ?, employee_surname = ?, employee_age = ?, " +
                     "employee_gender = ?, position = ?, hire_date = ?, dismiss_date = ?, employee_status = ? " +
                     "WHERE employee_id = ?;";
-    private static final String EXISTS_NAME_STATEMENT =
+    private final String EXISTS_NAME_STATEMENT =
             "SELECT COUNT(*) as label FROM hospital.employees WHERE employee_name = ? AND employee_surname = ?;";
 
     @Override
@@ -62,6 +71,29 @@ public class EmployeeDaoImpl implements EmployeeDao {
             String log = result ? "Employee " + name + " " + surname + " exists"
                     : "Employee " + name + " " + surname + " does not exist";
             LOGGER.log(Level.DEBUG, log);
+        } catch (SQLException | ConnectionPoolException e) {
+            throw new DaoException(e);
+        } finally {
+            close(statement);
+            close(connection);
+        }
+        return result;
+    }
+
+    @Override
+    public List<Employee> findAll(int start, int length, String sortBy) throws DaoException {
+        List<Employee> result;
+        Connection connection = null;
+        PreparedStatement statement = null;
+        try {
+            connection = ConnectionPool.INSTANCE.getConnection();
+            String sql = new StringBuilder(FIND_ALL_LIMIT_STATEMENT).insert(308, sortBy).toString();
+            statement = connection.prepareStatement(sql);
+            statement.setInt(1, start);
+            statement.setInt(2, length);
+            ResultSet resultSet = statement.executeQuery();
+            result = createEmployeeListFromResultSet(resultSet);
+            LOGGER.log(Level.DEBUG, "Employee list has been got");
         } catch (SQLException | ConnectionPoolException e) {
             throw new DaoException(e);
         } finally {
@@ -302,11 +334,12 @@ public class EmployeeDaoImpl implements EmployeeDao {
             long hireDateMillis = resultSet.getLong(7);
             long dismissDateMillis = resultSet.getLong(8);
             String stringStatus = resultSet.getString(9);
+            int userId = resultSet.getInt(10);
             Employee.Position position = Employee.Position.valueOf(stringPosition);
             Entity.Status status = Entity.Status.valueOf(stringStatus);
             Employee employee =
                     new Employee(id, name, surname, age, gender, position,
-                            hireDateMillis, dismissDateMillis, status);
+                            hireDateMillis, dismissDateMillis, status, userId);
             result.add(employee);
         }
         return result;

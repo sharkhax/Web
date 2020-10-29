@@ -24,8 +24,8 @@ public class ServletSecurityAdminFilter extends AbstractSecurityFilter {
         String uri = request.getRequestURI();
         switch (uri) {
             case UrlPattern.USER_REGISTRATION -> doCaseUserRegistration(request, response, session);
-            case UrlPattern.USER_REGISTRATION_SUCCESS -> doUserRegistrationSuccess(request, response, session);
-            case UrlPattern.USER_REGISTRATION_FAIL -> doUserRegistrationFail(request, response, session);
+            case UrlPattern.USER_REGISTRATION_SUCCESS -> doCaseUserRegistrationSuccess(request, response, session);
+            case UrlPattern.USER_REGISTRATION_FAIL -> doCaseUserRegistrationFail(request, response, session);
             case UrlPattern.EMPLOYEE_LIST -> doCaseEmployeeList(request, response, session);
             case UrlPattern.USER_LIST -> doCaseUserList(request, response, session);
             default -> filterChain.doFilter(servletRequest, servletResponse);
@@ -36,19 +36,21 @@ public class ServletSecurityAdminFilter extends AbstractSecurityFilter {
                                         HttpSession session) throws IOException, ServletException {
         session.setAttribute(RequestParameter.VALIDATED, null);
         session.setAttribute(RequestParameter.USER_REGISTRATION_FIELDS, null);
+        session.setAttribute(RequestParameter.USER_REGISTRATION_EXISTING_FIELDS, null);
         forwardToRegistration(request, response, session);
     }
 
-    private void doUserRegistrationSuccess(HttpServletRequest request, HttpServletResponse response,
-                                           HttpSession session) throws IOException, ServletException {
+    private void doCaseUserRegistrationSuccess(HttpServletRequest request, HttpServletResponse response,
+                                               HttpSession session) throws IOException, ServletException {
         request.setAttribute(RequestParameter.REGISTRATION_SUCCESS, true);
         session.setAttribute(RequestParameter.VALIDATED, null);
         session.setAttribute(RequestParameter.USER_REGISTRATION_FIELDS, null);
+        session.setAttribute(RequestParameter.USER_REGISTRATION_EXISTING_FIELDS, null);
         forwardToRegistration(request, response, session);
     }
 
-    private void doUserRegistrationFail(HttpServletRequest request, HttpServletResponse response,
-                                        HttpSession session) throws IOException, ServletException {
+    private void doCaseUserRegistrationFail(HttpServletRequest request, HttpServletResponse response,
+                                            HttpSession session) throws IOException, ServletException {
         session.setAttribute(RequestParameter.VALIDATED, true);
         forwardToRegistration(request, response, session);
     }

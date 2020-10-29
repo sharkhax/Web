@@ -1,13 +1,21 @@
-package com.drobot.web.model.service;
+package com.drobot.web.model.service.impl;
 
 import com.drobot.web.controller.RequestParameter;
+import com.drobot.web.model.service.MapService;
 import com.drobot.web.model.validator.UserValidator;
 
 import java.util.Map;
 
-public enum UserMapService {
+public enum UserMapService implements MapService {
 
     INSTANCE;
+
+    @Override
+    public boolean isMapValid(Map<String, String> fields) {
+        boolean result = checkLogin(fields) & checkPassword(fields)
+                & checkEmail(fields) & checkRole(fields);
+        return result;
+    }
 
     public boolean checkLogin(Map<String, String> fields) {
         boolean result = false;

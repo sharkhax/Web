@@ -19,6 +19,13 @@
         <session-timeout>30</session-timeout>
     </session-config>
 
+    <jsp-config>
+        <taglib>
+            <taglib-uri>custom_tag</taglib-uri>
+            <taglib-location>/WEB-INF/tag/custom_tag.tld</taglib-location>
+        </taglib>
+    </jsp-config>
+
     <filter>
         <filter-name>disableUrlSessionFilter</filter-name>
         <filter-class>com.drobot.web.controller.filter.DisableUrlSessionFilter</filter-class>
@@ -44,18 +51,23 @@
         <filter-name>disableUrlSessionFilter</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
+
     <filter-mapping>
         <filter-name>servletSecurityCommonFilter</filter-name>
         <url-pattern>/mainController</url-pattern>
         <url-pattern>/loginPage</url-pattern>
         <url-pattern>/mainPage</url-pattern>
     </filter-mapping>
+
     <filter-mapping>
         <filter-name>servletSecurityEmployeeFilter</filter-name>
-        <url-pattern>/mainPage/records</url-pattern>
+        <url-pattern>/mainPage/newPatient</url-pattern>
+        <url-pattern>/mainPage/newPatient/*</url-pattern>
+        <url-pattern>/mainPage/patients</url-pattern>
         <url-pattern>/settings</url-pattern>
         <url-pattern>/settings/*</url-pattern>
     </filter-mapping>
+
     <filter-mapping>
         <filter-name>servletSecurityAdminFilter</filter-name>
         <url-pattern>/mainPage/users</url-pattern>
@@ -63,6 +75,7 @@
         <url-pattern>/mainPage/userRegistration</url-pattern>
         <url-pattern>/mainPage/userRegistration/*</url-pattern>
     </filter-mapping>
+
     <filter-mapping>
         <filter-name>jspSecurityFilter</filter-name>
         <url-pattern>/jsp/*</url-pattern>

@@ -51,10 +51,28 @@ public final class RequestParameter {
     public static final String USER_DATA_FIELDS = "userDataFields";
     public static final String CHANGING_PASSWORD_FIELDS = "changingPasswordFields";
 
+    // tables
+    public static final String USER_LIST = "user_list";
+    public static final String USER_LIST_CURRENT_PAGE = "userListCurrentPage";
+    public static final String USER_LIST_SORT_BY = "userListSortBy";
+    public static final String EMPLOYEE_LIST = "employee_list";
+    public static final String EMPLOYEE_LIST_CURRENT_PAGE = "employeeListCurrentPage";
+    public static final String EMPLOYEE_LIST_SORT_BY = "employeeListSortBy";
+
     /**
      * Common
      */
-    public static final String REDIRECTING_PAGE = "r_page";
     public static final String COMMAND = "command";
 
+    /**
+     * Patient creating form
+     */
+    public static final String PATIENT_NAME = "patientName";
+    public static final String PATIENT_SURNAME = "patientSurname";
+    public static final String PATIENT_AGE = "patientAge";
+    public static final String PATIENT_GENDER = "patientGender";
+    public static final String DIAGNOSIS = "diagnosis";
+    public static final String PATIENT_CREATING_FIELDS = "patientCreatingFields";
+    public static final String PATIENT_CREATING_EXISTING_FIELDS = "patientCreatingExistingFields";
+    public static final String PATIENT_CREATING_SUCCESS = "patientCreatingSuccess";
 }

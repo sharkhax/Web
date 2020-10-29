@@ -1,10 +1,11 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="ctg" uri="custom_tag" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <fmt:setLocale value="${currentLocale}"/>
 <fmt:setBundle basename="locale.pagecontent"/>
 <html>
 <head>
-    <title>Title</title>
+    <title><fmt:message key="table.recordListPageTitle"/></title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
           integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
     <link href="${pageContext.request.contextPath}/css/custom.css" rel="stylesheet" type="text/css">
@@ -14,7 +15,9 @@
 <jsp:include page="background.jsp"/>
 <%@include file="header.jsp"%>
 
-
+<div style="width: 1200px; margin: 13px 10px">
+    <ctg:record_list/>
+</div>
 
 <%@include file="footer.jsp"%>
 

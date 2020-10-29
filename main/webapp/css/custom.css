@@ -27,12 +27,3 @@
     width: 300px;
     margin: 0 auto;
 }
-
-.list-group-custom {
-    width: 90%;
-    color: #495057;
-    text-align: center;
-    background-color: #ffffffb5;
-    font-weight: bold;
-    font-family: "Times New Roman", sans-serif;
-}

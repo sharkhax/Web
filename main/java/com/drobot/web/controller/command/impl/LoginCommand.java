@@ -5,6 +5,7 @@ import com.drobot.web.controller.UrlPattern;
 import com.drobot.web.controller.command.*;
 import com.drobot.web.exception.CommandException;
 import com.drobot.web.exception.ServiceException;
+import com.drobot.web.model.entity.Entity;
 import com.drobot.web.model.entity.User;
 import com.drobot.web.model.service.UserService;
 import com.drobot.web.model.service.impl.UserServiceImpl;
@@ -38,7 +39,7 @@ public class LoginCommand implements ActionCommand {
         String page;
         if (optional.isPresent()) {
             User user = optional.get();
-            if (user.isActive()) {
+            if (user.getStatus() != Entity.Status.BLOCKED) {
                 User.Role role = user.getRole();
                 switch (role) {
                     case ADMIN -> {
@@ -63,6 +64,8 @@ public class LoginCommand implements ActionCommand {
                 }
                 page = UrlPattern.MAIN_PAGE;
                 session.setAttribute(RequestParameter.CURRENT_PAGE, UrlPattern.MAIN_PAGE);
+                session.setAttribute(RequestParameter.WRONG_LOGIN_PASSWORD, null);
+                session.setAttribute(RequestParameter.USER_BLOCKED, null);
                 Map<String, String> loginInfo = new HashMap<>();
                 loginInfo.put(RequestParameter.LOGIN, login);
                 int userId = user.getId();

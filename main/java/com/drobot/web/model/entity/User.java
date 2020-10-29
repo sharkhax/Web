@@ -9,17 +9,19 @@ public class User extends Entity {
     private String login;
     private String email;
     private Role role;
-    private boolean isActive;
+    private Status status;
+    private int employeeId;
 
     public User() {
     }
 
-    public User(int id, String login, String email, Role role, boolean isActive) {
+    public User(int id, String login, String email, Role role, Status status, int employeeId) {
         super(id);
         this.login = login;
         this.email = email;
         this.role = role;
-        this.isActive = isActive;
+        this.status = status;
+        this.employeeId = employeeId;
     }
 
     public User(String login, String email, Role role) {
@@ -28,12 +30,12 @@ public class User extends Entity {
         this.role = role;
     }
 
-    public User(int userId, Role role, boolean isActive) {
+    public User(int userId, Role role, Status status) {
         super(userId);
         this.login = "";
         this.email = "";
         this.role = role;
-        this.isActive = isActive;
+        this.status = status;
     }
 
     public String getLogin() {
@@ -60,12 +62,20 @@ public class User extends Entity {
         this.role = role;
     }
 
-    public boolean isActive() {
-        return isActive;
+    public Status getStatus() {
+        return status;
     }
 
-    public void setActive(boolean active) {
-        this.isActive = active;
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
+    public int getEmployeeId() {
+        return employeeId;
+    }
+
+    public void setEmployeeId(int employeeId) {
+        this.employeeId = employeeId;
     }
 
     @Override
@@ -80,7 +90,7 @@ public class User extends Entity {
             return false;
         }
         User user = (User) o;
-        if (isActive != user.isActive) {
+        if (status != null ? status != user.status : user.status != null) {
             return false;
         }
         if (login != null) {
@@ -97,6 +107,9 @@ public class User extends Entity {
         } else if (user.email != null) {
             return false;
         }
+        if (employeeId != user.employeeId) {
+            return false;
+        }
         return role == user.role;
     }
 
@@ -106,18 +119,20 @@ public class User extends Entity {
         result = 31 * result + (login != null ? login.hashCode() : 0);
         result = 31 * result + (email != null ? email.hashCode() : 0);
         result = 31 * result + (role != null ? role.hashCode() : 0);
-        result = 31 * result + (isActive ? 1 : 0);
+        result = 31 * result + (status != null ? status.hashCode() : 0);
+        result = 31 * result + employeeId;
         return result;
     }
 
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("User{");
-        sb.append("userId=").append(getId());
+        sb.append("id=").append(getId());
         sb.append(", login='").append(login).append('\'');
         sb.append(", email='").append(email).append('\'');
         sb.append(", role=").append(role);
-        sb.append(", isActive=").append(isActive);
+        sb.append(", status=").append(status);
+        sb.append(", employeeId=").append(employeeId);
         sb.append('}');
         return sb.toString();
     }

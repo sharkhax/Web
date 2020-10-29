@@ -1,13 +1,14 @@
 package com.drobot.web.model.service;
 
 import com.drobot.web.exception.ServiceException;
+import com.drobot.web.model.creator.Creator;
 import com.drobot.web.model.entity.Employee;
 
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-public interface EmployeeService extends Creatable<Employee> {
+public interface EmployeeService {
 
     boolean add(Map<String, String> fields) throws ServiceException;
 
@@ -16,6 +17,8 @@ public interface EmployeeService extends Creatable<Employee> {
     boolean exists(String name, String surname) throws ServiceException;
 
     List<Employee> findAll(String sortBy) throws ServiceException;
+
+    List<Employee> findAll(int start, int length, String sortBy) throws ServiceException;
 
     Optional<Employee> findById(int employeeId) throws ServiceException;
 

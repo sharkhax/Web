@@ -1,14 +1,12 @@
 package com.drobot.web.model.service.impl;
 
-import com.drobot.web.controller.RequestParameter;
 import com.drobot.web.exception.DaoException;
 import com.drobot.web.exception.ServiceException;
 import com.drobot.web.model.dao.ColumnName;
 import com.drobot.web.model.dao.UserDao;
 import com.drobot.web.model.dao.impl.UserDaoImpl;
-import com.drobot.web.model.entity.Employee;
+import com.drobot.web.model.entity.Entity;
 import com.drobot.web.model.entity.User;
-import com.drobot.web.model.service.UserMapService;
 import com.drobot.web.model.service.UserService;
 import com.drobot.web.model.util.Encrypter;
 import com.drobot.web.model.validator.UserValidator;
@@ -17,7 +15,6 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 public enum UserServiceImpl implements UserService {
@@ -25,33 +22,7 @@ public enum UserServiceImpl implements UserService {
     INSTANCE;
 
     private final Logger LOGGER = LogManager.getLogger(UserServiceImpl.class);
-    private final UserDao userDao = new UserDaoImpl();
-
-    @Override
-    public Optional<User> create(Map<String, String> fields) {
-        Optional<User> result;
-        UserMapService userMapService = UserMapService.INSTANCE;
-        if (userMapService.checkLogin(fields)
-                && userMapService.checkEmail(fields)
-                && userMapService.checkPassword(fields)
-                && userMapService.checkRole(fields)) {
-            String login = fields.get(RequestParameter.LOGIN);
-            String email = fields.get(RequestParameter.EMAIL);
-            String stringPosition = fields.get(RequestParameter.POSITION);
-            User.Role role;
-            switch (stringPosition) {
-                case RequestParameter.DOCTOR -> role = User.Role.DOCTOR;
-                case RequestParameter.ASSISTANT -> role = User.Role.ASSISTANT;
-                default -> throw new EnumConstantNotPresentException(User.Role.class, stringPosition.toUpperCase());
-            }
-            User user = new User(login, email, role);
-            result = Optional.of(user);
-        } else {
-            result = Optional.empty();
-            LOGGER.log(Level.DEBUG, "Some fields are invalid or absent");
-        }
-        return result;
-    }
+    private final UserDao userDao = UserDaoImpl.INSTANCE;
 
     @Override
     public boolean add(String login, String email, String password, User.Role role) throws ServiceException {
@@ -96,6 +67,33 @@ public enum UserServiceImpl implements UserService {
         }
         return result;
     }
+
+    @Override
+    public List<User> findAll(int start, int length, String sortBy) throws ServiceException {
+        List<User> result;
+        try {
+            if (start >= 0 && length > 0) {
+                if (checkSortingTag(sortBy)) {
+                    result = userDao.findAll(start, length, sortBy);
+                } else {
+                    result = List.of();
+                    LOGGER.log(Level.ERROR, "Unsupported sorting tag");
+                }
+            } else {
+                result = List.of();
+                LOGGER.log(Level.ERROR, "Incorrect start or length values");
+            }
+        } catch (DaoException e) {
+            throw new ServiceException(e);
+        }
+        return result;
+    }
+
+    @Override
+    public List<User> findAll(int start, int length) throws ServiceException {
+        return findAll(start, length, ColumnName.USER_ID);
+    }
+
 
     @Override
     public Optional<User> findById(int userId) throws ServiceException {
@@ -294,14 +292,14 @@ public enum UserServiceImpl implements UserService {
     }
 
     @Override
-    public boolean updateStatus(int userId, boolean newStatus) throws ServiceException {
+    public boolean updateStatus(int userId, Entity.Status newStatus) throws ServiceException {
         boolean result = false;
         try {
             Optional<User> optional = userDao.findById(userId);
             if (optional.isPresent()) {
                 User user = optional.get();
-                if (user.isActive() != newStatus) {
-                    user.setActive(newStatus);
+                if (user.getStatus() != newStatus) {
+                    user.setStatus(newStatus);
                     result = userDao.update(user);
                 } else {
                     LOGGER.log(Level.DEBUG, "Such user status is already set");

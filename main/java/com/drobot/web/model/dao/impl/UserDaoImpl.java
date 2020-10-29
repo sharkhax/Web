@@ -17,52 +17,63 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 import static com.drobot.web.model.dao.ColumnName.SEMICOLON;
 
-public class UserDaoImpl implements UserDao { // FIXME: 23.09.2020 statuses
+public enum UserDaoImpl implements UserDao {
 
-    private static final Logger LOGGER = LogManager.getLogger(UserDaoImpl.class);
-    private static final String ADD_STATEMENT =
+    INSTANCE;
+
+    private final Logger LOGGER = LogManager.getLogger(UserDaoImpl.class);
+    private final String ADD_STATEMENT =
             "INSERT INTO hospital.users(login, email, password, role) VALUES(?, ?, ?, ?);";
-    private static final String CONTAINS_ID_STATEMENT =
+    private final String CONTAINS_ID_STATEMENT =
             "SELECT COUNT(*) as label FROM hospital.users WHERE user_id = ?;";
-    private static final String CONTAINS_EMAIL_STATEMENT =
+    private final String CONTAINS_EMAIL_STATEMENT =
             "SELECT COUNT(*) as label FROM hospital.users WHERE email = ?;";
-    private static final String CONTAINS_LOGIN_STATEMENT =
+    private final String CONTAINS_LOGIN_STATEMENT =
             "SELECT COUNT(*) as label FROM hospital.users WHERE login = ?;";
-    private static final String DELETE_STATEMENT =
+    private final String DELETE_STATEMENT =
             "DELETE FROM hospital.users WHERE user_id = ?;";
-    private static final String FIND_ALL_STATEMENT =
-            "SELECT user_id, login, email, role, status_name FROM hospital.users " +
-                    "INNER JOIN hospital.statuses ON user_status = status_id ORDER BY ";
-    private static final String FIND_BY_ID_STATEMENT =
-            "SELECT user_id, login, email, role, status_name FROM hospital.users " +
-                    "INNER JOIN hospital.statuses ON user_status = status_id WHERE user_id = ?;";
-    private static final String FIND_BY_LOGIN_STATEMENT =
-            "SELECT user_id, login, email, role, status_name FROM hospital.users " +
-                    "INNER JOIN hospital.statuses ON user_status = status_id WHERE login = ?;";
-    private static final String FIND_BY_EMAIL_STATEMENT =
-            "SELECT user_id, login, email, role, status_name FROM hospital.users " +
-                    "INNER JOIN hospital.statuses ON user_status = status_id WHERE email = ?;";
-    private static final String FIND_BY_ROLE_STATEMENT =
-            "SELECT user_id, login, email, role, status_name FROM hospital.users " +
-                    "INNER JOIN hospital.statuses ON user_status = status_id WHERE role = ? ORDER BY ";
-    private static final String FIND_BY_STATUS_STATEMENT =
-            "SELECT user_id, login, email, role, status_name FROM hospital.users " +
-                    "INNER JOIN hospital.statuses ON user_status = status_id WHERE user_status = ? ORDER BY ";
-    private static final String UPDATE_STATEMENT =
+    private final String FIND_ALL_STATEMENT =
+            "SELECT user_id, login, email, role, status_name, inter_employee_id FROM hospital.users " +
+                    "INNER JOIN hospital.statuses ON user_status = status_id " +
+                    "INNER JOIN hospital.user_employee ON user_id = inter_user_id ORDER BY ";
+    private final String FIND_BY_ID_STATEMENT =
+            "SELECT user_id, login, email, role, status_name, inter_employee_id FROM hospital.users " +
+                    "INNER JOIN hospital.statuses ON user_status = status_id " +
+                    "INNER JOIN hospital.user_employee ON user_id = inter_user_id WHERE user_id = ?;";
+    private final String FIND_BY_LOGIN_STATEMENT =
+            "SELECT user_id, login, email, role, status_name, inter_employee_id FROM hospital.users " +
+                    "INNER JOIN hospital.statuses ON user_status = status_id " +
+                    "INNER JOIN hospital.user_employee ON user_id = inter_user_id WHERE login = ?;";
+    private final String FIND_BY_EMAIL_STATEMENT =
+            "SELECT user_id, login, email, role, status_name, inter_employee_id FROM hospital.users " +
+                    "INNER JOIN hospital.statuses ON user_status = status_id " +
+                    "INNER JOIN hospital.user_employee ON user_id = inter_user_id WHERE email = ?;";
+    private final String FIND_BY_ROLE_STATEMENT =
+            "SELECT user_id, login, email, role, status_name, inter_employee_id FROM hospital.users " +
+                    "INNER JOIN hospital.statuses ON user_status = status_id " +
+                    "INNER JOIN hospital.user_employee ON user_id = inter_user_id WHERE role = ? ORDER BY ";
+    private final String FIND_BY_STATUS_STATEMENT =
+            "SELECT user_id, login, email, role, status_name, inter_employee_id FROM hospital.users " +
+                    "INNER JOIN hospital.statuses ON user_status = status_id " +
+                    "INNER JOIN hospital.user_employee ON user_id = inter_user_id WHERE user_status = ? ORDER BY ";
+    private final String UPDATE_STATEMENT =
             "UPDATE hospital.users SET login = ?, email = ?, role = ?, user_status = ? WHERE user_id = ?;";
-    private static final String DEFINE_ROLE_STATEMENT =
-            "SELECT user_id, password, role, status_name FROM hospital.users INNER JOIN hospital.statuses ON user_status = status_id" +
-                    " WHERE login = ?;";
-    private static final String GET_STATUS_STATEMENT =
+    private final String DEFINE_ROLE_STATEMENT =
+            "SELECT user_id, password, role, status_name FROM hospital.users " +
+                    "INNER JOIN hospital.statuses ON user_status = status_id WHERE login = ?;";
+    private final String GET_STATUS_STATEMENT =
             "SELECT status_name FROM hospital.users INNER JOIN hospital.statuses ON user_status = status_id" +
                     " WHERE user_id = ?;";
-    private static final String UPDATE_PASSWORD_STATEMENT =
+    private final String UPDATE_PASSWORD_STATEMENT =
             "UPDATE hospital.users SET password = ? WHERE user_id = ?;";
+    private final StringBuilder FIND_ALL_LIMIT_STATEMENT = new StringBuilder(
+            "SELECT user_id, login, email, role, status_name, inter_employee_id FROM hospital.users ")
+            .append("INNER JOIN hospital.statuses ON user_status = status_id ")
+            .append("INNER JOIN hospital.user_employee ON user_id = inter_user_id ORDER BY  LIMIT ?, ?");
 
     @Override
     public boolean exists(int userId) throws DaoException {
@@ -160,9 +171,7 @@ public class UserDaoImpl implements UserDao { // FIXME: 23.09.2020 statuses
                     User.Role role = User.Role.valueOf(stringRole);
                     String stringStatus = resultSet.getString(4);
                     Entity.Status status = Entity.Status.valueOf(stringStatus);
-                    boolean isActive = status == Entity.Status.ACTIVE
-                            || status == Entity.Status.UNREMOVABLE;
-                    User user = new User(userId, role, isActive);
+                    User user = new User(userId, role, status);
                     result = Optional.of(user);
                     LOGGER.log(Level.DEBUG, "Password is correct, login info has been created");
                 } else {
@@ -263,6 +272,29 @@ public class UserDaoImpl implements UserDao { // FIXME: 23.09.2020 statuses
     }
 
     @Override
+    public List<User> findAll(int start, int length, String sortBy) throws DaoException {
+        List<User> result;
+        Connection connection = null;
+        PreparedStatement statement = null;
+        try {
+            connection = ConnectionPool.INSTANCE.getConnection();
+            String sql = new StringBuilder(FIND_ALL_LIMIT_STATEMENT).insert(213, sortBy).toString();
+            System.out.println(sql);
+            statement = connection.prepareStatement(sql);
+            statement.setInt(1, start);
+            statement.setInt(2, length);
+            ResultSet resultSet = statement.executeQuery();
+            result = createUserListFromResultSet(resultSet);
+        } catch (SQLException | ConnectionPoolException e) {
+            throw new DaoException(e);
+        } finally {
+            close(statement);
+            close(connection);
+        }
+        return result;
+    }
+
+    @Override
     public Optional<User> findById(int userId) throws DaoException {
         Optional<User> result;
         Connection connection = null;
@@ -299,14 +331,13 @@ public class UserDaoImpl implements UserDao { // FIXME: 23.09.2020 statuses
             String login = user.getLogin();
             String email = user.getEmail();
             String role = user.getRole().toString();
-            boolean isActive = user.isActive();
-            byte status = (byte) (isActive ? Entity.Status.ACTIVE.getStatusId()
-                    : Entity.Status.BLOCKED.getStatusId());
+            Entity.Status status = user.getStatus();
+            int statusId = status.getStatusId();
             int userId = user.getId();
             statement.setString(1, login);
             statement.setString(2, email);
             statement.setString(3, role);
-            statement.setByte(4, status);
+            statement.setByte(4, (byte) statusId);
             statement.setInt(5, userId);
             statement.execute();
             result = true;
@@ -388,10 +419,10 @@ public class UserDaoImpl implements UserDao { // FIXME: 23.09.2020 statuses
                 String email = resultSet.getString(3);
                 String stringRole = resultSet.getString(4);
                 String stringStatus = resultSet.getString(5);
+                int employeeId = resultSet.getInt(6);
                 Entity.Status status = Entity.Status.valueOf(stringStatus);
-                boolean isActive = status.getStatusId() == Entity.Status.ACTIVE.getStatusId();
                 User.Role role = User.Role.valueOf(stringRole);
-                User user = new User(userId, login, email, role, isActive);
+                User user = new User(userId, login, email, role, status, employeeId);
                 result.add(user);
             }
             LOGGER.log(Level.DEBUG, result.size() + " users have been found");

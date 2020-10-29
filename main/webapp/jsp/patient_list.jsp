@@ -16,7 +16,7 @@
 <%@include file="header.jsp"%>
 
 <div style="width: 1200px; margin: 13px 10px">
-    <ctg:user_list/>
+    <ctg:patient_list/>
 </div>
 
 <%@include file="footer.jsp"%>

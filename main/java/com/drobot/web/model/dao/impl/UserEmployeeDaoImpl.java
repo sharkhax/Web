@@ -18,16 +18,18 @@ import java.sql.SQLException;
 import java.sql.Savepoint;
 import java.sql.Statement;
 
-public class UserEmployeeDaoImpl implements UserEmployeeDao {
+public enum UserEmployeeDaoImpl implements UserEmployeeDao {
 
-    private static final Logger LOGGER = LogManager.getLogger(UserEmployeeDaoImpl.class);
-    private static final String USER_ADDING_STATEMENT =
+    INSTANCE;
+
+    private final Logger LOGGER = LogManager.getLogger(UserEmployeeDaoImpl.class);
+    private final String USER_ADDING_STATEMENT =
             "INSERT INTO hospital.users(login, email, password, role) VALUES(?, ?, ?, ?);";
-    private static final String EMPLOYEE_ADDING_STATEMENT = "INSERT INTO hospital.employees(employee_name, " +
+    private final String EMPLOYEE_ADDING_STATEMENT = "INSERT INTO hospital.employees(employee_name, " +
             "employee_surname, employee_age, employee_gender, position, hire_date) VALUES(?, ?, ?, ?, ?, ?);";
-    private static final String USER_EMPLOYEE_ADD_STATEMENT =
+    private final String USER_EMPLOYEE_ADD_STATEMENT =
             "INSERT INTO hospital.user_employee(inter_user_id, inter_employee_id) VALUES(?, ?);";
-    private static final String USER_EMPLOYEE_DATA_STATEMENT = new StringBuilder(
+    private final String USER_EMPLOYEE_DATA_STATEMENT = new StringBuilder(
             "SELECT login, email, role, employee_name, employee_surname, employee_age, employee_gender, ")
             .append("position, hire_date, status_name FROM hospital.users ")
             .append("INNER JOIN hospital.user_employee ON user_id = inter_user_id ")
@@ -71,19 +73,9 @@ public class UserEmployeeDaoImpl implements UserEmployeeDao {
             result = true;
             LOGGER.log(Level.DEBUG, "Registration complete");
         } catch (SQLException | ConnectionPoolException e) {
-            try {
-                if (connection != null) {
-                    if (savepoint != null) {
-                        connection.rollback(savepoint);
-                    } else {
-                        connection.rollback();
-                    }
-                }
-            } catch (SQLException exc) {
-                throw new DaoException(exc); // TODO: 18.10.2020 ????
-            }
             throw new DaoException(e);
         } finally {
+            rollback(connection, savepoint);
             close(statement);
             close(connection);
         }

@@ -32,22 +32,6 @@ public abstract class AbstractSecurityFilter implements Filter {
     public void destroy() {
     }
 
-    protected String defineMainPage(String userRole) {
-        String page;
-        if (userRole != null) {
-            switch (userRole) {
-                case RequestParameter.ADMIN_ROLE -> page = JspPath.ADMIN_MAIN;
-                case RequestParameter.DOCTOR_ROLE -> page = JspPath.DOCTOR_MAIN;
-                case RequestParameter.ASSISTANT_ROLE -> page = JspPath.ASSISTANT_MAIN;
-                default -> page = JspPath.LOGIN;
-            }
-        } else {
-            page = JspPath.LOGIN;
-        }
-        LOGGER.log(Level.DEBUG, "Main page has been defined");
-        return page;
-    }
-
     protected void forward(HttpServletRequest request, HttpServletResponse response,
                          String page) throws IOException, ServletException {
         RequestDispatcher dispatcher = request.getServletContext().getRequestDispatcher(page);

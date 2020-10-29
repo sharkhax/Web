@@ -1,17 +1,22 @@
 package com.drobot.web.model.service;
 
 import com.drobot.web.exception.ServiceException;
+import com.drobot.web.model.entity.Entity;
 import com.drobot.web.model.entity.User;
 
 import java.util.List;
 import java.util.Optional;
 
-public interface UserService extends Creatable<User> {
+public interface UserService {
     boolean add(String login, String email, String password, User.Role role) throws ServiceException;
 
     boolean remove(int userId) throws ServiceException;
 
     List<User> findAll(String sortBy) throws ServiceException;
+
+    List<User> findAll(int start, int length, String sortBy) throws ServiceException;
+
+    List<User> findAll(int start, int length) throws ServiceException;
 
     Optional<User> findById(int userId) throws ServiceException;
 
@@ -37,5 +42,5 @@ public interface UserService extends Creatable<User> {
 
     boolean updateRole(int userId, User.Role newRole) throws ServiceException;
 
-    boolean updateStatus(int userId, boolean newStatus) throws ServiceException;
+    boolean updateStatus(int userId, Entity.Status newStatus) throws ServiceException;
 }

@@ -14,20 +14,9 @@ public class Employee extends Entity {
     private long hireDateMillis;
     private long dismissDateMillis;
     private Entity.Status status;
+    private int userId;
 
     public Employee() {
-    }
-
-    public Employee(String name, String surname,
-                    int age, char gender, Position position,
-                    long hireDateMillis, Status status) {
-        this.name = name;
-        this.surname = surname;
-        this.age = age;
-        this.gender = gender;
-        this.position = position;
-        this.hireDateMillis = hireDateMillis;
-        this.status = status;
     }
 
     public Employee(String name, String surname,
@@ -41,22 +30,9 @@ public class Employee extends Entity {
         this.hireDateMillis = hireDateMillis;
     }
 
-    public Employee(String name, String surname, int age, char gender,
-                    Position position, long hireDateMillis, long dismissDateMillis,
-                    Status status) {
-        this.name = name;
-        this.surname = surname;
-        this.age = age;
-        this.gender = gender;
-        this.position = position;
-        this.hireDateMillis = hireDateMillis;
-        this.dismissDateMillis = dismissDateMillis;
-        this.status = status;
-    }
-
     public Employee(int employeeId, String name, String surname,
                     int age, char gender, Position position,
-                    long hireDateMillis, long dismissDateMillis, Status status) {
+                    long hireDateMillis, long dismissDateMillis, Status status, int userId) {
         super(employeeId);
         this.name = name;
         this.surname = surname;
@@ -66,6 +42,7 @@ public class Employee extends Entity {
         this.hireDateMillis = hireDateMillis;
         this.dismissDateMillis = dismissDateMillis;
         this.status = status;
+        this.userId = userId;
     }
 
     public String getName() {
@@ -132,6 +109,14 @@ public class Employee extends Entity {
         this.status = status;
     }
 
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) {
@@ -165,6 +150,9 @@ public class Employee extends Entity {
         if (position != employee.position) {
             return false;
         }
+        if (userId != employee.userId) {
+            return false;
+        }
         return status == employee.status;
     }
 
@@ -179,13 +167,15 @@ public class Employee extends Entity {
         result = 31 * result + (int) (hireDateMillis ^ (hireDateMillis >>> 32));
         result = 31 * result + (int) (dismissDateMillis ^ (dismissDateMillis >>> 32));
         result = 31 * result + (status != null ? status.hashCode() : 0);
+        result = 31 * result + userId;
         return result;
     }
 
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("Employee{");
-        sb.append("name='").append(name).append('\'');
+        sb.append("id='").append(getId()).append('\'');
+        sb.append(", name='").append(name).append('\'');
         sb.append(", surname='").append(surname).append('\'');
         sb.append(", age=").append(age);
         sb.append(", gender=").append(gender);
@@ -193,6 +183,7 @@ public class Employee extends Entity {
         sb.append(", hireDateMillis=").append(hireDateMillis);
         sb.append(", dismissDateMillis=").append(dismissDateMillis);
         sb.append(", status=").append(status);
+        sb.append(", userId=").append(userId);
         sb.append('}');
         return sb.toString();
     }

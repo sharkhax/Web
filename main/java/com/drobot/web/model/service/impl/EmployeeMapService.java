@@ -1,7 +1,8 @@
-package com.drobot.web.model.service;
+package com.drobot.web.model.service.impl;
 
 import com.drobot.web.controller.RequestParameter;
 import com.drobot.web.model.entity.Employee;
+import com.drobot.web.model.service.MapService;
 import com.drobot.web.model.util.DateConverter;
 import com.drobot.web.model.validator.EmployeeValidator;
 import org.apache.logging.log4j.Level;
@@ -12,11 +13,19 @@ import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.Map;
 
-public enum EmployeeMapService {
+public enum EmployeeMapService implements MapService {
 
     INSTANCE;
 
     private final Logger LOGGER = LogManager.getLogger(EmployeeMapService.class);
+
+    @Override
+    public boolean isMapValid(Map<String, String> fields) {
+        boolean result = checkName(fields) & checkSurname(fields)
+                & checkAge(fields) & checkGender(fields)
+                & checkHireDate(fields) & checkPosition(fields);
+        return result;
+    }
 
     public boolean checkName(Map<String, String> fields) {
         return checkNameOrSurname(fields, RequestParameter.NAME);

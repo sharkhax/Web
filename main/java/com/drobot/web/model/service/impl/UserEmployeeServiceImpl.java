@@ -3,6 +3,9 @@ package com.drobot.web.model.service.impl;
 import com.drobot.web.controller.RequestParameter;
 import com.drobot.web.exception.DaoException;
 import com.drobot.web.exception.ServiceException;
+import com.drobot.web.model.creator.Creator;
+import com.drobot.web.model.creator.impl.EmployeeCreator;
+import com.drobot.web.model.creator.impl.UserCreator;
 import com.drobot.web.model.dao.impl.UserEmployeeDaoImpl;
 import com.drobot.web.model.entity.Employee;
 import com.drobot.web.model.entity.User;
@@ -21,8 +24,7 @@ public enum UserEmployeeServiceImpl implements UserEmployeeService {
 
     INSTANCE;
 
-    private final double SECS_TO_DAYS_MULTIPLIER = 1./(3600*24);
-    private final UserEmployeeDaoImpl userEmployeeDao = new UserEmployeeDaoImpl();
+    private final UserEmployeeDaoImpl userEmployeeDao = UserEmployeeDaoImpl.INSTANCE;
     private final UserService userService = UserServiceImpl.INSTANCE;
     private final EmployeeService employeeService = EmployeeServiceImpl.INSTANCE;
 
@@ -30,8 +32,10 @@ public enum UserEmployeeServiceImpl implements UserEmployeeService {
     public boolean register(Map<String, String> fields, Map<String, String> existingFields)
             throws ServiceException {
         boolean result = false;
-        Optional<User> optionalUser = userService.create(fields);
-        Optional<Employee> optionalEmployee = employeeService.create(fields);
+        Creator<User> userCreator = new UserCreator();
+        Creator<Employee> employeeCreator = new EmployeeCreator();
+        Optional<User> optionalUser = userCreator.create(fields);
+        Optional<Employee> optionalEmployee = employeeCreator.create(fields);
         if (optionalEmployee.isPresent() && optionalUser.isPresent()) {
             User user = optionalUser.get();
             Employee employee = optionalEmployee.get();
