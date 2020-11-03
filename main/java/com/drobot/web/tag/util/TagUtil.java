@@ -64,13 +64,11 @@ public class TagUtil {
                 } else {
                     int rightDelta = pagesNumber - currentPage;
                     int leftDelta = currentPage - 1;
-                    String submitMsg = null;
                     if (leftDelta <= 3) {
                         for (int i = 1; i <= currentPage - 1; i++) {
                             createButton(out, i);
                         }
                     } else {
-                        submitMsg = getSubmitButtonMsg(pageContext);
                         createButton(out, 1);
                         createNavigationButton(out, THREE_DOTS);
                         createButton(out, currentPage - 1);
@@ -81,9 +79,6 @@ public class TagUtil {
                             createButton(out, i);
                         }
                     } else {
-                        if (submitMsg == null) {
-                            submitMsg = getSubmitButtonMsg(pageContext);
-                        }
                         createButton(out, currentPage + 1);
                         createNavigationButton(out, THREE_DOTS);
                         createButton(out, pagesNumber);
@@ -92,6 +87,7 @@ public class TagUtil {
                 createNextButton(out, currentPage, pagesNumber);
             }
             out.write("</ul></nav></form>");
+            LOGGER.log(Level.DEBUG, "Pagination has been created");
         } catch (IOException e) {
             LOGGER.log(Level.FATAL, "Error while creating pagination");
             throw new JspException(e);
@@ -156,13 +152,5 @@ public class TagUtil {
         out.write("<button class=\"page-link\" type=\"button\" ");
         out.write(" style=\"" + PAGINATION_DISABLED_BUTTON_STYLE + "\" disabled>");
         out.write(content + "</button></li>");
-    }
-
-    private static String getSubmitButtonMsg(PageContext pageContext) {
-        HttpSession session = pageContext.getSession();
-        String locale = (String) session.getAttribute(RequestParameter.CURRENT_LOCALE);
-        ResourceBundle bundle = getMessageBundle(locale);
-        String submitMsg = bundle.getString(SUBMIT_BUTTON_MSG);
-        return submitMsg;
     }
 }
