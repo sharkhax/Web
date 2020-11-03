@@ -69,19 +69,19 @@ public enum UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> findAll(int start, int length, String sortBy) throws ServiceException {
+    public List<User> findAll(int start, int end, String sortBy) throws ServiceException {
         List<User> result;
         try {
-            if (start >= 0 && length > 0) {
+            if (start >= 0 && end > 0) {
                 if (checkSortingTag(sortBy)) {
-                    result = userDao.findAll(start, length, sortBy);
+                    result = userDao.findAll(start, end, sortBy);
                 } else {
                     result = List.of();
                     LOGGER.log(Level.ERROR, "Unsupported sorting tag");
                 }
             } else {
                 result = List.of();
-                LOGGER.log(Level.ERROR, "Incorrect start or length values");
+                LOGGER.log(Level.ERROR, "Incorrect start or end values");
             }
         } catch (DaoException e) {
             throw new ServiceException(e);
@@ -90,8 +90,8 @@ public enum UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> findAll(int start, int length) throws ServiceException {
-        return findAll(start, length, ColumnName.USER_ID);
+    public List<User> findAll(int start, int end) throws ServiceException {
+        return findAll(start, end, ColumnName.USER_ID);
     }
 
 
@@ -305,6 +305,18 @@ public enum UserServiceImpl implements UserService {
                     LOGGER.log(Level.DEBUG, "Such user status is already set");
                 }
             }
+        } catch (DaoException e) {
+            throw new ServiceException(e);
+        }
+        return result;
+    }
+
+    @Override
+    public int count() throws ServiceException {
+        int result;
+        try {
+            UserDao userDao = UserDaoImpl.INSTANCE;
+            result = userDao.count();
         } catch (DaoException e) {
             throw new ServiceException(e);
         }

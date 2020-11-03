@@ -106,6 +106,9 @@ public class ServletSecurityEmployeeFilter extends AbstractSecurityFilter {
 
     private void doCasePatientList(HttpServletRequest request, HttpServletResponse response,
                                    HttpSession session) throws IOException, ServletException {
-
+        String userRole = (String) session.getAttribute(RequestParameter.USER_ROLE);
+        String page = JspPath.PATIENT_LIST;
+        boolean condition = userRole != null && !userRole.equals(RequestParameter.GUEST_ROLE);
+        forwardOrError404(condition, page, request, response, session);
     }
 }

@@ -43,4 +43,6 @@ public interface UserService {
     boolean updateRole(int userId, User.Role newRole) throws ServiceException;
 
     boolean updateStatus(int userId, Entity.Status newStatus) throws ServiceException;
+
+    int count() throws ServiceException;
 }

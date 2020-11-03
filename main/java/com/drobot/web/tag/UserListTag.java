@@ -1,6 +1,7 @@
 package com.drobot.web.tag;
 
 import com.drobot.web.controller.RequestParameter;
+import com.drobot.web.controller.command.CommandType;
 import com.drobot.web.model.entity.User;
 import com.drobot.web.tag.util.TagUtil;
 import org.apache.logging.log4j.Level;
@@ -28,8 +29,40 @@ public class UserListTag extends TagSupport {
 
     @Override
     public int doStartTag() throws JspException {
+        HttpSession session = pageContext.getSession();
+        JspWriter out = pageContext.getOut();
+        createList(out, session);
+        int currentPage = (int) session.getAttribute(RequestParameter.USER_LIST_CURRENT_PAGE);
+        int usersNumber = (int) session.getAttribute(RequestParameter.USERS_NUMBER);
+        int pagesNumber = usersNumber % ROWS_NUMBER == 0
+                ? usersNumber / ROWS_NUMBER : usersNumber / ROWS_NUMBER + 1;
+        String command = CommandType.USER_LIST_COMMAND.toString().toLowerCase();
+        TagUtil.createPagination(pageContext, currentPage, pagesNumber, command);
+        return SKIP_BODY;
+    }
+
+    @Override
+    public int doEndTag() {
+        return EVAL_PAGE;
+    }
+
+    private void createList(JspWriter out, HttpSession session) throws JspException {
         try {
-            HttpSession session = pageContext.getSession();
+            out.write("<table class=\"table table-striped table-bordered table-hover\" style=\"text-align: center;");
+            out.write(" background-color: #f4f4f4b8; font-family: 'Times New Roman', sans-serif\">");
+            createHead(out, session);
+            out.write("<tbody>");
+            List<User> userList = (List<User>) pageContext.getSession().getAttribute(RequestParameter.USER_LIST);
+            createRows(out, session, userList);
+            out.write("</tbody></table>");
+        } catch (IOException e) {
+            LOGGER.log(Level.FATAL, "Error while creating user list ", e);
+            throw new JspException(e);
+        }
+    }
+
+    private void createHead(JspWriter out, HttpSession session) throws JspException {
+        try {
             String lang = (String) session.getAttribute(RequestParameter.CURRENT_LOCALE);
             ResourceBundle bundle = TagUtil.getMessageBundle(lang);
             String id = bundle.getString(ID_KEY);
@@ -38,23 +71,31 @@ public class UserListTag extends TagSupport {
             String role = bundle.getString(ROLE_KEY);
             String stringStatus = bundle.getString(STATUS_KEY);
             String employeeId = bundle.getString(EMPLOYEE_ID_KEY);
-            JspWriter out = pageContext.getOut();
-            out.write("<table class=\"table table-striped table-bordered table-hover\" style=\"text-align: center;");
-            out.write(" background-color: #f4f4f4b8; font-family: 'Times New Roman', sans-serif\">");
+            out.write("<form action=\"/mainController\" method=\"post\">");
+            out.write("<input type=\"hidden\" name=\"command\" value=\"user_list_command\"/>");
             out.write("<thead class=\"thead-light\"><tr>");
             out.write("<th scope=\"col\">#</th>");
-            out.write("<th scope=\"col\">" + id + "</th>");
-            out.write("<th scope=\"col\">"+ login +"</th>");
-            out.write("<th scope=\"col\">" + email +"</th>");
+            out.write("<th scope=\"col\">" + id + "<button type=\"submit\" name=\"userListSortBy\" value=\"login\">text</button></th>"); // FIXME: 03.11.2020 
+            out.write("<th scope=\"col\">" + login + "</th>");
+            out.write("<th scope=\"col\">" + email + "</th>");
             out.write("<th scope=\"col\">" + role + "</th>");
             out.write("<th scope=\"col\">" + stringStatus + "</th>");
             out.write("<th scope=\"col\">" + employeeId + "</th>");
-            out.write("</tr></thead><tbody>");
-            List<User> userList = (List<User>) pageContext.getSession().getAttribute(RequestParameter.USER_LIST);
+            out.write("</tr></thead></form>");
+        } catch (IOException e) {
+            LOGGER.log(Level.FATAL, "Error while creating user list head", e);
+            throw new JspException(e);
+        }
+    }
+
+    private void createRows(JspWriter out, HttpSession session, List<User> userList) throws JspException {
+        try {
             if (userList != null) {
                 int size = userList.size();
+                int currentPage = (int) session.getAttribute(RequestParameter.USER_LIST_CURRENT_PAGE);
                 for (int i = 0; i < ROWS_NUMBER; i++) {
-                    out.write("<tr><th scope=\"row\">" + (i + 1) + "</th>");
+                    int rowNumber = ROWS_NUMBER * (currentPage - 1) + i + 1;
+                    out.write("<tr><th scope=\"row\">" + rowNumber + "</th>");
                     if (size > i) {
                         User currentUser = userList.get(i);
                         out.write("<td>" + currentUser.getId() + "</td>");
@@ -72,16 +113,9 @@ public class UserListTag extends TagSupport {
             } else {
                 LOGGER.log(Level.ERROR, "User list is null");
             }
-            out.write("</tbody></table>");
         } catch (IOException e) {
-            LOGGER.log(Level.FATAL, e);
+            LOGGER.log(Level.FATAL, "Error while creating user list rows", e);
             throw new JspException(e);
         }
-        return SKIP_BODY;
-    }
-
-    @Override
-    public int doEndTag() {
-        return EVAL_PAGE;
     }
 }

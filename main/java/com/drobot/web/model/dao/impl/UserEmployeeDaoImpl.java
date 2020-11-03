@@ -73,9 +73,9 @@ public enum UserEmployeeDaoImpl implements UserEmployeeDao {
             result = true;
             LOGGER.log(Level.DEBUG, "Registration complete");
         } catch (SQLException | ConnectionPoolException e) {
+            rollback(connection, savepoint);
             throw new DaoException(e);
         } finally {
-            rollback(connection, savepoint);
             close(statement);
             close(connection);
         }

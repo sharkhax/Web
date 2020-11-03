@@ -15,6 +15,9 @@ public class UserValidator {
     private static final String LOGIN_REGEX1 = "[\\w-.]{5,16}"; // здесь проверка на длину и разрешенные символы
     private static final String LOGIN_REGEX2 = "[a-zA-Z\\-._]+"; // не может состоять только из цифр
 
+    private UserValidator() {
+    }
+
     public static boolean isPasswordValid(String password) {
         Pattern pattern = Pattern.compile(PASSWORD_REGEX);
         Matcher matcher = pattern.matcher(password);

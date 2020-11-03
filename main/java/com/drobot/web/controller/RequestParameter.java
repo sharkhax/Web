@@ -58,6 +58,13 @@ public final class RequestParameter {
     public static final String EMPLOYEE_LIST = "employee_list";
     public static final String EMPLOYEE_LIST_CURRENT_PAGE = "employeeListCurrentPage";
     public static final String EMPLOYEE_LIST_SORT_BY = "employeeListSortBy";
+    public static final String PATIENT_LIST = "patient_list";
+    public static final String PATIENT_LIST_CURRENT_PAGE = "patientListCurrentPage";
+    public static final String PATIENT_LIST_SORT_BY = "patientListSortBy";
+    public static final String REQUESTED_LIST_PAGE = "requestedListPage";
+    public static final String USERS_NUMBER = "usersNumber";
+    public static final String EMPLOYEES_NUMBER = "employeesNumber";
+    public static final String PATIENTS_NUMBER = "patientsNumber";
 
     /**
      * Common

@@ -20,6 +20,9 @@ public class EmployeeValidator {
     private static final String MIN_HIRE_DATE = "2020-07-01";
     private static final String MIN_DISMISS_DATE = "2020-07-02";
 
+    private EmployeeValidator() {
+    }
+
     public static boolean isNameValid(String name) {
         boolean result = false;
         if (name != null) {

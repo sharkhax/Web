@@ -1,13 +1,24 @@
 package com.drobot.web.controller.command.impl;
 
+import com.drobot.web.controller.RequestParameter;
+import com.drobot.web.controller.UrlPattern;
 import com.drobot.web.controller.command.AccessType;
 import com.drobot.web.controller.command.ActionCommand;
 import com.drobot.web.controller.command.CommandAccessLevel;
 import com.drobot.web.exception.CommandException;
+import com.drobot.web.exception.ServiceException;
+import com.drobot.web.model.dao.ColumnName;
+import com.drobot.web.model.entity.Patient;
+import com.drobot.web.model.service.PatientService;
+import com.drobot.web.model.service.impl.PatientServiceImpl;
+import com.drobot.web.tag.PatientListTag;
+import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import java.util.List;
 
 @CommandAccessLevel({AccessType.ADMIN, AccessType.DOCTOR, AccessType.ASSISTANT})
 public class PatientListCommand implements ActionCommand {
@@ -16,6 +27,32 @@ public class PatientListCommand implements ActionCommand {
 
     @Override
     public String execute(HttpServletRequest request) throws CommandException {
-        return null;
+        String page = UrlPattern.PATIENT_LIST;
+        HttpSession session = request.getSession();
+        Integer currentPage = (Integer) session.getAttribute(RequestParameter.PATIENT_LIST_CURRENT_PAGE);
+        String requestedPage = request.getParameter(RequestParameter.REQUESTED_LIST_PAGE);
+        if (requestedPage == null && currentPage == null) {
+            currentPage = 1;
+        } else if (requestedPage != null) {
+            currentPage = Integer.parseInt(requestedPage);
+        }
+        session.setAttribute(RequestParameter.PATIENT_LIST_CURRENT_PAGE, currentPage);
+        int start = (currentPage - 1) * PatientListTag.ROWS_NUMBER;
+        int end = PatientListTag.ROWS_NUMBER + start;
+        String sortBy = (String) session.getAttribute(RequestParameter.PATIENT_LIST_SORT_BY);
+        if (sortBy == null) {
+            sortBy = ColumnName.PATIENT_ID;
+        }
+        PatientService patientService = PatientServiceImpl.INSTANCE;
+        try {
+            List<Patient> patientList = patientService.findAll(start, end, sortBy);
+            session.setAttribute(RequestParameter.PATIENT_LIST, patientList);
+            int usersNumber = patientService.count();
+            session.setAttribute(RequestParameter.PATIENTS_NUMBER, usersNumber);
+        } catch (ServiceException e) {
+            throw new CommandException(e);
+        }
+        LOGGER.log(Level.DEBUG, "Patient list has been got");
+        return page;
     }
 }

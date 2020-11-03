@@ -23,4 +23,6 @@ public interface EmployeeService {
     Optional<Employee> findById(int employeeId) throws ServiceException;
 
     boolean update(int employeeId, Map<String, String> fields) throws ServiceException;
+
+    int count() throws ServiceException;
 }

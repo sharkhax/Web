@@ -10,10 +10,7 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -54,6 +51,7 @@ public enum EmployeeDaoImpl implements EmployeeDao {
                     "WHERE employee_id = ?;";
     private final String EXISTS_NAME_STATEMENT =
             "SELECT COUNT(*) as label FROM hospital.employees WHERE employee_name = ? AND employee_surname = ?;";
+    private final String COUNT_STATEMENT = "SELECT COUNT(*) as label FROM hospital.employees;";
 
     @Override
     public boolean exists(String name, String surname) throws DaoException {
@@ -81,7 +79,7 @@ public enum EmployeeDaoImpl implements EmployeeDao {
     }
 
     @Override
-    public List<Employee> findAll(int start, int length, String sortBy) throws DaoException {
+    public List<Employee> findAll(int start, int end, String sortBy) throws DaoException {
         List<Employee> result;
         Connection connection = null;
         PreparedStatement statement = null;
@@ -90,7 +88,7 @@ public enum EmployeeDaoImpl implements EmployeeDao {
             String sql = new StringBuilder(FIND_ALL_LIMIT_STATEMENT).insert(308, sortBy).toString();
             statement = connection.prepareStatement(sql);
             statement.setInt(1, start);
-            statement.setInt(2, length);
+            statement.setInt(2, end);
             ResultSet resultSet = statement.executeQuery();
             result = createEmployeeListFromResultSet(resultSet);
             LOGGER.log(Level.DEBUG, "Employee list has been got");
@@ -256,6 +254,28 @@ public enum EmployeeDaoImpl implements EmployeeDao {
         }
         return result;
     }
+
+    @Override
+    public int count() throws DaoException {
+        int result;
+        Connection connection = null;
+        Statement statement = null;
+        try {
+            connection = ConnectionPool.INSTANCE.getConnection();
+            statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery(COUNT_STATEMENT);
+            resultSet.next();
+            result = resultSet.getInt(1);
+            LOGGER.log(Level.DEBUG, "Employees have been counted");
+        } catch (SQLException | ConnectionPoolException e) {
+            throw new DaoException(e);
+        } finally {
+            close(statement);
+            close(connection);
+        }
+        return result;
+    }
+
 
     private boolean exists(int employeeId, Connection connection) throws SQLException {
         boolean result = false;

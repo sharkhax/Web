@@ -13,9 +13,11 @@ public interface Dao<E extends Entity> extends CloseableDao {
 
     List<E> findAll(String sortBy) throws DaoException;
 
-    List<E> findAll(int start, int length, String sortBy) throws DaoException;
+    List<E> findAll(int start, int end, String sortBy) throws DaoException;
 
     Optional<E> findById(int id) throws DaoException;
 
     boolean update(E entity) throws DaoException;
+
+    int count() throws DaoException;
 }

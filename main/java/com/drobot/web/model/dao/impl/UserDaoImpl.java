@@ -11,10 +11,7 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -74,6 +71,7 @@ public enum UserDaoImpl implements UserDao {
             "SELECT user_id, login, email, role, status_name, inter_employee_id FROM hospital.users ")
             .append("INNER JOIN hospital.statuses ON user_status = status_id ")
             .append("INNER JOIN hospital.user_employee ON user_id = inter_user_id ORDER BY  LIMIT ?, ?");
+    private final String COUNT_STATEMENT = "SELECT COUNT(*) as label FROM hospital.users;";
 
     @Override
     public boolean exists(int userId) throws DaoException {
@@ -272,17 +270,16 @@ public enum UserDaoImpl implements UserDao {
     }
 
     @Override
-    public List<User> findAll(int start, int length, String sortBy) throws DaoException {
+    public List<User> findAll(int start, int end, String sortBy) throws DaoException {
         List<User> result;
         Connection connection = null;
         PreparedStatement statement = null;
         try {
             connection = ConnectionPool.INSTANCE.getConnection();
             String sql = new StringBuilder(FIND_ALL_LIMIT_STATEMENT).insert(213, sortBy).toString();
-            System.out.println(sql);
             statement = connection.prepareStatement(sql);
             statement.setInt(1, start);
-            statement.setInt(2, length);
+            statement.setInt(2, end);
             ResultSet resultSet = statement.executeQuery();
             result = createUserListFromResultSet(resultSet);
         } catch (SQLException | ConnectionPoolException e) {
@@ -352,6 +349,27 @@ public enum UserDaoImpl implements UserDao {
     }
 
     @Override
+    public int count() throws DaoException {
+        int result;
+        Connection connection = null;
+        Statement statement = null;
+        try {
+            connection = ConnectionPool.INSTANCE.getConnection();
+            statement = connection.createStatement();
+            ResultSet resultSet = statement.executeQuery(COUNT_STATEMENT);
+            resultSet.next();
+            result = resultSet.getInt(1);
+            LOGGER.log(Level.DEBUG, "Users have been counted");
+        } catch (SQLException | ConnectionPoolException e) {
+            throw new DaoException(e);
+        } finally {
+            close(statement);
+            close(connection);
+        }
+        return result;
+    }
+
+    @Override
     public boolean updatePassword(int userId, String newEncPassword) throws DaoException {
         boolean result = false;
         Connection connection = null;
@@ -374,6 +392,8 @@ public enum UserDaoImpl implements UserDao {
         }
         return result;
     }
+
+
 
     private void fillStatement(User user, String encPassword, PreparedStatement statement) throws SQLException {
         if (statement != null) {

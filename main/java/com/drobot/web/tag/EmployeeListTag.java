@@ -1,6 +1,7 @@
 package com.drobot.web.tag;
 
 import com.drobot.web.controller.RequestParameter;
+import com.drobot.web.controller.command.CommandType;
 import com.drobot.web.model.entity.Employee;
 import com.drobot.web.model.util.DateConverter;
 import com.drobot.web.tag.util.TagUtil;
@@ -13,7 +14,6 @@ import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.JspWriter;
 import javax.servlet.jsp.tagext.TagSupport;
 import java.io.IOException;
-import java.time.LocalDate;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -36,21 +36,50 @@ public class EmployeeListTag extends TagSupport {
     public int doStartTag() throws JspException {
         JspWriter out = pageContext.getOut();
         HttpSession session = pageContext.getSession();
-        String lang = (String) session.getAttribute(RequestParameter.CURRENT_LOCALE);
-        ResourceBundle bundle = TagUtil.getMessageBundle(lang);
-        String id = bundle.getString(ID_KEY);
-        String name = bundle.getString(NAME_KEY);
-        String surname = bundle.getString(SURNAME_KEY);
-        String age = bundle.getString(AGE_KEY);
-        String gender = bundle.getString(GENDER_KEY);
-        String position = bundle.getString(POSITION_KEY);
-        String hireDate = bundle.getString(HIRE_DATE_KEY);
-        String dismissDate = bundle.getString(DISMISS_DATE_KEY);
-        String status = bundle.getString(STATUS_KEY);
-        String userId = bundle.getString(USER_ID_KEY);
+        createList(out, session);
+        int currentPage = (int) session.getAttribute(RequestParameter.EMPLOYEE_LIST_CURRENT_PAGE);
+        int employeesNumber = (int) session.getAttribute(RequestParameter.EMPLOYEES_NUMBER);
+        int pagesNumber = employeesNumber % ROWS_NUMBER == 0
+                ? employeesNumber / ROWS_NUMBER : employeesNumber / ROWS_NUMBER + 1;
+        String command = CommandType.EMPLOYEE_LIST_COMMAND.toString().toLowerCase();
+        TagUtil.createPagination(pageContext, currentPage, pagesNumber, command);
+        return SKIP_BODY;
+    }
+
+    @Override
+    public int doEndTag() {
+        return EVAL_PAGE;
+    }
+
+    private void createList(JspWriter out, HttpSession session) throws JspException {
         try {
             out.write("<table class=\"table table-striped table-bordered table-hover\" style=\"text-align: center;");
             out.write(" background-color: #f4f4f4b8; font-family: 'Times New Roman', sans-serif\">");
+            createHead(out, session);
+            out.write("<tbody>");
+            List<Employee> employeeList = (List<Employee>) session.getAttribute(RequestParameter.EMPLOYEE_LIST);
+            createRows(out, session, employeeList);
+            out.write("</tbody></table>");
+        } catch (IOException e) {
+            LOGGER.log(Level.FATAL, "Error while creating employee list", e);
+            throw new JspException(e);
+        }
+    }
+
+    private void createHead(JspWriter out, HttpSession session) throws JspException {
+        try {
+            String lang = (String) session.getAttribute(RequestParameter.CURRENT_LOCALE);
+            ResourceBundle bundle = TagUtil.getMessageBundle(lang);
+            String id = bundle.getString(ID_KEY);
+            String name = bundle.getString(NAME_KEY);
+            String surname = bundle.getString(SURNAME_KEY);
+            String age = bundle.getString(AGE_KEY);
+            String gender = bundle.getString(GENDER_KEY);
+            String position = bundle.getString(POSITION_KEY);
+            String hireDate = bundle.getString(HIRE_DATE_KEY);
+            String dismissDate = bundle.getString(DISMISS_DATE_KEY);
+            String status = bundle.getString(STATUS_KEY);
+            String userId = bundle.getString(USER_ID_KEY);
             out.write("<thead class=\"thead-light\"><tr>");
             out.write("<th scope=\"col\">#</th>");
             out.write("<th scope=\"col\">" + id + "</th>");
@@ -63,8 +92,15 @@ public class EmployeeListTag extends TagSupport {
             out.write("<th scope=\"col\">" + dismissDate + "</th>");
             out.write("<th scope=\"col\">" + status + "</th>");
             out.write("<th scope=\"col\">" + userId + "</th>");
-            out.write("</tr></thead><tbody>");
-            List<Employee> employeeList = (List<Employee>) session.getAttribute(RequestParameter.EMPLOYEE_LIST);
+            out.write("</tr></thead>");
+        } catch (IOException e) {
+            LOGGER.log(Level.FATAL, "Error while creating employee list head", e);
+            throw new JspException(e);
+        }
+    }
+
+    private void createRows(JspWriter out, HttpSession session, List<Employee> employeeList) throws JspException {
+        try {
             if (employeeList != null) {
                 int size = employeeList.size();
                 for (int i = 0; i < ROWS_NUMBER; i++) {
@@ -100,16 +136,9 @@ public class EmployeeListTag extends TagSupport {
             } else {
                 LOGGER.log(Level.ERROR, "Employee list is null");
             }
-            out.write("</tbody></table>");
         } catch (IOException e) {
-            LOGGER.log(Level.FATAL, e);
+            LOGGER.log(Level.FATAL, "", e);
             throw new JspException(e);
         }
-        return SKIP_BODY;
-    }
-
-    @Override
-    public int doEndTag() {
-        return EVAL_PAGE;
     }
 }

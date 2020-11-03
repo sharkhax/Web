@@ -53,19 +53,19 @@ public enum EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public List<Employee> findAll(int start, int length, String sortBy) throws ServiceException {
+    public List<Employee> findAll(int start, int end, String sortBy) throws ServiceException {
         List<Employee> result;
         try {
-            if (start >= 0 && length > 0) {
+            if (start >= 0 && end > start) {
                 if (checkSortingTag(sortBy)) {
-                    result = employeeDao.findAll(start, length, sortBy);
+                    result = employeeDao.findAll(start, end, sortBy);
                 } else {
                     result = List.of();
                     LOGGER.log(Level.ERROR, "Incorrect sorting tag");
                 }
             } else {
                 result = List.of();
-                LOGGER.log(Level.ERROR, "Incorrect start or length values");
+                LOGGER.log(Level.ERROR, "Incorrect start or end values");
             }
         } catch (DaoException e) {
             throw new ServiceException(e);
@@ -83,6 +83,19 @@ public enum EmployeeServiceImpl implements EmployeeService {
     public boolean update(int employeeId, Map<String, String> fields) throws ServiceException {
         return false;
     }
+
+    @Override
+    public int count() throws ServiceException {
+        int result;
+        try {
+            EmployeeDao userDao = EmployeeDaoImpl.INSTANCE;
+            result = userDao.count();
+        } catch (DaoException e) {
+            throw new ServiceException(e);
+        }
+        return result;
+    }
+
 
     private boolean checkSortingTag(String sortBy) {
         return sortBy.equals(ColumnName.EMPLOYEE_ID)

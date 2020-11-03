@@ -6,6 +6,10 @@ import com.drobot.web.exception.ServiceException;
 import com.drobot.web.model.creator.Creator;
 import com.drobot.web.model.creator.impl.EmployeeCreator;
 import com.drobot.web.model.creator.impl.UserCreator;
+import com.drobot.web.model.dao.EmployeeDao;
+import com.drobot.web.model.dao.UserDao;
+import com.drobot.web.model.dao.impl.EmployeeDaoImpl;
+import com.drobot.web.model.dao.impl.UserDaoImpl;
 import com.drobot.web.model.dao.impl.UserEmployeeDaoImpl;
 import com.drobot.web.model.entity.Employee;
 import com.drobot.web.model.entity.User;
@@ -23,10 +27,6 @@ import java.util.Optional;
 public enum UserEmployeeServiceImpl implements UserEmployeeService {
 
     INSTANCE;
-
-    private final UserEmployeeDaoImpl userEmployeeDao = UserEmployeeDaoImpl.INSTANCE;
-    private final UserService userService = UserServiceImpl.INSTANCE;
-    private final EmployeeService employeeService = EmployeeServiceImpl.INSTANCE;
 
     @Override
     public boolean register(Map<String, String> fields, Map<String, String> existingFields)
@@ -46,25 +46,28 @@ public enum UserEmployeeServiceImpl implements UserEmployeeService {
             String name = employee.getName();
             String surname = employee.getSurname();
             boolean noMatches = true;
-            if (userService.existsLogin(login)) {
-                existingFields.put(RequestParameter.LOGIN, login);
-                noMatches = false;
-            }
-            if (userService.existsEmail(email)) {
-                existingFields.put(RequestParameter.EMAIL, email);
-                noMatches = false;
-            }
-            if (employeeService.exists(name, surname)) {
-                existingFields.put(RequestParameter.NAME, name);
-                existingFields.put(RequestParameter.SURNAME, surname);
-                noMatches = false;
-            }
-            if (noMatches) {
-                try {
-                    result = userEmployeeDao.register(user, encPassword, employee);
-                } catch (DaoException e) {
-                    throw new ServiceException(e);
+            try {
+                UserDao userDao = UserDaoImpl.INSTANCE;
+                if (userDao.existsLogin(login)) {
+                    existingFields.put(RequestParameter.LOGIN, login);
+                    noMatches = false;
                 }
+                if (userDao.existsEmail(email)) {
+                    existingFields.put(RequestParameter.EMAIL, email);
+                    noMatches = false;
+                }
+                EmployeeDao employeeDao = EmployeeDaoImpl.INSTANCE;
+                if (employeeDao.exists(name, surname)) {
+                    existingFields.put(RequestParameter.NAME, name);
+                    existingFields.put(RequestParameter.SURNAME, surname);
+                    noMatches = false;
+                }
+                if (noMatches) {
+                    UserEmployeeDaoImpl userEmployeeDao = UserEmployeeDaoImpl.INSTANCE;
+                    result = userEmployeeDao.register(user, encPassword, employee);
+                }
+            } catch (DaoException e) {
+                throw new ServiceException(e);
             }
         }
         return result;
@@ -76,6 +79,7 @@ public enum UserEmployeeServiceImpl implements UserEmployeeService {
         User user = new User();
         Employee employee = new Employee();
         try {
+            UserEmployeeDaoImpl userEmployeeDao = UserEmployeeDaoImpl.INSTANCE;
             if (userEmployeeDao.loadUserEmployeeData(userId, user, employee)) {
                 String login = user.getLogin();
                 String email = user.getEmail();

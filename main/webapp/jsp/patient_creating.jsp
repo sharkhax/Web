@@ -237,9 +237,9 @@
                 </div>
                 <button type="submit" class="btn btn-primary"><fmt:message key="patientCreating.submitButton"/></button>
                 <c:if test="${patientCreatingSuccess eq true}">
-                <span style="color: white; font-size: 14pt; font-weight: bold">
+                    <br/><span style="color: white; font-size: 14pt; font-weight: bold">
                         <fmt:message key="patientCreating.success"/>
-                </span>
+                        </span>
                 </c:if>
             </form>
         </c:otherwise>

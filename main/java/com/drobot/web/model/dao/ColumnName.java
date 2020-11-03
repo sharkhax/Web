@@ -28,4 +28,13 @@ public final class ColumnName {
     public static final String EMPLOYEE_HIRE_DATE = "hire_date";
     public static final String EMPLOYEE_DISMISS_DATE = "dismiss_date";
     public static final String EMPLOYEE_STATUS = "employee_status";
+
+    // patients' table
+    public static final String PATIENT_ID = "patient_id";
+    public static final String PATIENT_NAME = "patient_name";
+    public static final String PATIENT_SURNAME = "patient_surname";
+    public static final String PATIENT_AGE = "patient_age";
+    public static final String PATIENT_GENDER = "patient_gender";
+    public static final String PATIENT_DIAGNOSIS = "diagnosis";
+    public static final String PATIENT_STATUS = "patient_status";
 }
