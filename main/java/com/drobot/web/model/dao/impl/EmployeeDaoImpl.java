@@ -15,8 +15,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static com.drobot.web.model.dao.ColumnName.SEMICOLON;
-
 public enum EmployeeDaoImpl implements EmployeeDao {
 
     INSTANCE;
@@ -79,12 +77,15 @@ public enum EmployeeDaoImpl implements EmployeeDao {
     }
 
     @Override
-    public List<Employee> findAll(int start, int end, String sortBy) throws DaoException {
+    public List<Employee> findAll(int start, int end, String sortBy, boolean reverse) throws DaoException {
         List<Employee> result;
         Connection connection = null;
         PreparedStatement statement = null;
         try {
             connection = ConnectionPool.INSTANCE.getConnection();
+            if (reverse) {
+                sortBy = sortBy + SPACE + DESC;
+            }
             String sql = new StringBuilder(FIND_ALL_LIMIT_STATEMENT).insert(308, sortBy).toString();
             statement = connection.prepareStatement(sql);
             statement.setInt(1, start);
@@ -183,13 +184,17 @@ public enum EmployeeDaoImpl implements EmployeeDao {
     }
 
     @Override
-    public List<Employee> findAll(String sortBy) throws DaoException {
+    public List<Employee> findAll(String sortBy, boolean reverse) throws DaoException {
         List<Employee> result;
         Connection connection = null;
         PreparedStatement statement = null;
         try {
             connection = ConnectionPool.INSTANCE.getConnection();
-            String sql = FIND_ALL_STATEMENT + sortBy + SEMICOLON;
+            StringBuilder sqlBuilder = new StringBuilder(FIND_ALL_STATEMENT).append(sortBy);
+            if (reverse) {
+                sqlBuilder.append(SPACE).append(DESC);
+            }
+            String sql = sqlBuilder.append(SEMICOLON).toString();
             statement = connection.prepareStatement(sql);
             ResultSet resultSet = statement.executeQuery();
             result = createEmployeeListFromResultSet(resultSet);
@@ -344,23 +349,27 @@ public enum EmployeeDaoImpl implements EmployeeDao {
 
     private List<Employee> createEmployeeListFromResultSet(ResultSet resultSet) throws SQLException {
         List<Employee> result = new ArrayList<>();
-        while (resultSet.next()) {
-            int id = resultSet.getInt(1);
-            String name = resultSet.getString(2);
-            String surname = resultSet.getString(3);
-            int age = resultSet.getByte(4);
-            char gender = resultSet.getString(5).charAt(0);
-            String stringPosition = resultSet.getString(6);
-            long hireDateMillis = resultSet.getLong(7);
-            long dismissDateMillis = resultSet.getLong(8);
-            String stringStatus = resultSet.getString(9);
-            int userId = resultSet.getInt(10);
-            Employee.Position position = Employee.Position.valueOf(stringPosition);
-            Entity.Status status = Entity.Status.valueOf(stringStatus);
-            Employee employee =
-                    new Employee(id, name, surname, age, gender, position,
-                            hireDateMillis, dismissDateMillis, status, userId);
-            result.add(employee);
+        if (resultSet != null && resultSet.next()) {
+            do {
+                int id = resultSet.getInt(1);
+                String name = resultSet.getString(2);
+                String surname = resultSet.getString(3);
+                int age = resultSet.getByte(4);
+                char gender = resultSet.getString(5).charAt(0);
+                String stringPosition = resultSet.getString(6);
+                long hireDateMillis = resultSet.getLong(7);
+                long dismissDateMillis = resultSet.getLong(8);
+                String stringStatus = resultSet.getString(9);
+                int userId = resultSet.getInt(10);
+                Employee.Position position = Employee.Position.valueOf(stringPosition);
+                Entity.Status status = Entity.Status.valueOf(stringStatus);
+                Employee employee = new Employee(id, name, surname, age, gender, position,
+                        hireDateMillis, dismissDateMillis, status, userId);
+                result.add(employee);
+            } while (resultSet.next());
+            LOGGER.log(Level.DEBUG, result.size() + " employees have been found");
+        } else {
+            LOGGER.log(Level.WARN, "Result set is null or empty");
         }
         return result;
     }

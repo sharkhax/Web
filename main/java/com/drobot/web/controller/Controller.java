@@ -9,6 +9,7 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -39,7 +40,14 @@ public class Controller extends HttpServlet {
         try {
             ActionCommand command = optionalCommand.orElseThrow();
             page = command.execute(request);
-            response.sendRedirect(request.getContextPath() + page);
+            if (page == null) {
+                LOGGER.log(Level.DEBUG, "Error 404, page is not found");
+                page = JspPath.ERROR_404;
+                RequestDispatcher dispatcher = request.getServletContext().getRequestDispatcher(page);
+                dispatcher.forward(request, response);
+            } else {
+                response.sendRedirect(request.getContextPath() + page);
+            }
         } catch (CommandException e) {
             LOGGER.log(Level.ERROR, "Redirecting to the error page", e);
             throw new ServletException(e);

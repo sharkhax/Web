@@ -18,4 +18,8 @@ public final class JspPath {
     public static final String PASSWORD_CHANGING = "/jsp/password_changing.jsp";
     public static final String PATIENT_CREATING = "/jsp/patient_creating.jsp";
     public static final String PATIENT_LIST = "/jsp/patient_list.jsp";
+    public static final String USER_INFO = "/jsp/user_info.jsp";
+    public static final String PATIENT_INFO = "/jsp/patient_info.jsp";
+    public static final String EMPLOYEE_INFO = "/jsp/employee_info.jsp";
+    public static final String ADMIN_CHANGING_PASSWORD = "/jsp/admin_changing_password.jsp";
 }

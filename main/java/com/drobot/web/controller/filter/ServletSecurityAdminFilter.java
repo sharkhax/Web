@@ -2,7 +2,11 @@ package com.drobot.web.controller.filter;
 
 import com.drobot.web.controller.JspPath;
 import com.drobot.web.controller.RequestParameter;
+import com.drobot.web.controller.SessionAttribute;
 import com.drobot.web.controller.UrlPattern;
+import com.drobot.web.controller.command.CommandType;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -14,6 +18,8 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
 public class ServletSecurityAdminFilter extends AbstractSecurityFilter {
+
+    private static final Logger LOGGER = LogManager.getLogger(ServletSecurityAdminFilter.class);
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse,
@@ -34,48 +40,54 @@ public class ServletSecurityAdminFilter extends AbstractSecurityFilter {
 
     private void doCaseUserRegistration(HttpServletRequest request, HttpServletResponse response,
                                         HttpSession session) throws IOException, ServletException {
-        session.setAttribute(RequestParameter.VALIDATED, null);
-        session.setAttribute(RequestParameter.USER_REGISTRATION_FIELDS, null);
-        session.setAttribute(RequestParameter.USER_REGISTRATION_EXISTING_FIELDS, null);
+        session.setAttribute(SessionAttribute.VALIDATED, null);
+        session.setAttribute(SessionAttribute.USER_REGISTRATION_FIELDS, null);
+        session.setAttribute(SessionAttribute.USER_REGISTRATION_EXISTING_FIELDS, null);
         forwardToRegistration(request, response, session);
     }
 
     private void doCaseUserRegistrationSuccess(HttpServletRequest request, HttpServletResponse response,
                                                HttpSession session) throws IOException, ServletException {
         request.setAttribute(RequestParameter.REGISTRATION_SUCCESS, true);
-        session.setAttribute(RequestParameter.VALIDATED, null);
-        session.setAttribute(RequestParameter.USER_REGISTRATION_FIELDS, null);
-        session.setAttribute(RequestParameter.USER_REGISTRATION_EXISTING_FIELDS, null);
+        session.setAttribute(SessionAttribute.VALIDATED, null);
+        session.setAttribute(SessionAttribute.USER_REGISTRATION_FIELDS, null);
+        session.setAttribute(SessionAttribute.USER_REGISTRATION_EXISTING_FIELDS, null);
         forwardToRegistration(request, response, session);
     }
 
     private void doCaseUserRegistrationFail(HttpServletRequest request, HttpServletResponse response,
                                             HttpSession session) throws IOException, ServletException {
-        session.setAttribute(RequestParameter.VALIDATED, true);
+        session.setAttribute(SessionAttribute.VALIDATED, true);
         forwardToRegistration(request, response, session);
     }
 
     private void forwardToRegistration(HttpServletRequest request, HttpServletResponse response,
                                        HttpSession session) throws IOException, ServletException {
-        String userRole = (String) session.getAttribute(RequestParameter.USER_ROLE);
+        String userRole = (String) session.getAttribute(SessionAttribute.USER_ROLE);
         String page = JspPath.USER_REGISTRATION;
-        boolean condition = userRole.equals(RequestParameter.ADMIN_ROLE);
+        boolean condition = userRole.equals(SessionAttribute.ADMIN_ROLE);
         forwardOrError404(condition, page, request, response, session);
     }
 
     private void doCaseEmployeeList(HttpServletRequest request, HttpServletResponse response,
                                     HttpSession session) throws IOException, ServletException {
-        String userRole = (String) session.getAttribute(RequestParameter.USER_ROLE);
+        String userRole = (String) session.getAttribute(SessionAttribute.USER_ROLE);
         String page = JspPath.EMPLOYEE_LIST;
-        boolean condition = userRole.equals(RequestParameter.ADMIN_ROLE);
+        if (session.getAttribute(SessionAttribute.EMPLOYEE_LIST) == null) {
+            executeCommand(CommandType.EMPLOYEE_LIST_COMMAND, request); // TODO: 07.11.2020 лучше делать редирект или просто обращение к команде?
+        }
+        boolean condition = userRole.equals(SessionAttribute.ADMIN_ROLE);
         forwardOrError404(condition, page, request, response, session);
     }
 
     private void doCaseUserList(HttpServletRequest request, HttpServletResponse response,
                                 HttpSession session) throws IOException, ServletException {
-        String userRole = (String) session.getAttribute(RequestParameter.USER_ROLE);
+        String userRole = (String) session.getAttribute(SessionAttribute.USER_ROLE);
         String page = JspPath.USER_LIST;
-        boolean condition = userRole.equals(RequestParameter.ADMIN_ROLE);
+        if (session.getAttribute(SessionAttribute.USER_LIST) == null) {
+            executeCommand(CommandType.USER_LIST_COMMAND, request);
+        }
+        boolean condition = userRole.equals(SessionAttribute.ADMIN_ROLE);
         forwardOrError404(condition, page, request, response, session);
     }
 }

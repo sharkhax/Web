@@ -1,6 +1,7 @@
 package com.drobot.web.controller.command.impl;
 
 import com.drobot.web.controller.RequestParameter;
+import com.drobot.web.controller.SessionAttribute;
 import com.drobot.web.controller.UrlPattern;
 import com.drobot.web.controller.command.AccessType;
 import com.drobot.web.controller.command.ActionCommand;
@@ -43,13 +44,13 @@ public class RegisterPatientCommand implements ActionCommand {
         try {
             if (patientService.add(fields, existingFields)) {
                 page = UrlPattern.PATIENT_CREATING_SUCCESS;
-                session.setAttribute(RequestParameter.PATIENT_CREATING_FIELDS, null);
-                session.setAttribute(RequestParameter.PATIENT_CREATING_EXISTING_FIELDS, null);
+                session.setAttribute(SessionAttribute.PATIENT_CREATING_FIELDS, null);
+                session.setAttribute(SessionAttribute.PATIENT_CREATING_EXISTING_FIELDS, null);
                 LOGGER.log(Level.INFO, "Patient has been created successfully");
             } else {
                 page = UrlPattern.PATIENT_CREATING_FAIL;
-                session.setAttribute(RequestParameter.PATIENT_CREATING_FIELDS, fields);
-                session.setAttribute(RequestParameter.PATIENT_CREATING_EXISTING_FIELDS, existingFields);
+                session.setAttribute(SessionAttribute.PATIENT_CREATING_FIELDS, fields);
+                session.setAttribute(SessionAttribute.PATIENT_CREATING_EXISTING_FIELDS, existingFields);
                 LOGGER.log(Level.INFO, "Patient registration failed");
             }
         } catch (ServiceException e) {

@@ -5,15 +5,15 @@
          version="4.0">
     <error-page>
         <error-code>404</error-code>
-        <location>/jsp/error404.jsp</location>
+        <location>/jsp/error/error404.jsp</location>
     </error-page>
     <error-page>
         <error-code>403</error-code>
-        <location>/jsp/error.jsp</location>
+        <location>/jsp/error/error.jsp</location>
     </error-page>
     <error-page>
         <error-code>500</error-code>
-        <location>/jsp/error.jsp</location>
+        <location>/jsp/error/error.jsp</location>
     </error-page>
     <session-config>
         <session-timeout>30</session-timeout>
@@ -46,6 +46,10 @@
         <filter-name>servletSecurityAdminFilter</filter-name>
         <filter-class>com.drobot.web.controller.filter.ServletSecurityAdminFilter</filter-class>
     </filter>
+    <filter>
+        <filter-name>dynamicUrlFilter</filter-name>
+        <filter-class>com.drobot.web.controller.filter.DynamicUrlFilter</filter-class>
+    </filter>
 
     <filter-mapping>
         <filter-name>disableUrlSessionFilter</filter-name>
@@ -74,6 +78,13 @@
         <url-pattern>/mainPage/employees</url-pattern>
         <url-pattern>/mainPage/userRegistration</url-pattern>
         <url-pattern>/mainPage/userRegistration/*</url-pattern>
+    </filter-mapping>
+
+    <filter-mapping>
+        <filter-name>dynamicUrlFilter</filter-name>
+        <url-pattern>/mainPage/users/*</url-pattern>
+        <url-pattern>/mainPage/employees/*</url-pattern>
+        <url-pattern>/mainPage/patients/*</url-pattern>
     </filter-mapping>
 
     <filter-mapping>

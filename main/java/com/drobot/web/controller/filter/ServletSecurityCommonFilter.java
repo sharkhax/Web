@@ -2,6 +2,7 @@ package com.drobot.web.controller.filter;
 
 import com.drobot.web.controller.JspPath;
 import com.drobot.web.controller.RequestParameter;
+import com.drobot.web.controller.SessionAttribute;
 import com.drobot.web.controller.UrlPattern;
 import com.drobot.web.controller.command.ActionCommand;
 import com.drobot.web.controller.command.CommandProvider;
@@ -37,7 +38,7 @@ public class ServletSecurityCommonFilter extends AbstractSecurityFilter {
 
     private void doCaseMainController(HttpServletRequest request, HttpServletResponse response, HttpSession session,
                                       FilterChain filterChain) throws IOException, ServletException {
-        String userRole = (String) session.getAttribute(RequestParameter.USER_ROLE);
+        String userRole = (String) session.getAttribute(SessionAttribute.USER_ROLE);
         boolean shouldBeRedirected = false;
         Optional<ActionCommand> optionalCommand = CommandProvider.defineCommand(request);
         if (optionalCommand.isEmpty()) {
@@ -62,22 +63,22 @@ public class ServletSecurityCommonFilter extends AbstractSecurityFilter {
 
     private void doCaseMainPage(HttpServletRequest request, HttpServletResponse response,
                                 HttpSession session) throws IOException, ServletException {
-        String userRole = (String) session.getAttribute(RequestParameter.USER_ROLE);
-        if (userRole == null || userRole.equals(RequestParameter.GUEST_ROLE)) {
+        String userRole = (String) session.getAttribute(SessionAttribute.USER_ROLE);
+        if (userRole == null || userRole.equals(SessionAttribute.GUEST_ROLE)) {
             redirect(response, UrlPattern.LOGIN_PAGE);
         } else {
             String page = JspPath.MAIN;
-            session.setAttribute(RequestParameter.CURRENT_PAGE, page);
+            session.setAttribute(SessionAttribute.CURRENT_PAGE, page);
             forward(request, response, page);
         }
     }
 
     private void doCaseLoginPage(HttpServletRequest request, HttpServletResponse response,
                                  HttpSession session) throws IOException, ServletException {
-        String userRole = (String) session.getAttribute(RequestParameter.USER_ROLE);
-        if (userRole == null || userRole.equals(RequestParameter.GUEST_ROLE)) {
+        String userRole = (String) session.getAttribute(SessionAttribute.USER_ROLE);
+        if (userRole == null || userRole.equals(SessionAttribute.GUEST_ROLE)) {
             String page = JspPath.LOGIN;
-            session.setAttribute(RequestParameter.CURRENT_PAGE, page);
+            session.setAttribute(SessionAttribute.CURRENT_PAGE, page);
             forward(request, response, page);
         } else {
             redirect(response, UrlPattern.MAIN_PAGE);

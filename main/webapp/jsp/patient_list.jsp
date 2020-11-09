@@ -13,13 +13,13 @@
 <body>
 
 <jsp:include page="background.jsp"/>
-<%@include file="header.jsp"%>
+<%@include file="header.jsp" %>
 
 <div style="width: 1200px; margin: 13px 10px">
     <ctg:patient_list/>
 </div>
 
-<%@include file="footer.jsp"%>
+<%@include file="footer.jsp" %>
 
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
         integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
@@ -30,6 +30,11 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
         integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
         crossorigin="anonymous"></script>
+<script type="text/javascript">
+    function goToPatientInfo(id) {
+        document.location.href = "${pageContext.request.contextPath}/mainController?command=patient_data&requestedPatientInfoId=" + id;
+    }
+</script>
 
 </body>
 </html>

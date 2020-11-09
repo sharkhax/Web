@@ -1,7 +1,8 @@
 package com.drobot.web.tag;
 
-import com.drobot.web.controller.RequestParameter;
+import com.drobot.web.controller.SessionAttribute;
 import com.drobot.web.controller.command.CommandType;
+import com.drobot.web.model.dao.ColumnName;
 import com.drobot.web.model.entity.Employee;
 import com.drobot.web.model.util.DateConverter;
 import com.drobot.web.tag.util.TagUtil;
@@ -31,14 +32,15 @@ public class EmployeeListTag extends TagSupport {
     private static final String DISMISS_DATE_KEY = "table.dismissDate";
     private static final String STATUS_KEY = "table.status";
     private static final String USER_ID_KEY = "table.userId";
+    private static final String HEAD_BUTTON_STYLE = "background-color: #fff0; border: #fff0; font-weight: bold;";
 
     @Override
     public int doStartTag() throws JspException {
         JspWriter out = pageContext.getOut();
         HttpSession session = pageContext.getSession();
         createList(out, session);
-        int currentPage = (int) session.getAttribute(RequestParameter.EMPLOYEE_LIST_CURRENT_PAGE);
-        int employeesNumber = (int) session.getAttribute(RequestParameter.EMPLOYEES_NUMBER);
+        int currentPage = (int) session.getAttribute(SessionAttribute.EMPLOYEE_LIST_CURRENT_PAGE);
+        int employeesNumber = (int) session.getAttribute(SessionAttribute.EMPLOYEES_NUMBER);
         int pagesNumber = employeesNumber % ROWS_NUMBER == 0
                 ? employeesNumber / ROWS_NUMBER : employeesNumber / ROWS_NUMBER + 1;
         String command = CommandType.EMPLOYEE_LIST_COMMAND.toString().toLowerCase();
@@ -57,7 +59,7 @@ public class EmployeeListTag extends TagSupport {
             out.write(" background-color: #f4f4f4b8; font-family: 'Times New Roman', sans-serif\">");
             createHead(out, session);
             out.write("<tbody>");
-            List<Employee> employeeList = (List<Employee>) session.getAttribute(RequestParameter.EMPLOYEE_LIST);
+            List<Employee> employeeList = (List<Employee>) session.getAttribute(SessionAttribute.EMPLOYEE_LIST);
             createRows(out, session, employeeList);
             out.write("</tbody></table>");
         } catch (IOException e) {
@@ -68,7 +70,7 @@ public class EmployeeListTag extends TagSupport {
 
     private void createHead(JspWriter out, HttpSession session) throws JspException {
         try {
-            String lang = (String) session.getAttribute(RequestParameter.CURRENT_LOCALE);
+            String lang = (String) session.getAttribute(SessionAttribute.CURRENT_LOCALE);
             ResourceBundle bundle = TagUtil.getMessageBundle(lang);
             String id = bundle.getString(ID_KEY);
             String name = bundle.getString(NAME_KEY);
@@ -80,19 +82,37 @@ public class EmployeeListTag extends TagSupport {
             String dismissDate = bundle.getString(DISMISS_DATE_KEY);
             String status = bundle.getString(STATUS_KEY);
             String userId = bundle.getString(USER_ID_KEY);
+            String sortedBy = (String) session.getAttribute(SessionAttribute.EMPLOYEE_LIST_SORT_BY);
+            boolean reverseSorting = (boolean) session.getAttribute(SessionAttribute.EMPLOYEE_LIST_REVERSE_SORTING);
+            String numericArrow = reverseSorting ? TagUtil.SORT_NUMERIC_UP_IMAGE : TagUtil.SORT_NUMERIC_DOWN_IMAGE;
+            String alphaArrow = reverseSorting ? TagUtil.SORT_ALPHA_UP_IMAGE : TagUtil.SORT_ALPHA_DOWN_IMAGE;
+            switch (sortedBy) {
+                case ColumnName.EMPLOYEE_ID -> id = id + " " + numericArrow;
+                case ColumnName.EMPLOYEE_NAME -> name = name + " " + alphaArrow;
+                case ColumnName.EMPLOYEE_SURNAME -> surname = surname + " " + alphaArrow;
+                case ColumnName.EMPLOYEE_AGE -> age = age + " " + numericArrow;
+                case ColumnName.EMPLOYEE_GENDER -> gender = gender + " " + alphaArrow;
+                case ColumnName.EMPLOYEE_POSITION -> position = position + " " + alphaArrow;
+                case ColumnName.EMPLOYEE_HIRE_DATE -> hireDate = hireDate + " " + numericArrow;
+                case ColumnName.EMPLOYEE_DISMISS_DATE -> dismissDate = dismissDate + " " + numericArrow;
+                case ColumnName.EMPLOYEE_STATUS -> status = status + " " + alphaArrow;
+                case ColumnName.INTER_USER_ID -> userId = userId + " " + numericArrow;
+            }
+            out.write("<form action=\"/mainController\" method=\"post\">");
+            out.write("<input type=\"hidden\" name=\"command\" value=\"employee_list_command\"/>");
             out.write("<thead class=\"thead-light\"><tr>");
-            out.write("<th scope=\"col\">#</th>");
-            out.write("<th scope=\"col\">" + id + "</th>");
-            out.write("<th scope=\"col\">" + name + "</th>");
-            out.write("<th scope=\"col\">" + surname + "</th>");
-            out.write("<th scope=\"col\">" + age + "</th>");
-            out.write("<th scope=\"col\">" + gender + "</th>");
-            out.write("<th scope=\"col\">" + position + "</th>");
-            out.write("<th scope=\"col\">" + hireDate + "</th>");
-            out.write("<th scope=\"col\">" + dismissDate + "</th>");
-            out.write("<th scope=\"col\">" + status + "</th>");
-            out.write("<th scope=\"col\">" + userId + "</th>");
-            out.write("</tr></thead>");
+            out.write("<th scope=\"col\"><span style=\"font-weight: bold\">№</span></th>");
+            TagUtil.createTableHeadButton(out, id, HEAD_BUTTON_STYLE, ColumnName.EMPLOYEE_ID);
+            TagUtil.createTableHeadButton(out, name, HEAD_BUTTON_STYLE, ColumnName.EMPLOYEE_NAME);
+            TagUtil.createTableHeadButton(out, surname, HEAD_BUTTON_STYLE, ColumnName.EMPLOYEE_SURNAME);
+            TagUtil.createTableHeadButton(out, age, HEAD_BUTTON_STYLE, ColumnName.EMPLOYEE_AGE);
+            TagUtil.createTableHeadButton(out, gender, HEAD_BUTTON_STYLE, ColumnName.EMPLOYEE_GENDER);
+            TagUtil.createTableHeadButton(out, position, HEAD_BUTTON_STYLE, ColumnName.EMPLOYEE_POSITION);
+            TagUtil.createTableHeadButton(out, hireDate, HEAD_BUTTON_STYLE, ColumnName.EMPLOYEE_HIRE_DATE);
+            TagUtil.createTableHeadButton(out, dismissDate, HEAD_BUTTON_STYLE, ColumnName.EMPLOYEE_DISMISS_DATE);
+            TagUtil.createTableHeadButton(out, status, HEAD_BUTTON_STYLE, ColumnName.EMPLOYEE_STATUS);
+            TagUtil.createTableHeadButton(out, userId, HEAD_BUTTON_STYLE, ColumnName.INTER_USER_ID);
+            out.write("</tr></thead></form>");
         } catch (IOException e) {
             LOGGER.log(Level.FATAL, "Error while creating employee list head", e);
             throw new JspException(e);
@@ -103,10 +123,13 @@ public class EmployeeListTag extends TagSupport {
         try {
             if (employeeList != null) {
                 int size = employeeList.size();
+                int currentPage = (int) session.getAttribute(SessionAttribute.EMPLOYEE_LIST_CURRENT_PAGE);
                 for (int i = 0; i < ROWS_NUMBER; i++) {
-                    out.write("<tr><th scope=\"row\">" + (i + 1) + "</th>");
+                    int rowNumber = ROWS_NUMBER * (currentPage - 1) + i + 1;
                     if (size > i) {
                         Employee currentEmployee = employeeList.get(i);
+                        out.write("<tr style=\"cursor: pointer\" onclick=\"goToEmployeeInfo("
+                                + currentEmployee.getId() + ")\"><th scope=\"row\">" + rowNumber + "</th>");
                         out.write("<td>" + currentEmployee.getId() + "</td>");
                         out.write("<td>" + currentEmployee.getName() + "</td>");
                         out.write("<td>" + currentEmployee.getSurname() + "</td>");
@@ -127,6 +150,7 @@ public class EmployeeListTag extends TagSupport {
                         out.write("<td>" + currentEmployee.getStatus() + "</td>");
                         out.write("<td>" + currentEmployee.getUserId() + "</td>");
                     } else {
+                        out.write("<tr><th scope=\"row\">" + rowNumber + "</th>");
                         out.write("<td></td><td></td><td></td><td></td><td></td><td></td>");
                         out.write("<td></td><td></td><td></td><td></td>");
                     }

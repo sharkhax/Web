@@ -1,6 +1,7 @@
 package com.drobot.web.controller.command.impl;
 
 import com.drobot.web.controller.RequestParameter;
+import com.drobot.web.controller.SessionAttribute;
 import com.drobot.web.controller.UrlPattern;
 import com.drobot.web.controller.command.AccessType;
 import com.drobot.web.controller.command.ActionCommand;
@@ -32,8 +33,8 @@ public class ChangePasswordCommand implements ActionCommand {
         String newPassword = request.getParameter(RequestParameter.NEW_PASSWORD);
         Map<String, String> fields;
         HttpSession session = request.getSession();
-        Map<String, String> loginInfo = (Map<String, String>) session.getAttribute(RequestParameter.LOGIN_INFO);
-        int userId = Integer.parseInt(loginInfo.get(RequestParameter.USER_ID));
+        Map<String, String> loginInfo = (Map<String, String>) session.getAttribute(SessionAttribute.LOGIN_INFO);
+        int userId = Integer.parseInt(loginInfo.get(SessionAttribute.USER_ID));
         String login = loginInfo.get(RequestParameter.LOGIN);
         UserService userService = UserServiceImpl.INSTANCE;
         try {
@@ -45,14 +46,14 @@ public class ChangePasswordCommand implements ActionCommand {
                     LOGGER.log(Level.DEBUG, "Password has been changed");
                 } else {
                     LOGGER.log(Level.DEBUG, "New password is invalid");
-                    session.setAttribute(RequestParameter.VALIDATED, true);
+                    session.setAttribute(SessionAttribute.VALIDATED, true);
                     fields = new HashMap<>();
                     fields.put(RequestParameter.CURRENT_PASSWORD, currentPassword);
                     page = UrlPattern.CHANGING_PASSWORD;
                 }
             } else {
                 LOGGER.log(Level.DEBUG, "Current password is incorrect");
-                session.setAttribute(RequestParameter.VALIDATED, true);
+                session.setAttribute(SessionAttribute.VALIDATED, true);
                 fields = new HashMap<>();
                 fields.put(RequestParameter.NEW_PASSWORD, newPassword);
                 page = UrlPattern.CHANGING_PASSWORD;
@@ -60,7 +61,7 @@ public class ChangePasswordCommand implements ActionCommand {
         } catch (ServiceException e) {
             throw new CommandException(e);
         }
-        session.setAttribute(RequestParameter.CHANGING_PASSWORD_FIELDS, fields);
+        session.setAttribute(SessionAttribute.CHANGING_PASSWORD_FIELDS, fields);
         return page;
     }
 }

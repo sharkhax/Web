@@ -1,6 +1,7 @@
 package com.drobot.web.controller.command.impl;
 
 import com.drobot.web.controller.RequestParameter;
+import com.drobot.web.controller.SessionAttribute;
 import com.drobot.web.controller.UrlPattern;
 import com.drobot.web.controller.command.*;
 import com.drobot.web.exception.CommandException;
@@ -43,18 +44,15 @@ public class LoginCommand implements ActionCommand {
                 User.Role role = user.getRole();
                 switch (role) {
                     case ADMIN -> {
-                        session.setAttribute(RequestParameter.USER_ROLE,
-                                RequestParameter.ADMIN_ROLE);
+                        session.setAttribute(SessionAttribute.USER_ROLE, SessionAttribute.ADMIN_ROLE);
                         LOGGER.log(Level.DEBUG, "Logged in as " + role.toString());
                     }
                     case DOCTOR -> {
-                        session.setAttribute(RequestParameter.USER_ROLE,
-                                RequestParameter.DOCTOR_ROLE);
+                        session.setAttribute(SessionAttribute.USER_ROLE, SessionAttribute.DOCTOR_ROLE);
                         LOGGER.log(Level.DEBUG, "Logged in as " + role.toString());
                     }
                     case ASSISTANT -> {
-                        session.setAttribute(RequestParameter.USER_ROLE,
-                                RequestParameter.ASSISTANT_ROLE);
+                        session.setAttribute(SessionAttribute.USER_ROLE, SessionAttribute.ASSISTANT_ROLE);
                         LOGGER.log(Level.DEBUG, "Logged in as " + role.toString());
                     }
                     default -> {
@@ -63,21 +61,21 @@ public class LoginCommand implements ActionCommand {
                     }
                 }
                 page = UrlPattern.MAIN_PAGE;
-                session.setAttribute(RequestParameter.CURRENT_PAGE, UrlPattern.MAIN_PAGE);
-                session.setAttribute(RequestParameter.WRONG_LOGIN_PASSWORD, null);
-                session.setAttribute(RequestParameter.USER_BLOCKED, null);
+                session.setAttribute(SessionAttribute.CURRENT_PAGE, UrlPattern.MAIN_PAGE);
+                session.setAttribute(SessionAttribute.WRONG_LOGIN_PASSWORD, null);
+                session.setAttribute(SessionAttribute.USER_BLOCKED, null);
                 Map<String, String> loginInfo = new HashMap<>();
                 loginInfo.put(RequestParameter.LOGIN, login);
                 int userId = user.getId();
-                loginInfo.put(RequestParameter.USER_ID, String.valueOf(userId));
-                session.setAttribute(RequestParameter.LOGIN_INFO, loginInfo);
+                loginInfo.put(SessionAttribute.USER_ID, String.valueOf(userId));
+                session.setAttribute(SessionAttribute.LOGIN_INFO, loginInfo);
             } else {
-                session.setAttribute(RequestParameter.USER_BLOCKED, true);
+                session.setAttribute(SessionAttribute.USER_BLOCKED, true);
                 page = UrlPattern.LOGIN_PAGE;
                 LOGGER.log(Level.DEBUG, "User is blocked");
             }
         } else {
-            session.setAttribute(RequestParameter.WRONG_LOGIN_PASSWORD, true);
+            session.setAttribute(SessionAttribute.WRONG_LOGIN_PASSWORD, true);
             page = UrlPattern.LOGIN_PAGE;
         }
         return page;

@@ -1,6 +1,6 @@
 package com.drobot.web.controller.command.impl;
 
-import com.drobot.web.controller.RequestParameter;
+import com.drobot.web.controller.SessionAttribute;
 import com.drobot.web.controller.UrlPattern;
 import com.drobot.web.controller.command.AccessType;
 import com.drobot.web.controller.command.ActionCommand;
@@ -27,14 +27,14 @@ public class SettingsPageCommand implements ActionCommand {
         String page = UrlPattern.PERSONAL_SETTINGS;
         UserEmployeeService userEmployeeService = UserEmployeeServiceImpl.INSTANCE;
         HttpSession session = request.getSession();
-        Map<String, String> loginInfo = (Map<String, String>) session.getAttribute(RequestParameter.LOGIN_INFO);
+        Map<String, String> loginInfo = (Map<String, String>) session.getAttribute(SessionAttribute.LOGIN_INFO);
         if (loginInfo == null) {
             throw new CommandException("Login info is null");
         }
-        int userId = Integer.parseInt(loginInfo.get(RequestParameter.USER_ID));
+        int userId = Integer.parseInt(loginInfo.get(SessionAttribute.USER_ID));
         try {
             Map<String, String> fields = userEmployeeService.loadUserData(userId);
-            session.setAttribute(RequestParameter.USER_DATA_FIELDS, fields);
+            session.setAttribute(SessionAttribute.PERSONAL_SETTINGS_DATA, fields);
             LOGGER.log(Level.DEBUG, "User data has been loaded");
         } catch (ServiceException e) {
             throw new CommandException(e);

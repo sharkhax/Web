@@ -5,8 +5,6 @@ public final class ColumnName {
     private ColumnName() {
     }
 
-    public static final char SEMICOLON = ';';
-
     /**
      * Users' table
      */
@@ -37,4 +35,9 @@ public final class ColumnName {
     public static final String PATIENT_GENDER = "patient_gender";
     public static final String PATIENT_DIAGNOSIS = "diagnosis";
     public static final String PATIENT_STATUS = "patient_status";
+
+    public static final String RECORD_ID = "record_id";
+
+    public static final String INTER_USER_ID = "inter_user_id";
+    public static final String INTER_EMPLOYEE_ID = "inter_employee_id";
 }

@@ -1,10 +1,12 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="ctg" uri="custom_tag" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <fmt:setLocale value="${currentLocale}"/>
 <fmt:setBundle basename="locale.pagecontent"/>
 <html>
 <head>
-    <title><fmt:message key="main.personalSettingsButton"/></title>
+    <title><fmt:message key="patientInfo.pageTitle"/></title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
           integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
     <link href="${pageContext.request.contextPath}/css/custom.css" rel="stylesheet" type="text/css">
@@ -12,13 +14,14 @@
 <body>
 
 <jsp:include page="background.jsp"/>
-<%@include file="header.jsp" %>
+<%@ include file="header.jsp" %>
 
 <div class="main-menu">
     <div class="list-group">
         <form action="${pageContext.request.contextPath}/mainController" method="post">
-            <button class="list-group-item list-group-item-action" type="submit"
-                    name="command" value="redirect_to_changing_password" style="width: 90%;
+            <input type="hidden" name="command" value="redirect_command"/>
+            <button class="list-group-item list-group-item-action" type="submit" name="r_page"
+                    value="/settings/changePassword" style="width: 90%;
     color: #495057;
     text-align: center;
     background-color: #ffffffb5;
@@ -34,89 +37,88 @@
     <dl class="row">
         <dt class="col-sm-3">
             <span style="font-family: 'Times New Roman', sans-serif; font-weight: bold">
-                <fmt:message key="settings.login"/>
+                <fmt:message key="patientInfo.patientId"/>
             </span>
         </dt>
         <dd class="col-sm-9">
-            <span style="font-family: 'Times New Roman', sans-serif">${personalSettingsData.login}</span>
+            <span style="font-family: 'Times New Roman', sans-serif">${patientDataFields.patientId}</span>
         </dd>
 
         <dt class="col-sm-3">
             <span style="font-family: 'Times New Roman', sans-serif; font-weight: bold">
-                <fmt:message key="settings.email"/>
+                <fmt:message key="patientInfo.name"/>
             </span>
         </dt>
         <dd class="col-sm-9">
-            <span style="font-family: 'Times New Roman', sans-serif">${personalSettingsData.email}</span>
+            <span style="font-family: 'Times New Roman', sans-serif">${patientDataFields.patientName}</span>
         </dd>
 
         <dt class="col-sm-3">
             <span style="font-family: 'Times New Roman', sans-serif; font-weight: bold">
-                <fmt:message key="settings.name"/>
+                <fmt:message key="patientInfo.surname"/>
             </span>
         </dt>
         <dd class="col-sm-9">
-            <span style="font-family: 'Times New Roman', sans-serif">${personalSettingsData.employeeName}</span>
+            <span style="font-family: 'Times New Roman', sans-serif">${patientDataFields.patientSurname}</span>
         </dd>
 
         <dt class="col-sm-3">
             <span style="font-family: 'Times New Roman', sans-serif; font-weight: bold">
-                <fmt:message key="settings.surname"/>
+                <fmt:message key="patientInfo.age"/>
             </span>
         </dt>
         <dd class="col-sm-9">
-            <span style="font-family: 'Times New Roman', sans-serif">${personalSettingsData.employeeSurname}</span>
+            <span style="font-family: 'Times New Roman', sans-serif">${patientDataFields.patientAge}</span>
         </dd>
 
         <dt class="col-sm-3">
             <span style="font-family: 'Times New Roman', sans-serif; font-weight: bold">
-                <fmt:message key="settings.age"/>
+                <fmt:message key="patientInfo.gender"/>
             </span>
         </dt>
         <dd class="col-sm-9">
-            <span style="font-family: 'Times New Roman', sans-serif">${personalSettingsData.employeeAge}</span>
+            <span style="font-family: 'Times New Roman', sans-serif">${patientDataFields.patientGender}</span>
         </dd>
 
         <dt class="col-sm-3">
             <span style="font-family: 'Times New Roman', sans-serif; font-weight: bold">
-                <fmt:message key="settings.gender"/>
+                <fmt:message key="patientInfo.diagnosis"/>
             </span>
         </dt>
         <dd class="col-sm-9">
-            <span style="font-family: 'Times New Roman', sans-serif">${personalSettingsData.employeeGender}</span>
+            <span style="font-family: 'Times New Roman', sans-serif">${patientDataFields.patientDiagnosis}</span>
         </dd>
 
         <dt class="col-sm-3">
             <span style="font-family: 'Times New Roman', sans-serif; font-weight: bold">
-                <fmt:message key="settings.position"/>
+                <fmt:message key="patientInfo.status"/>
             </span>
         </dt>
         <dd class="col-sm-9">
-            <span style="font-family: 'Times New Roman', sans-serif">${personalSettingsData.employeePosition}</span>
+            <span style="font-family: 'Times New Roman', sans-serif">${patientDataFields.patientStatus}</span>
         </dd>
 
         <dt class="col-sm-3">
             <span style="font-family: 'Times New Roman', sans-serif; font-weight: bold">
-                <fmt:message key="settings.hireDate"/>
+                <fmt:message key="patientInfo.currentRecordId"/>
             </span>
         </dt>
         <dd class="col-sm-9">
-            <span style="font-family: 'Times New Roman', sans-serif">${personalSettingsData.hireDate}</span>
-        </dd>
-
-        <dt class="col-sm-3">
-            <span style="font-family: 'Times New Roman', sans-serif; font-weight: bold">
-                <fmt:message key="settings.employeeStatus"/>
-            </span>
-        </dt>
-        <dd class="col-sm-9">
-            <span style="font-family: 'Times New Roman', sans-serif">${personalSettingsData.employeeStatus}</span>
+            <c:choose>
+                <c:when test="${not empty patientDataFields.lastRecordId and not patientDataFields.lastRecordId eq '-'}">
+                    <a href="${pageContext.request.contextPath}/mainController?command=record_data&requestedRecordInfoId=${patientDataFields.lastRecordId}">
+                        <span style="font-family: 'Times New Roman', sans-serif">${patientDataFields.lastRecordId}</span>
+                    </a>
+                </c:when>
+                <c:otherwise>
+                    <span style="font-family: 'Times New Roman', sans-serif">${patientDataFields.lastRecordId}</span>
+                </c:otherwise>
+            </c:choose>
         </dd>
     </dl>
 </div>
 
-<%@include file="footer.jsp" %>
-
+<%@ include file="footer.jsp" %>
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
         integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
         crossorigin="anonymous"></script>

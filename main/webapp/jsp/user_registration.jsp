@@ -104,20 +104,20 @@
                                    style="font-family: 'Times New Roman', sans-serif; font-weight: bold "><fmt:message
                                     key="userReg.name"/></label>
                             <c:choose>
-                                <c:when test="${not empty userRegistrationExistingFields.name}">
-                                    <input name="name" type="text" value="${userRegistrationExistingFields.name}"
+                                <c:when test="${not empty userRegistrationExistingFields.employeeName}">
+                                    <input name="employeeName" type="text" value="${userRegistrationExistingFields.employeeName}"
                                            pattern="[a-zA-Z\-']{2,45}"
                                            class="form-control is-invalid" id="inputName1" required maxlength="45"/>
                                     <div style="font-family: 'Times New Roman', sans-serif" class="invalid-feedback">
                                         <fmt:message key="userReg.nameExistsMsg"/></div>
                                 </c:when>
-                                <c:when test="${not empty userRegistrationFields.name}">
-                                    <input name="name" type="text" value="${userRegistrationFields.name}"
+                                <c:when test="${not empty userRegistrationFields.employeeName}">
+                                    <input name="employeeName" type="text" value="${userRegistrationFields.employeeName}"
                                            pattern="[a-zA-Z\-']{2,45}"
                                            class="form-control is-valid" id="inputName1" required maxlength="45"/>
                                 </c:when>
                                 <c:otherwise>
-                                    <input name="name" type="text" pattern="[a-zA-Z\-']{2,45}"
+                                    <input name="employeeName" type="text" pattern="[a-zA-Z\-']{2,45}"
                                            class="form-control is-invalid" id="inputName1" required maxlength="45"/>
                                     <div style="font-family: 'Times New Roman', sans-serif" class="invalid-feedback">
                                         <fmt:message key="userReg.invalidNameMsg"/></div>
@@ -129,20 +129,20 @@
                                    style="font-family: 'Times New Roman', sans-serif; font-weight: bold "><fmt:message
                                     key="userReg.surname"/></label>
                             <c:choose>
-                                <c:when test="${not empty userRegistrationExistingFields.surname}">
-                                    <input name="surname" type="text" value="${userRegistrationExistingFields.surname}"
+                                <c:when test="${not empty userRegistrationExistingFields.employeeSurname}">
+                                    <input name="employeeSurname" type="text" value="${userRegistrationExistingFields.employeeSurname}"
                                            pattern="[a-zA-Z\-']{2,45}"
                                            class="form-control is-invalid" id="inputSurname1" required maxlength="45"/>
                                     <div style="font-family: 'Times New Roman', sans-serif" class="invalid-feedback">
                                         <fmt:message key="userReg.nameExistsMsg"/></div>
                                 </c:when>
-                                <c:when test="${not empty userRegistrationFields.surname}">
-                                    <input name="surname" type="text" value="${userRegistrationFields.surname}"
+                                <c:when test="${not empty userRegistrationFields.employeeSurname}">
+                                    <input name="employeeSurname" type="text" value="${userRegistrationFields.employeeSurname}"
                                            pattern="[a-zA-Z\-']{2,45}"
                                            class="form-control is-valid" id="inputSurname1" required maxlength="45"/>
                                 </c:when>
                                 <c:otherwise>
-                                    <input name="surname" type="text" pattern="[a-zA-Z\-']{2,45}"
+                                    <input name="employeeSurname" type="text" pattern="[a-zA-Z\-']{2,45}"
                                            class="form-control is-invalid" id="inputSurname1" required maxlength="45"/>
                                     <div style="font-family: 'Times New Roman', sans-serif" class="invalid-feedback">
                                         <fmt:message key="userReg.invalidSurnameMsg"/></div>
@@ -156,10 +156,10 @@
                                    style="font-family: 'Times New Roman', sans-serif; font-weight: bold "><fmt:message
                                     key="userReg.position"/></label>
                             <c:choose>
-                                <c:when test="${not empty userRegistrationFields.position}">
-                                    <select id="inputRole1" name="position" class="form-control is-valid" required>
+                                <c:when test="${not empty userRegistrationFields.employeePosition}">
+                                    <select id="inputRole1" name="employeePosition" class="form-control is-valid" required>
                                         <c:choose>
-                                            <c:when test="${userRegistrationFields.position eq 'assistant'}">
+                                            <c:when test="${userRegistrationFields.employeePosition eq 'assistant'}">
                                                 <option style="font-family: 'Times New Roman', sans-serif"
                                                         value="doctor"><fmt:message
                                                         key="userReg.positionDoctor"/></option>
@@ -179,7 +179,7 @@
                                     </select>
                                 </c:when>
                                 <c:otherwise>
-                                    <select id="inputRole1" name="position" class="form-control is-invalid" required>
+                                    <select id="inputRole1" name="employeePosition" class="form-control is-invalid" required>
                                         <option style="font-family: 'Times New Roman', sans-serif"
                                                 value="doctor" selected><fmt:message
                                                 key="userReg.positionDoctor"/></option>
@@ -197,15 +197,15 @@
                                    style="font-family: 'Times New Roman', sans-serif; font-weight: bold"><fmt:message
                                     key="userReg.age"/></label>
                             <c:choose>
-                                <c:when test="${not empty userRegistrationFields.age}">
-                                    <input name="age" type="number" value="${userRegistrationFields.age}" min="18"
+                                <c:when test="${not empty userRegistrationFields.employeeAge}">
+                                    <input name="employeeAge" type="number" value="${userRegistrationFields.employeeAge}" min="18"
                                            max="99"
                                            class="form-control is-valid" id="inputAge1" required/>
                                     <div style="font-family: 'Times New Roman', sans-serif" class="valid-feedback">
                                         <fmt:message key="userReg.ageDescribing"/></div>
                                 </c:when>
                                 <c:otherwise>
-                                    <input name="age" type="number" min="18" max="99"
+                                    <input name="employeeAge" type="number" min="18" max="99"
                                            class="form-control is-invalid" id="inputAge1" required/>
                                     <div style="font-family: 'Times New Roman', sans-serif" class="invalid-feedback">
                                         <fmt:message key="userReg.ageDescribing"/></div>
@@ -217,10 +217,10 @@
                                    style="font-weight: bold; font-family: 'Times New Roman', sans-serif"><fmt:message
                                     key="userReg.gender"/></label>
                             <c:choose>
-                                <c:when test="${not empty userRegistrationFields.gender}">
-                                    <select id="inputGender1" name="gender" class="form-control is-valid" required>
+                                <c:when test="${not empty userRegistrationFields.employeeGender}">
+                                    <select id="inputGender1" name="employeeGender" class="form-control is-valid" required>
                                         <c:choose>
-                                            <c:when test="${userRegistrationFields.gender eq 'F'}">
+                                            <c:when test="${userRegistrationFields.employeeGender eq 'F'}">
                                                 <option style="font-family: 'Times New Roman', sans-serif"
                                                         value="M"><fmt:message key="userReg.genderMale"/></option>
                                                 <option style="font-family: 'Times New Roman', sans-serif"
@@ -238,7 +238,7 @@
                                     </select>
                                 </c:when>
                                 <c:otherwise>
-                                    <select id="inputGender1" name="gender" class="form-control is-invalid" required>
+                                    <select id="inputGender1" name="employeeGender" class="form-control is-invalid" required>
                                         <option style="font-family: 'Times New Roman', sans-serif"
                                                 value="M" selected><fmt:message key="userReg.genderMale"/></option>
                                         <option style="font-family: 'Times New Roman', sans-serif"
@@ -321,7 +321,7 @@
                             <label for="inputName"
                                    style="font-family: 'Times New Roman', sans-serif; font-weight: bold "><fmt:message
                                     key="userReg.name"/></label>
-                            <input name="name" type="text" value="${userRegistrationFields.name}"
+                            <input name="employeeName" type="text" value="${userRegistrationFields.employeeName}"
                                    pattern="[a-zA-Z\-']{2,45}"
                                    class="form-control"
                                    id="inputName" required
@@ -331,7 +331,7 @@
                             <label for="inputSurname"
                                    style="font-family: 'Times New Roman', sans-serif; font-weight: bold "><fmt:message
                                     key="userReg.surname"/></label>
-                            <input name="surname" type="text" value="${userRegistrationFields.surname}"
+                            <input name="employeeSurname" type="text" value="${userRegistrationFields.employeeSurname}"
                                    pattern="[a-zA-Z\-']{2,45}"
                                    class="form-control" id="inputSurname"
                                    required maxlength="45"/>
@@ -342,9 +342,9 @@
                             <label for="inputRole"
                                    style="font-family: 'Times New Roman', sans-serif; font-weight: bold "><fmt:message
                                     key="userReg.position"/></label>
-                            <select id="inputRole" name="position" class="form-control" required>
+                            <select id="inputRole" name="employeePosition" class="form-control" required>
                                 <c:choose>
-                                    <c:when test="${userRegistrationFields.position eq 'assistant'}">
+                                    <c:when test="${userRegistrationFields.employeePosition eq 'assistant'}">
                                         <option style="font-family: 'Times New Roman', sans-serif"
                                                 value="doctor"><fmt:message key="userReg.positionDoctor"/></option>
                                         <option style="font-weight: bold; font-family: 'Times New Roman', sans-serif"
@@ -366,7 +366,7 @@
                             <label for="inputAge"
                                    style="font-family: 'Times New Roman', sans-serif; font-weight: bold"><fmt:message
                                     key="userReg.age"/></label>
-                            <input name="age" type="number" value="${userRegistrationFields.age}" min="18" max="99"
+                            <input name="employeeAge" type="number" value="${userRegistrationFields.employeeAge}" min="18" max="99"
                                    class="form-control"
                                    id="inputAge"
                                    aria-describedby="ageHelpBlock"
@@ -378,9 +378,9 @@
                             <label for="inputGender"
                                    style="font-weight: bold; font-family: 'Times New Roman', sans-serif"><fmt:message
                                     key="userReg.gender"/></label>
-                            <select id="inputGender" name="gender" class="form-control" required>
+                            <select id="inputGender" name="employeeGender" class="form-control" required>
                                 <c:choose>
-                                    <c:when test="${userRegistrationFields.gender eq 'F'}">
+                                    <c:when test="${userRegistrationFields.employeeGender eq 'F'}">
                                         <option style="font-family: 'Times New Roman', sans-serif"
                                                 value="M"><fmt:message key="userReg.genderMale"/></option>
                                         <option style="font-family: 'Times New Roman', sans-serif"

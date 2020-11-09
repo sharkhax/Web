@@ -22,10 +22,12 @@
             <li class="nav-item active">
                 <c:choose>
                     <c:when test="${is_main_page eq true}">
-                        <a class="nav-link disabled" href="${pageContext.request.contextPath}/mainPage"><fmt:message key="header.mainPage"/><span class="sr-only">(current)</span></a>
+                        <a class="nav-link disabled text-muted" href=""><fmt:message
+                                key="header.mainPage"/><span class="sr-only">(current)</span></a>
                     </c:when>
                     <c:otherwise>
-                        <a class="nav-link" href="${pageContext.request.contextPath}/mainPage"><fmt:message key="header.mainPage"/><span class="sr-only">(current)</span></a>
+                        <a class="nav-link" href="${pageContext.request.contextPath}/mainPage"><fmt:message
+                                key="header.mainPage"/><span class="sr-only">(current)</span></a>
                     </c:otherwise>
                 </c:choose>
             </li>
@@ -50,7 +52,8 @@
                                 </button>
                             </c:when>
                             <c:otherwise>
-                                <button type="submit" class="dropdown-item disabled" name="currentLocale" value="en_EN">English
+                                <button type="submit" class="dropdown-item disabled" name="currentLocale" value="en_EN">
+                                    English
                                 </button>
                                 <button type="submit" class="dropdown-item" name="currentLocale" value="ru_BY">
                                     Русский

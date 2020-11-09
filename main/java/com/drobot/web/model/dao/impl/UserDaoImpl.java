@@ -11,12 +11,14 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
-import static com.drobot.web.model.dao.ColumnName.SEMICOLON;
 
 public enum UserDaoImpl implements UserDao {
 
@@ -70,7 +72,7 @@ public enum UserDaoImpl implements UserDao {
     private final StringBuilder FIND_ALL_LIMIT_STATEMENT = new StringBuilder(
             "SELECT user_id, login, email, role, status_name, inter_employee_id FROM hospital.users ")
             .append("INNER JOIN hospital.statuses ON user_status = status_id ")
-            .append("INNER JOIN hospital.user_employee ON user_id = inter_user_id ORDER BY  LIMIT ?, ?");
+            .append("INNER JOIN hospital.user_employee ON user_id = inter_user_id ORDER BY  LIMIT ?, ?;");
     private final String COUNT_STATEMENT = "SELECT COUNT(*) as label FROM hospital.users;";
 
     @Override
@@ -85,7 +87,7 @@ public enum UserDaoImpl implements UserDao {
             ResultSet resultSet = statement.executeQuery();
             resultSet.next();
             result = resultSet.getInt(1) != 0;
-            String log = result ? "User with such id exists" : "User with such id does not exist";
+            String log = result ? "User with id " + userId + " exists" : "User with id " + userId + " does not exist";
             LOGGER.log(Level.DEBUG, log);
         } catch (SQLException | ConnectionPoolException e) {
             throw new DaoException(e);
@@ -250,13 +252,17 @@ public enum UserDaoImpl implements UserDao {
     }
 
     @Override
-    public List<User> findAll(String sortBy) throws DaoException {
+    public List<User> findAll(String sortBy, boolean reverse) throws DaoException {
         List<User> result;
         Connection connection = null;
         PreparedStatement statement = null;
         try {
             connection = ConnectionPool.INSTANCE.getConnection();
-            String sql = FIND_ALL_STATEMENT + sortBy + SEMICOLON;
+            StringBuilder sqlBuilder = new StringBuilder(FIND_ALL_STATEMENT).append(sortBy);
+            if (reverse) {
+                sqlBuilder.append(SPACE).append(DESC);
+            }
+            String sql = sqlBuilder.append(SEMICOLON).toString();
             statement = connection.prepareStatement(sql);
             ResultSet resultSet = statement.executeQuery();
             result = createUserListFromResultSet(resultSet);
@@ -270,12 +276,15 @@ public enum UserDaoImpl implements UserDao {
     }
 
     @Override
-    public List<User> findAll(int start, int end, String sortBy) throws DaoException {
+    public List<User> findAll(int start, int end, String sortBy, boolean reverse) throws DaoException {
         List<User> result;
         Connection connection = null;
         PreparedStatement statement = null;
         try {
             connection = ConnectionPool.INSTANCE.getConnection();
+            if (reverse) {
+                sortBy = sortBy + SPACE + DESC;
+            }
             String sql = new StringBuilder(FIND_ALL_LIMIT_STATEMENT).insert(213, sortBy).toString();
             statement = connection.prepareStatement(sql);
             statement.setInt(1, start);
@@ -304,7 +313,7 @@ public enum UserDaoImpl implements UserDao {
             List<User> userList = createUserListFromResultSet(resultSet);
             if (!userList.isEmpty()) {
                 User user = userList.get(0);
-                result = Optional.ofNullable(user);
+                result = Optional.of(user);
             } else {
                 result = Optional.empty();
             }
@@ -432,8 +441,8 @@ public enum UserDaoImpl implements UserDao {
 
     private List<User> createUserListFromResultSet(ResultSet resultSet) throws SQLException {
         List<User> result = new ArrayList<>();
-        if (resultSet != null) {
-            while (resultSet.next()) {
+        if (resultSet != null && resultSet.next()) {
+            do {
                 int userId = resultSet.getInt(1);
                 String login = resultSet.getString(2);
                 String email = resultSet.getString(3);
@@ -444,10 +453,10 @@ public enum UserDaoImpl implements UserDao {
                 User.Role role = User.Role.valueOf(stringRole);
                 User user = new User(userId, login, email, role, status, employeeId);
                 result.add(user);
-            }
+            } while (resultSet.next());
             LOGGER.log(Level.DEBUG, result.size() + " users have been found");
         } else {
-            LOGGER.log(Level.ERROR, "Result set is null");
+            LOGGER.log(Level.WARN, "Result set is null or empty");
         }
         return result;
     }

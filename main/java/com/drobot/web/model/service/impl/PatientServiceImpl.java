@@ -14,6 +14,7 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -52,13 +53,13 @@ public enum PatientServiceImpl implements PatientService {
     }
 
     @Override
-    public List<Patient> findAll(int start, int end, String sortBy) throws ServiceException {
+    public List<Patient> findAll(int start, int end, String sortBy, boolean reverse) throws ServiceException {
         List<Patient> result;
         try {
             if (start >= 0 && end > start) {
                 if (checkSortingTag(sortBy)) {
                     PatientDao patientDao = PatientDaoImpl.INSTANCE;
-                    result = patientDao.findAll(start, end, sortBy);
+                    result = patientDao.findAll(start, end, sortBy, reverse);
                 } else {
                     result = List.of();
                     LOGGER.log(Level.ERROR, "Invalid sorting tag");
@@ -85,6 +86,22 @@ public enum PatientServiceImpl implements PatientService {
         return result;
     }
 
+    @Override
+    public Optional<Patient> findById(int patientId) throws ServiceException {
+        Optional<Patient> optionalPatient;
+        PatientDao patientDao = PatientDaoImpl.INSTANCE;
+        try {
+            if (patientId > 0) {
+                optionalPatient = patientDao.findById(patientId);
+            } else {
+                optionalPatient = Optional.empty();
+                LOGGER.log(Level.ERROR, "Invalid patient id: " + patientId);
+            }
+        } catch (DaoException e) {
+            throw new ServiceException(e);
+        }
+        return optionalPatient;
+    }
 
     private boolean checkSortingTag(String sortBy) {
         return sortBy.equals(ColumnName.PATIENT_ID)
@@ -93,6 +110,7 @@ public enum PatientServiceImpl implements PatientService {
                 || sortBy.equals(ColumnName.PATIENT_AGE)
                 || sortBy.equals(ColumnName.PATIENT_GENDER)
                 || sortBy.equals(ColumnName.PATIENT_DIAGNOSIS)
-                || sortBy.equals(ColumnName.PATIENT_STATUS);
+                || sortBy.equals(ColumnName.PATIENT_STATUS)
+                || sortBy.equals(ColumnName.RECORD_ID);
     }
 }

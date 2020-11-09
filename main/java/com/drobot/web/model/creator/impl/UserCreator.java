@@ -22,7 +22,7 @@ public class UserCreator implements Creator<User> {
         if (userMapService.isMapValid(fields)) {
             String login = fields.get(RequestParameter.LOGIN);
             String email = fields.get(RequestParameter.EMAIL);
-            String stringPosition = fields.get(RequestParameter.POSITION);
+            String stringPosition = fields.get(RequestParameter.EMPLOYEE_POSITION);
             User.Role role;
             switch (stringPosition) {
                 case RequestParameter.DOCTOR -> role = User.Role.DOCTOR;

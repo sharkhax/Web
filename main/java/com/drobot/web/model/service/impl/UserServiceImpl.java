@@ -3,6 +3,7 @@ package com.drobot.web.model.service.impl;
 import com.drobot.web.exception.DaoException;
 import com.drobot.web.exception.ServiceException;
 import com.drobot.web.model.dao.ColumnName;
+import com.drobot.web.model.dao.Dao;
 import com.drobot.web.model.dao.UserDao;
 import com.drobot.web.model.dao.impl.UserDaoImpl;
 import com.drobot.web.model.entity.Entity;
@@ -53,11 +54,11 @@ public enum UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> findAll(String sortBy) throws ServiceException {
+    public List<User> findAll(String sortBy, boolean reverse) throws ServiceException {
         List<User> result;
         try {
             if (checkSortingTag(sortBy)) {
-                result = userDao.findAll(sortBy);
+                result = userDao.findAll(sortBy, reverse);
             } else {
                 LOGGER.log(Level.ERROR, "Unsupported sorting tag");
                 result = List.of();
@@ -69,12 +70,12 @@ public enum UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> findAll(int start, int end, String sortBy) throws ServiceException {
+    public List<User> findAll(int start, int end, String sortBy, boolean reverse) throws ServiceException {
         List<User> result;
         try {
             if (start >= 0 && end > 0) {
                 if (checkSortingTag(sortBy)) {
-                    result = userDao.findAll(start, end, sortBy);
+                    result = userDao.findAll(start, end, sortBy, reverse);
                 } else {
                     result = List.of();
                     LOGGER.log(Level.ERROR, "Unsupported sorting tag");
@@ -91,7 +92,7 @@ public enum UserServiceImpl implements UserService {
 
     @Override
     public List<User> findAll(int start, int end) throws ServiceException {
-        return findAll(start, end, ColumnName.USER_ID);
+        return findAll(start, end, ColumnName.USER_ID, false);
     }
 
 
@@ -99,7 +100,12 @@ public enum UserServiceImpl implements UserService {
     public Optional<User> findById(int userId) throws ServiceException {
         Optional<User> result;
         try {
-            result = userDao.findById(userId);
+            if (userId > 0) {
+                result = userDao.findById(userId);
+            } else {
+                LOGGER.log(Level.ERROR, "Incorrect user id: " + userId);
+                result = Optional.empty();
+            }
         } catch (DaoException e) {
             throw new ServiceException(e);
         }
@@ -167,6 +173,22 @@ public enum UserServiceImpl implements UserService {
         }
         return result;
     }
+
+    @Override
+    public boolean exists(int userId) throws ServiceException {
+        boolean result = false;
+        try {
+            if (userId > 0) {
+                result = userDao.exists(userId);
+            } else {
+                LOGGER.log(Level.DEBUG, "User id is not valid");
+            }
+        } catch (DaoException e) {
+            throw new ServiceException(e);
+        }
+        return result;
+    }
+
 
     @Override
     public boolean existsLogin(String login) throws ServiceException {
@@ -259,8 +281,7 @@ public enum UserServiceImpl implements UserService {
         boolean result = false;
         try {
             if (UserValidator.isPasswordValid(newPassword)) {
-                Optional<User> optional = userDao.findById(userId);
-                if (optional.isPresent()) {
+                if (userDao.exists(userId)) {
                     String encryptedPassword = Encrypter.encrypt(newPassword);
                     result = userDao.updatePassword(userId, encryptedPassword);
                 }
@@ -328,6 +349,7 @@ public enum UserServiceImpl implements UserService {
                 || sortBy.equals(ColumnName.USER_ROLE)
                 || sortBy.equals(ColumnName.USER_STATUS)
                 || sortBy.equals(ColumnName.USER_LOGIN)
-                || sortBy.equals(ColumnName.USER_EMAIL);
+                || sortBy.equals(ColumnName.USER_EMAIL)
+                || sortBy.equals(ColumnName.INTER_EMPLOYEE_ID);
     }
 }

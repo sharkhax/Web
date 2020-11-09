@@ -1,8 +1,9 @@
 package com.drobot.web.controller.filter;
 
 import com.drobot.web.controller.JspPath;
-import com.drobot.web.controller.RequestParameter;
+import com.drobot.web.controller.SessionAttribute;
 import com.drobot.web.controller.UrlPattern;
+import com.drobot.web.controller.command.CommandType;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -40,75 +41,81 @@ public class ServletSecurityEmployeeFilter extends AbstractSecurityFilter {
 
     private void doCaseRecordList(HttpServletRequest request, HttpServletResponse response,
                                   HttpSession session) throws IOException, ServletException {
-        String userRole = (String) session.getAttribute(RequestParameter.USER_ROLE);
+        String userRole = (String) session.getAttribute(SessionAttribute.USER_ROLE);
         String page = JspPath.RECORD_LIST;
-        boolean condition = userRole != null && (userRole.equals(RequestParameter.ASSISTANT_ROLE)
-                || userRole.equals(RequestParameter.DOCTOR_ROLE)
-                || userRole.equals(RequestParameter.ADMIN_ROLE));
+        boolean condition = userRole != null && (userRole.equals(SessionAttribute.ASSISTANT_ROLE)
+                || userRole.equals(SessionAttribute.DOCTOR_ROLE)
+                || userRole.equals(SessionAttribute.ADMIN_ROLE));
         forwardOrError404(condition, page, request, response, session);
     }
 
     private void doCasePersonalSettings(HttpServletRequest request, HttpServletResponse response,
                                         HttpSession session) throws IOException, ServletException {
-        String userRole = (String) session.getAttribute(RequestParameter.USER_ROLE);
+        String userRole = (String) session.getAttribute(SessionAttribute.USER_ROLE);
         String page = JspPath.PERSONAL_SETTINGS;
-        boolean condition = userRole != null && (userRole.equals(RequestParameter.ASSISTANT_ROLE)
-                || userRole.equals(RequestParameter.DOCTOR_ROLE)
-                || userRole.equals(RequestParameter.ADMIN_ROLE));
+        if (session.getAttribute(SessionAttribute.PERSONAL_SETTINGS_DATA) == null) {
+            executeCommand(CommandType.SETTINGS_PAGE, request);
+        }
+        boolean condition = userRole != null && (userRole.equals(SessionAttribute.ASSISTANT_ROLE)
+                || userRole.equals(SessionAttribute.DOCTOR_ROLE)
+                || userRole.equals(SessionAttribute.ADMIN_ROLE));
         forwardOrError404(condition, page, request, response, session);
     }
 
     private void doCasePasswordChanging(HttpServletRequest request, HttpServletResponse response,
                                         HttpSession session) throws IOException, ServletException {
-        String prevPage = request.getRequestURI();
+        String prevPage = (String) session.getAttribute(SessionAttribute.CURRENT_PAGE);
         if (!prevPage.equals(UrlPattern.CHANGING_PASSWORD)) {
-            session.setAttribute(RequestParameter.VALIDATED, null);
+            session.setAttribute(SessionAttribute.VALIDATED, null);
         }
-        String userRole = (String) session.getAttribute(RequestParameter.USER_ROLE);
+        String userRole = (String) session.getAttribute(SessionAttribute.USER_ROLE);
         String page = JspPath.PASSWORD_CHANGING;
-        boolean condition = userRole != null && (userRole.equals(RequestParameter.ASSISTANT_ROLE)
-                || userRole.equals(RequestParameter.DOCTOR_ROLE)
-                || userRole.equals(RequestParameter.ADMIN_ROLE));
+        boolean condition = userRole != null && (userRole.equals(SessionAttribute.ASSISTANT_ROLE)
+                || userRole.equals(SessionAttribute.DOCTOR_ROLE)
+                || userRole.equals(SessionAttribute.ADMIN_ROLE));
         forwardOrError404(condition, page, request, response, session);
     }
 
     private void doCasePatientCreating(HttpServletRequest request, HttpServletResponse response,
                                        HttpSession session) throws IOException, ServletException {
-        session.setAttribute(RequestParameter.VALIDATED, null);
-        session.setAttribute(RequestParameter.PATIENT_CREATING_EXISTING_FIELDS, null);
-        session.setAttribute(RequestParameter.PATIENT_CREATING_FIELDS, null);
+        session.setAttribute(SessionAttribute.VALIDATED, null);
+        session.setAttribute(SessionAttribute.PATIENT_CREATING_EXISTING_FIELDS, null);
+        session.setAttribute(SessionAttribute.PATIENT_CREATING_FIELDS, null);
         forwardToPatientCreating(request, response, session);
     }
 
     private void doCasePatientCreatingFail(HttpServletRequest request, HttpServletResponse response,
                                            HttpSession session) throws IOException, ServletException {
-        session.setAttribute(RequestParameter.VALIDATED, true);
+        session.setAttribute(SessionAttribute.VALIDATED, true);
         forwardToPatientCreating(request, response, session);
     }
 
     private void doCasePatientCreatingSuccess(HttpServletRequest request, HttpServletResponse response,
                                            HttpSession session) throws IOException, ServletException {
-        request.setAttribute(RequestParameter.PATIENT_CREATING_SUCCESS, true);
-        session.setAttribute(RequestParameter.VALIDATED, null);
-        session.setAttribute(RequestParameter.PATIENT_CREATING_EXISTING_FIELDS, null);
-        session.setAttribute(RequestParameter.PATIENT_CREATING_FIELDS, null);
+        request.setAttribute(SessionAttribute.PATIENT_CREATING_SUCCESS, true);
+        session.setAttribute(SessionAttribute.VALIDATED, null);
+        session.setAttribute(SessionAttribute.PATIENT_CREATING_EXISTING_FIELDS, null);
+        session.setAttribute(SessionAttribute.PATIENT_CREATING_FIELDS, null);
         forwardToPatientCreating(request, response, session);
     }
 
     private void forwardToPatientCreating(HttpServletRequest request, HttpServletResponse response,
                                               HttpSession session) throws IOException, ServletException {
-        String userRole = (String) session.getAttribute(RequestParameter.USER_ROLE);
+        String userRole = (String) session.getAttribute(SessionAttribute.USER_ROLE);
         String page = JspPath.PATIENT_CREATING;
-        boolean condition = userRole != null && (userRole.equals(RequestParameter.ADMIN_ROLE)
-                || userRole.equals(RequestParameter.DOCTOR_ROLE));
+        boolean condition = userRole != null && (userRole.equals(SessionAttribute.ADMIN_ROLE)
+                || userRole.equals(SessionAttribute.DOCTOR_ROLE));
         forwardOrError404(condition, page, request, response, session);
     }
 
     private void doCasePatientList(HttpServletRequest request, HttpServletResponse response,
                                    HttpSession session) throws IOException, ServletException {
-        String userRole = (String) session.getAttribute(RequestParameter.USER_ROLE);
+        String userRole = (String) session.getAttribute(SessionAttribute.USER_ROLE);
         String page = JspPath.PATIENT_LIST;
-        boolean condition = userRole != null && !userRole.equals(RequestParameter.GUEST_ROLE);
+        if (session.getAttribute(SessionAttribute.PATIENT_LIST) == null) {
+            executeCommand(CommandType.PATIENT_LIST_COMMAND, request);
+        }
+        boolean condition = userRole != null && !userRole.equals(SessionAttribute.GUEST_ROLE);
         forwardOrError404(condition, page, request, response, session);
     }
 }

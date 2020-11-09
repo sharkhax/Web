@@ -1,13 +1,13 @@
 package com.drobot.web.controller.command;
 
-import com.drobot.web.controller.RequestParameter;
+import com.drobot.web.controller.SessionAttribute;
 
 public enum AccessType {
 
-    ADMIN(RequestParameter.ADMIN_ROLE),
-    DOCTOR(RequestParameter.DOCTOR_ROLE),
-    ASSISTANT(RequestParameter.ASSISTANT_ROLE),
-    GUEST(RequestParameter.GUEST_ROLE);
+    ADMIN(SessionAttribute.ADMIN_ROLE),
+    DOCTOR(SessionAttribute.DOCTOR_ROLE),
+    ASSISTANT(SessionAttribute.ASSISTANT_ROLE),
+    GUEST(SessionAttribute.GUEST_ROLE);
 
     private final String userRole;
 

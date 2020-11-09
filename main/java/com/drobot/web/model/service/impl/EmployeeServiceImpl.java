@@ -48,17 +48,17 @@ public enum EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public List<Employee> findAll(String sortBy) throws ServiceException {
+    public List<Employee> findAll(String sortBy, boolean reverse) throws ServiceException {
         return null;
     }
 
     @Override
-    public List<Employee> findAll(int start, int end, String sortBy) throws ServiceException {
+    public List<Employee> findAll(int start, int end, String sortBy, boolean reverse) throws ServiceException {
         List<Employee> result;
         try {
             if (start >= 0 && end > start) {
                 if (checkSortingTag(sortBy)) {
-                    result = employeeDao.findAll(start, end, sortBy);
+                    result = employeeDao.findAll(start, end, sortBy, reverse);
                 } else {
                     result = List.of();
                     LOGGER.log(Level.ERROR, "Incorrect sorting tag");
@@ -76,7 +76,18 @@ public enum EmployeeServiceImpl implements EmployeeService {
 
     @Override
     public Optional<Employee> findById(int employeeId) throws ServiceException {
-        return Optional.empty();
+        Optional<Employee> result;
+        try {
+            if (employeeId > 0) {
+                result = employeeDao.findById(employeeId);
+            } else {
+                result = Optional.empty();
+                LOGGER.log(Level.ERROR, "Incorrect employee id: " + employeeId);
+            }
+        } catch (DaoException e) {
+            throw new ServiceException(e);
+        }
+        return result;
     }
 
     @Override
@@ -106,6 +117,7 @@ public enum EmployeeServiceImpl implements EmployeeService {
                 || sortBy.equals(ColumnName.EMPLOYEE_POSITION)
                 || sortBy.equals(ColumnName.EMPLOYEE_HIRE_DATE)
                 || sortBy.equals(ColumnName.EMPLOYEE_DISMISS_DATE)
-                || sortBy.equals(ColumnName.EMPLOYEE_STATUS);
+                || sortBy.equals(ColumnName.EMPLOYEE_STATUS)
+                || sortBy.equals(ColumnName.INTER_USER_ID);
     }
 }

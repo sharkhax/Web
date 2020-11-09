@@ -1,6 +1,6 @@
 package com.drobot.web.tag;
 
-import com.drobot.web.controller.RequestParameter;
+import com.drobot.web.controller.SessionAttribute;
 import com.drobot.web.tag.util.TagUtil;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -31,15 +31,15 @@ public class MainMenuTag extends TagSupport {
     public int doStartTag() throws JspException {
         JspWriter out = pageContext.getOut();
         HttpSession session = pageContext.getSession();
-        String userRole = (String) session.getAttribute(RequestParameter.USER_ROLE);
-        String lang = (String) session.getAttribute(RequestParameter.CURRENT_LOCALE);
+        String userRole = (String) session.getAttribute(SessionAttribute.USER_ROLE);
+        String lang = (String) session.getAttribute(SessionAttribute.CURRENT_LOCALE);
         ResourceBundle bundle = TagUtil.getMessageBundle(lang);
         try {
             out.write("<form action=\"mainController\" method=\"post\">");
             switch (userRole) {
-                case RequestParameter.ADMIN_ROLE -> createAdminMenu(out, bundle);
-                case RequestParameter.DOCTOR_ROLE -> createDoctorMenu(out, bundle);
-                case RequestParameter.ASSISTANT_ROLE -> createAssistantMenu(out, bundle);
+                case SessionAttribute.ADMIN_ROLE -> createAdminMenu(out, bundle);
+                case SessionAttribute.DOCTOR_ROLE -> createDoctorMenu(out, bundle);
+                case SessionAttribute.ASSISTANT_ROLE -> createAssistantMenu(out, bundle);
             }
             out.write("</form>");
         } catch (IOException e) {

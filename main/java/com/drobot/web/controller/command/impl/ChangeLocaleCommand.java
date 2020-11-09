@@ -1,5 +1,6 @@
 package com.drobot.web.controller.command.impl;
 
+import com.drobot.web.controller.SessionAttribute;
 import com.drobot.web.controller.command.ActionCommand;
 import com.drobot.web.controller.command.CommandAccessLevel;
 import com.drobot.web.controller.RequestParameter;
@@ -19,11 +20,11 @@ public class ChangeLocaleCommand implements ActionCommand {
     @Override
     public String execute(HttpServletRequest request) throws CommandException {
         HttpSession session = request.getSession();
-        String newLocale = request.getParameter(RequestParameter.CURRENT_LOCALE);
+        String newLocale = request.getParameter(SessionAttribute.CURRENT_LOCALE);
         String page;
         if (newLocale != null) {
-            page = (String) session.getAttribute(RequestParameter.CURRENT_PAGE);
-            session.setAttribute(RequestParameter.CURRENT_LOCALE, newLocale);
+            page = (String) session.getAttribute(SessionAttribute.CURRENT_PAGE);
+            session.setAttribute(SessionAttribute.CURRENT_LOCALE, newLocale);
             LOGGER.log(Level.DEBUG, "Locale was changed");
         } else {
             LOGGER.log(Level.ERROR, "Locale parameter is null");

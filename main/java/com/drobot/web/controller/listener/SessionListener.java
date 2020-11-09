@@ -1,5 +1,6 @@
 package com.drobot.web.controller.listener;
 
+import com.drobot.web.controller.SessionAttribute;
 import com.drobot.web.controller.UrlPattern;
 import com.drobot.web.controller.RequestParameter;
 
@@ -14,9 +15,9 @@ public class SessionListener implements HttpSessionListener {
     @Override
     public void sessionCreated(HttpSessionEvent se) {
         HttpSession session = se.getSession();
-        session.setAttribute(RequestParameter.USER_ROLE, RequestParameter.GUEST_ROLE);
-        session.setAttribute(RequestParameter.CURRENT_LOCALE, RequestParameter.DEFAULT_LOCALE);
-        session.setAttribute(RequestParameter.CURRENT_PAGE, UrlPattern.LOGIN_PAGE);
+        session.setAttribute(SessionAttribute.USER_ROLE, SessionAttribute.GUEST_ROLE);
+        session.setAttribute(SessionAttribute.CURRENT_LOCALE, SessionAttribute.DEFAULT_LOCALE);
+        session.setAttribute(SessionAttribute.CURRENT_PAGE, UrlPattern.LOGIN_PAGE);
     }
 
     @Override

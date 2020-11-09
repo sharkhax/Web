@@ -2,9 +2,12 @@ package com.drobot.web.controller.filter;
 
 import com.drobot.web.controller.JspPath;
 import com.drobot.web.controller.RequestParameter;
+import com.drobot.web.controller.SessionAttribute;
 import com.drobot.web.controller.command.AccessType;
 import com.drobot.web.controller.command.ActionCommand;
 import com.drobot.web.controller.command.CommandAccessLevel;
+import com.drobot.web.controller.command.CommandType;
+import com.drobot.web.exception.CommandException;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -14,6 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.net.http.HttpRequest;
 
 public abstract class AbstractSecurityFilter implements Filter {
 
@@ -63,11 +67,21 @@ public abstract class AbstractSecurityFilter implements Filter {
                                      HttpSession session) throws ServletException, IOException {
         if (condition) {
             LOGGER.log(Level.DEBUG, "User has an access to the page, forwarding");
-            session.setAttribute(RequestParameter.CURRENT_PAGE, request.getRequestURI());
+            session.setAttribute(SessionAttribute.CURRENT_PAGE, request.getRequestURI());
         } else {
             LOGGER.log(Level.DEBUG, "User doesn't have an access to the page, redirecting to error 404 page");
             page = JspPath.ERROR_404;
         }
         forward(request, response, page);
+    }
+
+    protected String executeCommand(CommandType commandType, HttpServletRequest request) throws ServletException {
+        try {
+            ActionCommand command = commandType.getCommand();
+            return command.execute(request);
+        } catch (CommandException e) {
+            LOGGER.log(Level.ERROR, "Redirecting to the error page", e);
+            throw new ServletException(e);
+        }
     }
 }

@@ -12,9 +12,9 @@ public interface UserService {
 
     boolean remove(int userId) throws ServiceException;
 
-    List<User> findAll(String sortBy) throws ServiceException;
+    List<User> findAll(String sortBy, boolean reverse) throws ServiceException;
 
-    List<User> findAll(int start, int length, String sortBy) throws ServiceException;
+    List<User> findAll(int start, int length, String sortBy, boolean reverse) throws ServiceException;
 
     List<User> findAll(int start, int length) throws ServiceException;
 
@@ -27,6 +27,8 @@ public interface UserService {
     List<User> findByRole(User.Role role, String sortBy) throws ServiceException;
 
     List<User> findByStatus(boolean isActive, String sortBy) throws ServiceException;
+
+    boolean exists(int userId) throws ServiceException;
 
     boolean existsLogin(String login) throws ServiceException;
 

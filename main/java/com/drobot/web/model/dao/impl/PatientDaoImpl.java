@@ -30,6 +30,10 @@ public enum PatientDaoImpl implements PatientDao {
             .append("LEFT JOIN hospital.patient_records ON patient_id = patient_id_fk ")
             .append("ORDER BY  LIMIT ?, ?;").toString();
     private final String COUNT_STATEMENT = "SELECT COUNT(*) as label FROM hospital.patients;";
+    private final String FIND_BY_ID_STATEMENT = new StringBuilder(
+            "SELECT patient_id, patient_name, patient_surname, patient_age, patient_gender, diagnosis, status_name, ")
+            .append("record_id FROM hospital.patients INNER JOIN hospital.statuses ON patient_status = status_id ")
+            .append("LEFT JOIN hospital.patient_records ON patient_id = patient_id_fk WHERE patient_id = ?;").toString();
 
     @Override
     public boolean exists(String name, String surname) throws DaoException {
@@ -90,17 +94,20 @@ public enum PatientDaoImpl implements PatientDao {
     }
 
     @Override
-    public List<Patient> findAll(String sortBy) throws DaoException {
+    public List<Patient> findAll(String sortBy, boolean reverse) throws DaoException {
         return null;
     }
 
     @Override
-    public List<Patient> findAll(int start, int end, String sortBy) throws DaoException {
+    public List<Patient> findAll(int start, int end, String sortBy, boolean reverse) throws DaoException {
         List<Patient> result;
         Connection connection = null;
         PreparedStatement statement = null;
         try {
             connection = ConnectionPool.INSTANCE.getConnection();
+            if (reverse) {
+                sortBy = sortBy + SPACE + DESC;
+            }
             String sql = new StringBuilder(FIND_ALL_LIMIT_STATEMENT).insert(269, sortBy).toString();
             statement = connection.prepareStatement(sql);
             statement.setInt(1, start);
@@ -117,8 +124,29 @@ public enum PatientDaoImpl implements PatientDao {
     }
 
     @Override
-    public Optional<Patient> findById(int id) throws DaoException {
-        return Optional.empty();
+    public Optional<Patient> findById(int patientId) throws DaoException {
+        Optional<Patient> result;
+        Connection connection = null;
+        PreparedStatement statement = null;
+        try {
+            connection = ConnectionPool.INSTANCE.getConnection();
+            statement = connection.prepareStatement(FIND_BY_ID_STATEMENT);
+            statement.setInt(1, patientId);
+            ResultSet resultSet = statement.executeQuery();
+            List<Patient> patientList = createPatientListFromResultSet(resultSet);
+            if (!patientList.isEmpty()) {
+                result = Optional.of(patientList.get(0));
+            } else {
+                LOGGER.log(Level.DEBUG, "Patient with id " + patientId + " has not been found");
+                result = Optional.empty();
+            }
+        } catch (SQLException | ConnectionPoolException e) {
+            throw new DaoException(e);
+        } finally {
+            close(statement);
+            close(connection);
+        }
+        return result;
     }
 
     @Override
@@ -162,10 +190,10 @@ public enum PatientDaoImpl implements PatientDao {
                 int recordId = resultSet.getInt(8);
                 Patient patient = new Patient(id, name, surname, age, gender, diagnosis, status, recordId);
                 result.add(patient);
-                LOGGER.log(Level.DEBUG, "Patient list has been created");
+                LOGGER.log(Level.DEBUG, result.size() + " patients have been found");
             } while (resultSet.next());
         } else {
-            LOGGER.log(Level.ERROR, "Result set is null or empty");
+            LOGGER.log(Level.WARN, "Result set is null or empty");
         }
         return result;
     }

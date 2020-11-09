@@ -1,85 +1,185 @@
 package com.drobot.web.controller;
 
+/**
+ * Represents constant names of request parameters and attributes.
+ */
 public final class RequestParameter {
 
     private RequestParameter() {
     }
 
     /**
-     * Form's pages
+     * Represents user's login.
      */
     public static final String LOGIN = "login";
+
+    /**
+     * Represents user's password.
+     */
     public static final String PASSWORD = "password";
+
+    /**
+     * Represents user's email.
+     */
     public static final String EMAIL = "email";
-    public static final String WRONG_LOGIN_PASSWORD = "invalidLoginOrPass";
-    public static final String USER_BLOCKED = "userBlocked";
+
+    /**
+     * Represents message about successful user registration.
+     */
     public static final String REGISTRATION_SUCCESS = "registrationSuccess";
-    public static final String VALIDATED = "validated";
-    public static final String USER_REGISTRATION_FIELDS = "userRegistrationFields";
-    public static final String USER_REGISTRATION_EXISTING_FIELDS = "userRegistrationExistingFields";
+
+    /**
+     * Represents current password at changing password form.
+     */
     public static final String CURRENT_PASSWORD = "currentPassword";
+
+    /**
+     * Represents new password at changing password form.
+     */
     public static final String NEW_PASSWORD = "newPassword";
 
     /**
-     * Employee's creating/updating form
+     * Represents employee's name field at registration or updating forms or appropriate lists.
      */
-    public static final String NAME = "name";
-    public static final String SURNAME = "surname";
-    public static final String AGE = "age";
-    public static final String GENDER = "gender";
-    public static final String POSITION = "position";
+    public static final String EMPLOYEE_NAME = "employeeName";
+
+    /**
+     * Represents employee's surname field at registration or updating forms or appropriate lists.
+     */
+    public static final String EMPLOYEE_SURNAME = "employeeSurname";
+
+    /**
+     * Represents employee's age field at registration or updating forms or appropriate lists.
+     */
+    public static final String EMPLOYEE_AGE = "employeeAge";
+
+    /**
+     * Represents employee's gender field at registration or updating forms or appropriate lists.
+     */
+    public static final String EMPLOYEE_GENDER = "employeeGender";
+
+    /**
+     * Represents employee's position field at registration or updating forms or appropriate lists.
+     */
+    public static final String EMPLOYEE_POSITION = "employeePosition";
+
+    /**
+     * Represents employee's hire date field at registration or updating forms or appropriate lists.
+     */
     public static final String HIRE_DATE = "hireDate";
+
+    /**
+     * Represents employee's dismiss date field at registration or updating forms or appropriate lists.
+     */
     public static final String DISMISS_DATE = "dismissDate";
-    public static final String STATUS_ID = "statusId";
+
+    /**
+     * Represents employee's position "Doctor" field at registration or updating forms or appropriate lists.
+     */
     public static final String DOCTOR = "doctor";
+
+    /**
+     * Represents employee's position "Doctor" field at registration or updating forms or appropriate lists.
+     */
     public static final String ASSISTANT = "assistant";
+
+    /**
+     * Represents employee's status field at registration or updating forms or appropriate lists.
+     */
     public static final String EMPLOYEE_STATUS = "employeeStatus";
 
     /**
-     * Session's attributes
+     * Represents user's role field at registration or updating forms or appropriate lists.
      */
-    public static final String USER_ROLE = "role";
-    public static final String USER_ID = "userId";
-    public static final String ADMIN_ROLE = "admin_role";
-    public static final String DOCTOR_ROLE = "doctor_role";
-    public static final String ASSISTANT_ROLE = "assistant_role";
-    public static final String GUEST_ROLE = "guest_role";
-    public static final String CURRENT_PAGE = "currentPage";
-    public static final String CURRENT_LOCALE = "currentLocale";
-    public static final String DEFAULT_LOCALE = "en_EN";
-    public static final String LOGIN_INFO = "login_info";
-    public static final String USER_DATA_FIELDS = "userDataFields";
-    public static final String CHANGING_PASSWORD_FIELDS = "changingPasswordFields";
-
-    // tables
-    public static final String USER_LIST = "user_list";
-    public static final String USER_LIST_CURRENT_PAGE = "userListCurrentPage";
-    public static final String USER_LIST_SORT_BY = "userListSortBy";
-    public static final String EMPLOYEE_LIST = "employee_list";
-    public static final String EMPLOYEE_LIST_CURRENT_PAGE = "employeeListCurrentPage";
-    public static final String EMPLOYEE_LIST_SORT_BY = "employeeListSortBy";
-    public static final String PATIENT_LIST = "patient_list";
-    public static final String PATIENT_LIST_CURRENT_PAGE = "patientListCurrentPage";
-    public static final String PATIENT_LIST_SORT_BY = "patientListSortBy";
-    public static final String REQUESTED_LIST_PAGE = "requestedListPage";
-    public static final String USERS_NUMBER = "usersNumber";
-    public static final String EMPLOYEES_NUMBER = "employeesNumber";
-    public static final String PATIENTS_NUMBER = "patientsNumber";
+    public static final String USER_ROLE = "userRole";
 
     /**
-     * Common
+     * Represents user's ID field at registration or updating forms or appropriate lists.
+     */
+    public static final String USER_ID = "userId";
+
+    /**
+     * Represents requested page number for lists at appropriate pages.
+     */
+    public static final String LIST_PAGE = "requestedListPage";
+
+    /**
+     * Represents requested sorting tag for lists at appropriate pages.
+     */
+    public static final String SORT_BY = "requestedSortBy";
+
+    /**
+     * Represents command from the request.
      */
     public static final String COMMAND = "command";
 
     /**
-     * Patient creating form
+     * Represents patient's name field at registration or updating forms or appropriate lists.
      */
     public static final String PATIENT_NAME = "patientName";
+
+    /**
+     * Represents patient's surname field at registration or updating forms or appropriate lists.
+     */
     public static final String PATIENT_SURNAME = "patientSurname";
+
+    /**
+     * Represents patient's age field at registration or updating forms or appropriate lists.
+     */
     public static final String PATIENT_AGE = "patientAge";
+
+    /**
+     * Represents patient's gender field at registration or updating forms or appropriate lists.
+     */
     public static final String PATIENT_GENDER = "patientGender";
+
+    /**
+     * Represents patient's diagnosis field at registration or updating forms or appropriate lists.
+     */
     public static final String DIAGNOSIS = "diagnosis";
-    public static final String PATIENT_CREATING_FIELDS = "patientCreatingFields";
-    public static final String PATIENT_CREATING_EXISTING_FIELDS = "patientCreatingExistingFields";
-    public static final String PATIENT_CREATING_SUCCESS = "patientCreatingSuccess";
+
+    /**
+     * Represents patient's ID field at registration or updating forms or appropriate lists.
+     */
+    public static final String PATIENT_ID = "patientId";
+
+    /**
+     * Represents patient's diagnosis field at registration or updating forms or appropriate lists.
+     */
+    public static final String PATIENT_DIAGNOSIS = "patientDiagnosis";
+
+    /**
+     * Represents patient's status field at registration or updating forms or appropriate lists.
+     */
+    public static final String PATIENT_STATUS = "patientStatus";
+
+    /**
+     * Represents patient's record ID field at registration or updating forms or appropriate lists.
+     */
+    public static final String LAST_RECORD_ID = "lastRecordId";
+
+    /**
+     * Represents user's status field at registration or updating forms or appropriate lists.
+     */
+    public static final String USER_STATUS = "userStatus";
+
+    /**
+     * Represents employee's ID field at registration or updating forms or appropriate lists.
+     */
+    public static final String EMPLOYEE_ID = "employeeId";
+
+    /**
+     * Represents requested employee's ID at employee's info page.
+     */
+    public static final String EMPLOYEE_INFO_ID = "requestedEmployeeInfoId";
+
+    /**
+     * Represents requested patient's ID at patient's info page.
+     */
+    public static final String PATIENT_INFO_ID = "requestedPatientInfoId";
+
+    /**
+     * Represents requested user's ID at user's info page.
+     */
+    public static final String USER_INFO_ID = "requestedUserInfoId";
 }

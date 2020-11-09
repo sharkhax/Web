@@ -23,4 +23,13 @@ public final class UrlPattern {
     public static final String PATIENT_CREATING_SUCCESS = "/mainPage/newPatient/success";
     public static final String PATIENT_CREATING_FAIL = "/mainPage/newPatient/fail";
     public static final String PATIENT_LIST = "/mainPage/patients";
+    public static final String USER_INFO = "/mainPage/users/*";
+    public static final String USER_INFO_REQUEST = "/mainController?command=user_data&requestedUserInfoId=";
+    public static final String EMPLOYEE_INFO = "/mainPage/employees/*";
+    public static final String EMPLOYEE_INFO_REQUEST = "/mainController?command=employee_data&requestedEmployeeInfoId=";
+    public static final String PATIENT_INFO = "/mainPage/patients/*";
+    public static final String PATIENT_INFO_REQUEST = "/mainController?command=patient_data&requestedPatientInfoId=";
+    public static final String ADMIN_CHANGING_PASSWORD = "/mainPage/users/*/changePassword";
+    public static final String ADMIN_CHANGING_PASSWORD_REQUEST =
+            "/mainController?command=redirect_to_updating_password&userId=";
 }

@@ -28,21 +28,21 @@ public enum EmployeeMapService implements MapService {
     }
 
     public boolean checkName(Map<String, String> fields) {
-        return checkNameOrSurname(fields, RequestParameter.NAME);
+        return checkNameOrSurname(fields, RequestParameter.EMPLOYEE_NAME);
     }
 
     public boolean checkSurname(Map<String, String> fields) {
-        return checkNameOrSurname(fields, RequestParameter.SURNAME);
+        return checkNameOrSurname(fields, RequestParameter.EMPLOYEE_SURNAME);
     }
     
     public boolean checkAge(Map<String, String> fields) {
         boolean result = false;
-        if (fields != null && fields.containsKey(RequestParameter.AGE)) {
+        if (fields != null && fields.containsKey(RequestParameter.EMPLOYEE_AGE)) {
             result = true;
-            String stringAge = fields.get(RequestParameter.AGE);
+            String stringAge = fields.get(RequestParameter.EMPLOYEE_AGE);
             if (!EmployeeValidator.isAgeValid(stringAge)) {
                 result = false;
-                fields.put(RequestParameter.AGE, "");
+                fields.put(RequestParameter.EMPLOYEE_AGE, "");
             }
         }
         return result;
@@ -50,12 +50,12 @@ public enum EmployeeMapService implements MapService {
     
     public boolean checkGender(Map<String, String> fields) {
         boolean result = false;
-        if (fields != null && fields.containsKey(RequestParameter.GENDER)) {
+        if (fields != null && fields.containsKey(RequestParameter.EMPLOYEE_GENDER)) {
             result = true;
-            String stringGender = fields.get(RequestParameter.GENDER);
+            String stringGender = fields.get(RequestParameter.EMPLOYEE_GENDER);
             if (!EmployeeValidator.isGenderValid(stringGender)) {
                 result = false;
-                fields.put(RequestParameter.GENDER, "");
+                fields.put(RequestParameter.EMPLOYEE_GENDER, "");
             }
         }
         return result;
@@ -63,14 +63,14 @@ public enum EmployeeMapService implements MapService {
     
     public boolean checkPosition(Map<String, String> fields) {
         boolean result = false;
-        if (fields != null && fields.containsKey(RequestParameter.POSITION)) {
+        if (fields != null && fields.containsKey(RequestParameter.EMPLOYEE_POSITION)) {
             result = true;
-            String stringPosition = fields.get(RequestParameter.POSITION);
+            String stringPosition = fields.get(RequestParameter.EMPLOYEE_POSITION);
             try {
                 Employee.Position.valueOf(stringPosition.toUpperCase());
             } catch (IllegalArgumentException e) {
                 result = false;
-                fields.put(RequestParameter.POSITION, "");
+                fields.put(RequestParameter.EMPLOYEE_POSITION, "");
                 LOGGER.log(Level.DEBUG, "Position " + stringPosition + " is invalid");
             }
         }

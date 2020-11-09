@@ -23,13 +23,13 @@ public class EmployeeCreator implements Creator<Employee> {
         Optional<Employee> result;
         EmployeeMapService mapService = EmployeeMapService.INSTANCE;
         if (mapService.isMapValid(fields)) {
-            String name = fields.get(RequestParameter.NAME);
-            String surname = fields.get(RequestParameter.SURNAME);
-            String stringAge = fields.get(RequestParameter.AGE);
+            String name = fields.get(RequestParameter.EMPLOYEE_NAME);
+            String surname = fields.get(RequestParameter.EMPLOYEE_SURNAME);
+            String stringAge = fields.get(RequestParameter.EMPLOYEE_AGE);
             int age = Integer.parseInt(stringAge);
-            String stringGender = fields.get(RequestParameter.GENDER);
+            String stringGender = fields.get(RequestParameter.EMPLOYEE_GENDER);
             char gender = stringGender.charAt(0);
-            String stringPosition = fields.get(RequestParameter.POSITION);
+            String stringPosition = fields.get(RequestParameter.EMPLOYEE_POSITION);
             Employee.Position position = Employee.Position.valueOf(stringPosition.toUpperCase());
             String stringDate = fields.get(RequestParameter.HIRE_DATE);
             long hireDateDays = LocalDate.parse(stringDate).getLong(ChronoField.EPOCH_DAY);

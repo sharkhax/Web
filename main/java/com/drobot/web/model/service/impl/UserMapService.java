@@ -58,13 +58,13 @@ public enum UserMapService implements MapService {
 
     public boolean checkRole(Map<String, String> fields) {
         boolean result = false;
-        if (fields != null && fields.containsKey(RequestParameter.POSITION)) {
+        if (fields != null && fields.containsKey(RequestParameter.EMPLOYEE_POSITION)) {
             result = true;
-            String position = fields.get(RequestParameter.POSITION);
+            String position = fields.get(RequestParameter.EMPLOYEE_POSITION);
             if (!position.equalsIgnoreCase(RequestParameter.DOCTOR)
                     && !position.equalsIgnoreCase(RequestParameter.ASSISTANT)) {
                 result = false;
-                fields.put(RequestParameter.POSITION, "");
+                fields.put(RequestParameter.EMPLOYEE_POSITION, "");
             }
         }
         return result;

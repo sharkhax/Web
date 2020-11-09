@@ -1,6 +1,7 @@
 package com.drobot.web.model.service.impl;
 
 import com.drobot.web.controller.RequestParameter;
+import com.drobot.web.controller.SessionAttribute;
 import com.drobot.web.exception.DaoException;
 import com.drobot.web.exception.ServiceException;
 import com.drobot.web.model.creator.Creator;
@@ -13,9 +14,7 @@ import com.drobot.web.model.dao.impl.UserDaoImpl;
 import com.drobot.web.model.dao.impl.UserEmployeeDaoImpl;
 import com.drobot.web.model.entity.Employee;
 import com.drobot.web.model.entity.User;
-import com.drobot.web.model.service.EmployeeService;
 import com.drobot.web.model.service.UserEmployeeService;
-import com.drobot.web.model.service.UserService;
 import com.drobot.web.model.util.DateConverter;
 import com.drobot.web.model.util.Encrypter;
 
@@ -58,8 +57,8 @@ public enum UserEmployeeServiceImpl implements UserEmployeeService {
                 }
                 EmployeeDao employeeDao = EmployeeDaoImpl.INSTANCE;
                 if (employeeDao.exists(name, surname)) {
-                    existingFields.put(RequestParameter.NAME, name);
-                    existingFields.put(RequestParameter.SURNAME, surname);
+                    existingFields.put(RequestParameter.EMPLOYEE_NAME, name);
+                    existingFields.put(RequestParameter.EMPLOYEE_SURNAME, surname);
                     noMatches = false;
                 }
                 if (noMatches) {
@@ -96,11 +95,11 @@ public enum UserEmployeeServiceImpl implements UserEmployeeService {
                 fields.put(RequestParameter.LOGIN, login);
                 fields.put(RequestParameter.EMAIL, email);
                 fields.put(RequestParameter.USER_ROLE, role);
-                fields.put(RequestParameter.NAME, name);
-                fields.put(RequestParameter.SURNAME, surname);
-                fields.put(RequestParameter.AGE, age);
-                fields.put(RequestParameter.GENDER, gender);
-                fields.put(RequestParameter.POSITION, position);
+                fields.put(RequestParameter.EMPLOYEE_NAME, name);
+                fields.put(RequestParameter.EMPLOYEE_SURNAME, surname);
+                fields.put(RequestParameter.EMPLOYEE_AGE, age);
+                fields.put(RequestParameter.EMPLOYEE_GENDER, gender);
+                fields.put(RequestParameter.EMPLOYEE_POSITION, position);
                 fields.put(RequestParameter.HIRE_DATE, hireDate);
                 fields.put(RequestParameter.EMPLOYEE_STATUS, status);
             }

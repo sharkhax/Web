@@ -16,9 +16,9 @@ public interface EmployeeService {
 
     boolean exists(String name, String surname) throws ServiceException;
 
-    List<Employee> findAll(String sortBy) throws ServiceException;
+    List<Employee> findAll(String sortBy, boolean reverse) throws ServiceException;
 
-    List<Employee> findAll(int start, int length, String sortBy) throws ServiceException;
+    List<Employee> findAll(int start, int length, String sortBy, boolean reverse) throws ServiceException;
 
     Optional<Employee> findById(int employeeId) throws ServiceException;
 
