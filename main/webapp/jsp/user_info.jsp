@@ -41,65 +41,7 @@
     </div>
 </div>
 
-<div style="background-color: #f4f4f4b8; width: 700px; margin-left: 2px">
-    <dl class="row">
-        <dt class="col-sm-3">
-            <span style="font-family: 'Times New Roman', sans-serif; font-weight: bold">
-                <fmt:message key="userInfo.userId"/>
-            </span>
-        </dt>
-        <dd class="col-sm-9">
-            <span style="font-family: 'Times New Roman', sans-serif">${userDataFields.userId}</span>
-        </dd>
-
-        <dt class="col-sm-3">
-            <span style="font-family: 'Times New Roman', sans-serif; font-weight: bold">
-                <fmt:message key="userInfo.login"/>
-            </span>
-        </dt>
-        <dd class="col-sm-9">
-            <span style="font-family: 'Times New Roman', sans-serif">${userDataFields.login}</span>
-        </dd>
-
-        <dt class="col-sm-3">
-            <span style="font-family: 'Times New Roman', sans-serif; font-weight: bold">
-                <fmt:message key="userInfo.email"/>
-            </span>
-        </dt>
-        <dd class="col-sm-9">
-            <span style="font-family: 'Times New Roman', sans-serif">${userDataFields.email}</span>
-        </dd>
-
-        <dt class="col-sm-3">
-            <span style="font-family: 'Times New Roman', sans-serif; font-weight: bold">
-                <fmt:message key="userInfo.role"/>
-            </span>
-        </dt>
-        <dd class="col-sm-9">
-            <span style="font-family: 'Times New Roman', sans-serif">${userDataFields.userRole}</span>
-        </dd>
-
-        <dt class="col-sm-3">
-            <span style="font-family: 'Times New Roman', sans-serif; font-weight: bold">
-                <fmt:message key="userInfo.status"/>
-            </span>
-        </dt>
-        <dd class="col-sm-9">
-            <span style="font-family: 'Times New Roman', sans-serif">${userDataFields.userStatus}</span>
-        </dd>
-
-        <dt class="col-sm-3">
-            <span style="font-family: 'Times New Roman', sans-serif; font-weight: bold">
-                <fmt:message key="userInfo.employeeId"/>
-            </span>
-        </dt>
-        <dd class="col-sm-9">
-            <a href="${pageContext.request.contextPath}/mainController?command=employee_data&requestedEmployeeInfoId=${userDataFields.employeeId}">
-                <span style="font-family: 'Times New Roman', sans-serif">${userDataFields.employeeId}</span>
-            </a>
-        </dd>
-    </dl>
-</div>
+<%@include file="user_info_part.jsp" %>
 
 <%@ include file="footer.jsp" %>
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"

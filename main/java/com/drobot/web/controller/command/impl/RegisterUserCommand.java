@@ -45,7 +45,6 @@ public class RegisterUserCommand implements ActionCommand {
         fields.put(RequestParameter.EMPLOYEE_POSITION, position);
         fields.put(RequestParameter.EMPLOYEE_GENDER, gender);
         fields.put(RequestParameter.HIRE_DATE, hireDate);
-        LOGGER.log(Level.DEBUG, "Fields map has been created");
         UserEmployeeService userEmployeeService = UserEmployeeServiceImpl.INSTANCE;
         String page;
         Map<String, String> existingFields = new HashMap<>();

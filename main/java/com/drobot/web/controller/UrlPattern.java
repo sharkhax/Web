@@ -4,7 +4,7 @@ public final class UrlPattern {
 
     private UrlPattern() {
     }
-
+    public static final String ASTERISK = "*";
     public static final String MAIN_CONTROLLER = "/mainController";
     public static final String LOGIN_PAGE = "/loginPage";
     public static final String MAIN_PAGE = "/mainPage";
@@ -32,4 +32,9 @@ public final class UrlPattern {
     public static final String ADMIN_CHANGING_PASSWORD = "/mainPage/users/*/changePassword";
     public static final String ADMIN_CHANGING_PASSWORD_REQUEST =
             "/mainController?command=redirect_to_updating_password&userId=";
+    public static final String UPDATING_USER = "/mainPage/users/*/update";
+    public static final String UPDATING_EMPLOYEE = "/mainPage/employees/*/update";
+    public static final String UPDATING_PATIENT = "/mainPage/patients/*/update";
+    public static final String UPDATING_USER_REQUEST =
+            "/mainController?command=redirect_to_update_user_page&userId=";
 }

@@ -5,6 +5,7 @@ import com.drobot.web.model.entity.Entity;
 import com.drobot.web.model.entity.User;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public interface UserService {
@@ -47,4 +48,9 @@ public interface UserService {
     boolean updateStatus(int userId, Entity.Status newStatus) throws ServiceException;
 
     int count() throws ServiceException;
+
+    Map<String, String> packUserInfoMap(User user);
+
+    boolean update(Map<String, String> newFields, Map<String, String> existingFields,
+                   Map<String, String> currentFields) throws ServiceException;
 }

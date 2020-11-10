@@ -21,7 +21,6 @@ import javax.servlet.http.HttpSession;
 public class RedirectToUpdatingPasswordCommand implements ActionCommand {
 
     private static final Logger LOGGER = LogManager.getLogger(RedirectToUpdatingPasswordCommand.class);
-    private static final String ASTERISK = "*";
 
     @Override
     public String execute(HttpServletRequest request) throws CommandException {
@@ -38,7 +37,7 @@ public class RedirectToUpdatingPasswordCommand implements ActionCommand {
             UserService userService = UserServiceImpl.INSTANCE;
             if (userService.exists(userId)) {
                 StringBuilder sb = new StringBuilder(UrlPattern.ADMIN_CHANGING_PASSWORD);
-                int indexOfAsterisk = sb.indexOf(ASTERISK);
+                int indexOfAsterisk = sb.indexOf(UrlPattern.ASTERISK);
                 sb.replace(indexOfAsterisk, indexOfAsterisk + 1, stringUserId);
                 page = sb.toString();
                 HttpSession session = request.getSession();

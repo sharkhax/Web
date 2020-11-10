@@ -30,7 +30,10 @@ public class DynamicUrlFilter extends AbstractSecurityFilter {
         USER_INFO("/mainPage/users/[0-9]+"),
         EMPLOYEE_INFO("/mainPage/employees/[0-9]+"),
         PATIENT_INFO("/mainPage/patients/[0-9]+"),
-        CHANGING_PASSWORD("/mainPage/users/[0-9]+/changePassword");
+        CHANGING_PASSWORD("/mainPage/users/[0-9]+/changePassword"),
+        UPDATING_USER("/mainPage/users/[0-9]+/update"),
+        UPDATING_EMPLOYEE("/mainPage/employees/[0-9]+/update"),
+        UPDATING_PATIENT("/mainPage/patients/[0-9]+/update");
 
         private final String pattern;
 
@@ -57,6 +60,9 @@ public class DynamicUrlFilter extends AbstractSecurityFilter {
                 case PATIENT_INFO -> doCasePatientInfo(request, response, session);
                 case EMPLOYEE_INFO -> doCaseEmployeeInfo(request, response, session);
                 case CHANGING_PASSWORD -> doCaseChangingPassword(request, response, session);
+                case UPDATING_USER -> doCaseUpdatingUser(request, response, session);
+                case UPDATING_EMPLOYEE -> doCaseUpdatingEmployee(request, response, session);
+                case UPDATING_PATIENT -> doCaseUpdatingPatient(request, response, session);
                 default -> throw new EnumConstantNotPresentException(DynamicUrl.class, dynamicUrl.name());
             }
         } else {
@@ -105,7 +111,7 @@ public class DynamicUrlFilter extends AbstractSecurityFilter {
             forwardOrError404(condition, page, request, response, session);
         } else {
             page = UrlPattern.USER_INFO_REQUEST + requestedUserId;
-            redirect(response, page);
+            forward(request, response, page);
         }
     }
 
@@ -121,7 +127,7 @@ public class DynamicUrlFilter extends AbstractSecurityFilter {
             forwardOrError404(condition, page, request, response, session);
         } else {
             page = UrlPattern.PATIENT_INFO_REQUEST + requestedPatientId;
-            redirect(response, page);
+            forward(request, response, page);
         }
     }
 
@@ -137,7 +143,7 @@ public class DynamicUrlFilter extends AbstractSecurityFilter {
             forwardOrError404(condition, page, request, response, session);
         } else {
             page = UrlPattern.EMPLOYEE_INFO_REQUEST + requestedEmployeeId;
-            redirect(response, page);
+            forward(request, response, page);
         }
     }
 
@@ -161,8 +167,43 @@ public class DynamicUrlFilter extends AbstractSecurityFilter {
         } else {
             LOGGER.log(Level.DEBUG, "Requesting the command to check user id");
             page = UrlPattern.ADMIN_CHANGING_PASSWORD_REQUEST + userId;
-            redirect(response, page);
+            forward(request, response, page);
         }
+    }
+
+    private void doCaseUpdatingUser(HttpServletRequest request, HttpServletResponse response,
+                                    HttpSession session) throws IOException, ServletException {
+        String page;
+        int userId = defineIdFromUri(request.getRequestURI());
+        Boolean userExists = (Boolean) session.getAttribute(SessionAttribute.USER_EXISTS);
+        if (userExists != null && userExists) {
+            String prevPage = (String) session.getAttribute(SessionAttribute.CURRENT_PAGE);
+            if (!prevPage.matches(DynamicUrl.UPDATING_USER.getPattern())) {
+                session.setAttribute(SessionAttribute.VALIDATED, null);
+                LOGGER.log(Level.DEBUG, "\"VALIDATED\" is set to null");
+            }
+            LOGGER.log(Level.DEBUG, "Flag \"USER_EXISTS\" has been removed from the session");
+            session.setAttribute(SessionAttribute.USER_EXISTS, null);
+            String userRole = (String) session.getAttribute(SessionAttribute.USER_ROLE);
+            page = JspPath.USER_UPDATING;
+            request.setAttribute(RequestParameter.USER_ID, userId);
+            boolean condition = userRole != null && userRole.equals(SessionAttribute.ADMIN_ROLE);
+            forwardOrError404(condition, page, request, response, session);
+        } else {
+            LOGGER.log(Level.DEBUG, "Requesting the command to check user id");
+            page = UrlPattern.UPDATING_USER_REQUEST + userId;
+            forward(request, response, page);
+        }
+    }
+
+    private void doCaseUpdatingEmployee(HttpServletRequest request, HttpServletResponse response,
+                                    HttpSession session) throws IOException, ServletException {
+
+    }
+
+    private void doCaseUpdatingPatient(HttpServletRequest request, HttpServletResponse response,
+                                    HttpSession session) throws IOException, ServletException {
+
     }
 }
 

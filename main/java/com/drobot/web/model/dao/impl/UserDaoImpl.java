@@ -60,7 +60,7 @@ public enum UserDaoImpl implements UserDao {
                     "INNER JOIN hospital.statuses ON user_status = status_id " +
                     "INNER JOIN hospital.user_employee ON user_id = inter_user_id WHERE user_status = ? ORDER BY ";
     private final String UPDATE_STATEMENT =
-            "UPDATE hospital.users SET login = ?, email = ?, role = ?, user_status = ? WHERE user_id = ?;";
+            "UPDATE hospital.users SET login = ?, email = ?, user_status = ? WHERE user_id = ?;";
     private final String DEFINE_ROLE_STATEMENT =
             "SELECT user_id, password, role, status_name FROM hospital.users " +
                     "INNER JOIN hospital.statuses ON user_status = status_id WHERE login = ?;";
@@ -327,8 +327,8 @@ public enum UserDaoImpl implements UserDao {
     }
 
     @Override
-    public boolean update(User user) throws DaoException {
-        boolean result;
+    public boolean update(User user) throws DaoException { // FIXME: 10.11.2020
+        /*boolean result;
         Connection connection = null;
         PreparedStatement statement = null;
         try {
@@ -354,7 +354,8 @@ public enum UserDaoImpl implements UserDao {
             close(statement);
             close(connection);
         }
-        return result;
+        return result;*/
+        return false;
     }
 
     @Override
@@ -402,6 +403,35 @@ public enum UserDaoImpl implements UserDao {
         return result;
     }
 
+    @Override
+    public boolean updateRole(int userId, User.Role newRole) throws DaoException {
+        return false;
+    }
+
+    @Override
+    public boolean update(int userId, String newLogin, String newEmail, Entity.Status newStatus)
+            throws DaoException {
+        boolean result;
+        Connection connection = null;
+        PreparedStatement statement = null;
+        try {
+            connection = ConnectionPool.INSTANCE.getConnection();
+            statement = connection.prepareStatement(UPDATE_STATEMENT);
+            statement.setString(1, newLogin);
+            statement.setString(2, newEmail);
+            statement.setInt(3, newStatus.getStatusId());
+            statement.setInt(4, userId);
+            statement.execute();
+            result = true;
+            LOGGER.log(Level.DEBUG, "User has been updated");
+        } catch (SQLException | ConnectionPoolException e) {
+            throw new DaoException(e);
+        } finally {
+            close(statement);
+            close(connection);
+        }
+        return result;
+    }
 
 
     private void fillStatement(User user, String encPassword, PreparedStatement statement) throws SQLException {

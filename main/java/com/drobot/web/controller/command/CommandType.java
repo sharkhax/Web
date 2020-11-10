@@ -26,7 +26,8 @@ public enum CommandType {
     RECORD_DATA(new RecordDataCommand()),
     REDIRECT_TO_UPDATE_USER_PAGE(new RedirectToUpdateUserPageCommand()),
     UPDATE_USER_PASSWORD(new UpdateUserPasswordCommand()),
-    REDIRECT_TO_UPDATING_PASSWORD(new RedirectToUpdatingPasswordCommand());
+    REDIRECT_TO_UPDATING_PASSWORD(new RedirectToUpdatingPasswordCommand()),
+    UPDATE_USER(new UpdateUserCommand());
 
     private final ActionCommand command;
 

@@ -1,6 +1,7 @@
 package com.drobot.web.model.service.impl;
 
 import com.drobot.web.controller.RequestParameter;
+import com.drobot.web.model.entity.Entity;
 import com.drobot.web.model.service.MapService;
 import com.drobot.web.model.validator.UserValidator;
 
@@ -65,6 +66,20 @@ public enum UserMapService implements MapService {
                     && !position.equalsIgnoreCase(RequestParameter.ASSISTANT)) {
                 result = false;
                 fields.put(RequestParameter.EMPLOYEE_POSITION, "");
+            }
+        }
+        return result;
+    }
+
+    public boolean checkStatus(Map<String, String> fields) {
+        boolean result = false;
+        if (fields != null && fields.containsKey(RequestParameter.USER_STATUS)) {
+            String status = fields.get(RequestParameter.USER_STATUS);
+            try {
+                Entity.Status.valueOf(status);
+                result = true;
+            } catch (IllegalArgumentException e) {
+                result = false;
             }
         }
         return result;

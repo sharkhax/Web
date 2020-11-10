@@ -1,5 +1,6 @@
 package com.drobot.web.model.service.impl;
 
+import com.drobot.web.controller.RequestParameter;
 import com.drobot.web.exception.DaoException;
 import com.drobot.web.exception.ServiceException;
 import com.drobot.web.model.dao.ColumnName;
@@ -15,7 +16,9 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public enum UserServiceImpl implements UserService {
@@ -343,6 +346,81 @@ public enum UserServiceImpl implements UserService {
         }
         return result;
     }
+
+    @Override
+    public Map<String, String> packUserInfoMap(User user) {
+        Map<String, String> result = new HashMap<>();
+        if (user != null) {
+            int userId = user.getId();
+            String stringUserId = userId != 0 ? String.valueOf(userId) : "";
+            result.put(RequestParameter.USER_ID, stringUserId);
+            result.put(RequestParameter.LOGIN, user.getLogin());
+            result.put(RequestParameter.EMAIL, user.getEmail());
+            result.put(RequestParameter.USER_STATUS, user.getStatus().toString());
+            result.put(RequestParameter.USER_ROLE, user.getRole().toString());
+            int employeeId = user.getEmployeeId();
+            String stringEmployeeId = employeeId != 0 ? String.valueOf(employeeId) : "";
+            result.put(RequestParameter.EMPLOYEE_ID, stringEmployeeId);
+        }
+        return result;
+    }
+
+    @Override
+    public boolean update(Map<String, String> newFields, Map<String, String> existingFields,
+                          Map<String, String> currentFields) throws ServiceException {
+        boolean result = false;
+        UserMapService mapService = UserMapService.INSTANCE;
+        int userId = Integer.parseInt(currentFields.get(RequestParameter.USER_ID));
+        String login = null;
+        String email = null;
+        Entity.Status status = null;
+        boolean isValid = true;
+        boolean noMatches = true;
+        try {
+            if (newFields.containsKey(RequestParameter.LOGIN)) {
+                if (mapService.checkLogin(newFields)) {
+                    login = newFields.get(RequestParameter.LOGIN);
+                    if (userDao.existsLogin(login)) {
+                        existingFields.put(RequestParameter.LOGIN, login);
+                        noMatches = false;
+                    }
+                } else {
+                    isValid = false;
+                }
+            } else {
+                login = currentFields.get(RequestParameter.LOGIN);
+            }
+            if (newFields.containsKey(RequestParameter.EMAIL)) {
+                if (mapService.checkEmail(newFields)) {
+                    email = newFields.get(RequestParameter.EMAIL);
+                    if (userDao.existsEmail(email)) {
+                        existingFields.put(RequestParameter.EMAIL, email);
+                        noMatches = false;
+                    }
+                } else {
+                    isValid = false;
+                }
+            } else {
+                email = currentFields.get(RequestParameter.EMAIL);
+            }
+            if (newFields.containsKey(RequestParameter.USER_STATUS)) {
+                if (mapService.checkStatus(newFields)) {
+                    status = Entity.Status.valueOf(newFields.get(RequestParameter.USER_STATUS));
+                } else {
+                    isValid = false;
+                }
+            } else {
+                status = Entity.Status.valueOf(currentFields.get(RequestParameter.USER_STATUS));
+            }
+            if (isValid && noMatches) {
+                result = userDao.update(userId, login, email, status);
+            }
+        } catch (DaoException e) {
+            throw new ServiceException(e);
+        }
+        return result;
+    }
+
 
     private boolean checkSortingTag(String sortBy) {
         return sortBy.equals(ColumnName.USER_ID)

@@ -21,7 +21,7 @@ public abstract class Entity {
             return statusId;
         }
 
-        public static Status defineStatus(int statusId) throws IllegalArgumentException {
+        public static Status defineStatus(int statusId) { // FIXME: 10.11.2020 useless
             Status[] values = Status.values();
             Status result = null;
             for (Status status : values) {

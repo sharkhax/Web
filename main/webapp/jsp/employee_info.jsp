@@ -100,7 +100,7 @@
 
         <dt class="col-sm-3">
             <span style="font-family: 'Times New Roman', sans-serif; font-weight: bold">
-                <fmt:message key="employeeInfo.hireDate"/>
+                <fmt:message key="employeeInfo.dismissDate"/>
             </span>
         </dt>
         <dd class="col-sm-9">

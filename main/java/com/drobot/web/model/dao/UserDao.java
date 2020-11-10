@@ -1,5 +1,6 @@
 package com.drobot.web.model.dao;
 
+import com.drobot.web.model.entity.Entity;
 import com.drobot.web.model.entity.User;
 import com.drobot.web.exception.DaoException;
 
@@ -27,4 +28,8 @@ public interface UserDao extends Dao<User> {
     Optional<User> checkPassword(String login, String encPassword) throws DaoException;
 
     boolean updatePassword(int userId, String newEncPassword) throws DaoException;
+
+    boolean updateRole(int userId, User.Role newRole) throws DaoException;
+
+    boolean update(int userId, String newLogin, String newEmail, Entity.Status newStatus) throws DaoException;
 }

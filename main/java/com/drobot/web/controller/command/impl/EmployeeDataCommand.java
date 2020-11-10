@@ -71,8 +71,8 @@ public class EmployeeDataCommand implements ActionCommand {
                 StringBuilder sb = new StringBuilder(UrlPattern.EMPLOYEE_INFO);
                 page = sb.deleteCharAt(sb.length() - 1).append(employeeId).toString();
             } else {
-                LOGGER.log(Level.DEBUG, "No employee found, redirected to employee list");
-                page = UrlPattern.EMPLOYEE_LIST;
+                LOGGER.log(Level.DEBUG, "No employee found");
+                page = null;
             }
         } catch (ServiceException e) {
             throw new CommandException(e);

@@ -66,8 +66,8 @@ public class PatientDataCommand implements ActionCommand {
                 StringBuilder sb = new StringBuilder(UrlPattern.PATIENT_INFO);
                 page = sb.deleteCharAt(sb.length() - 1).append(patientId).toString();
             } else {
-                LOGGER.log(Level.DEBUG, "No patient found, redirected to patient list");
-                page = UrlPattern.PATIENT_LIST;
+                LOGGER.log(Level.DEBUG, "No patient found");
+                page = null;
             }
         } catch (ServiceException e) {
             throw new CommandException(e);

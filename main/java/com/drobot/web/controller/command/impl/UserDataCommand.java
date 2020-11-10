@@ -43,13 +43,7 @@ public class UserDataCommand implements ActionCommand {
             Optional<User> optionalUser = userService.findById(userId);
             if (optionalUser.isPresent()) {
                 User user = optionalUser.get();
-                Map<String, String> fields = new HashMap<>();
-                fields.put(RequestParameter.USER_ID, String.valueOf(userId));
-                fields.put(RequestParameter.LOGIN, user.getLogin());
-                fields.put(RequestParameter.EMAIL, user.getEmail());
-                fields.put(RequestParameter.USER_ROLE, user.getRole().toString());
-                fields.put(RequestParameter.USER_STATUS, user.getStatus().toString());
-                fields.put(RequestParameter.EMPLOYEE_ID, String.valueOf(user.getEmployeeId()));
+                Map<String, String> fields = userService.packUserInfoMap(user);
                 HttpSession session = request.getSession();
                 session.setAttribute(SessionAttribute.USER_DATA_FIELDS, fields);
                 session.setAttribute(SessionAttribute.USER_INFO_ID, userId);
@@ -57,8 +51,8 @@ public class UserDataCommand implements ActionCommand {
                 StringBuilder sb = new StringBuilder(UrlPattern.USER_INFO);
                 page = sb.deleteCharAt(sb.length() - 1).append(userId).toString();
             } else {
-                LOGGER.log(Level.DEBUG, "No user found, redirected to user list");
-                page = UrlPattern.USER_LIST;
+                LOGGER.log(Level.DEBUG, "No user found");
+                page = null;
             }
         } catch (ServiceException e) {
             throw new CommandException(e);

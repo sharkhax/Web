@@ -217,4 +217,19 @@ public final class SessionAttribute {
      * Flag that shows that concrete user exists. Should be removed from session in filter after the checking.
      */
     public static final String USER_EXISTS = "userExists";
+
+    /**
+     * Represents map of user's new fields at its updating form page.
+     */
+    public static final String USER_DATA_NEW_FIELDS = "userDataNewFields";
+
+    /**
+     * Represents map of user's new fields that are already used at its updating form page.
+     */
+    public static final String USER_DATA_EXISTING_FIELDS = "userDataExistingFields";
+
+    /**
+     * Represents map of user's fields that were not updated at its updating form page.
+     */
+    public static final String USER_DATA_EMPTY_FIELDS = "userDataEmptyFields";
 }
