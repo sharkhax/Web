@@ -37,4 +37,7 @@ public final class UrlPattern {
     public static final String UPDATING_PATIENT = "/mainPage/patients/*/update";
     public static final String UPDATING_USER_REQUEST =
             "/mainController?command=redirect_to_update_user_page&userId=";
+    public static final String UPDATING_EMPLOYEE_REQUEST =
+            "/mainController?command=redirect_to_update_employee_page&employeeId=";
+
 }

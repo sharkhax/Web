@@ -3,7 +3,6 @@ package com.drobot.web.model.dao;
 import com.drobot.web.exception.DaoException;
 import com.drobot.web.model.entity.Employee;
 import com.drobot.web.model.entity.Entity;
-import com.drobot.web.model.entity.User;
 
 import java.util.List;
 import java.util.Optional;
@@ -25,4 +24,10 @@ public interface EmployeeDao extends Dao<Employee> {
     List<Employee> findByStatus(Entity.Status status, String sortBy) throws DaoException;
 
     Optional<Employee> findByUserId(int userId) throws DaoException;
+
+    Optional<Entity.Status> findStatus(int employeeId) throws DaoException;
+
+    boolean updateStatus(int employeeId, Entity.Status newStatus) throws DaoException;
+
+    boolean setDismissDate(int employeeId, long dismissDateMillis) throws DaoException;
 }

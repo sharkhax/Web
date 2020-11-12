@@ -6,22 +6,37 @@
 <fmt:setBundle basename="locale.pagecontent"/>
 <html>
 <head>
-    <title><fmt:message key="main.pageTitle"/></title>
+    <title><fmt:message key="employeeInfo.pageTitle"/></title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
           integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
     <link href="${pageContext.request.contextPath}/css/custom.css" rel="stylesheet" type="text/css">
 </head>
 <body>
 
-<c:set var="is_main_page" value="true" scope="page"/>
-<jsp:include page="background.jsp"/>
-<%@ include file="header.jsp" %>
+<jsp:include page="../supporting/background.jsp"/>
+<%@ include file="../supporting/header.jsp" %>
 
-<div class="main-menu list-group">
-    <ctg:main_menu/>
+<div class="main-menu">
+    <div class="list-group">
+        <form action="${pageContext.request.contextPath}/mainController" method="post">
+            <input type="hidden" name="employeeId" value="${employeeDataFields.employeeId}"/>
+            <button class="list-group-item list-group-item-action" type="submit" name="command"
+                    value="redirect_to_update_employee_page" style="width: 90%;
+    color: #495057;
+    text-align: center;
+    background-color: #ffffffb5;
+    font-weight: bold;
+    font-family: 'Times New Roman', sans-serif">
+                <fmt:message key="employeeInfo.updateEmployeeButton"/>
+            </button>
+            <ctg:employee_info_dynamic_buttons/>
+        </form>
+    </div>
 </div>
 
-<%@ include file="footer.jsp" %>
+<%@ include file="employee_info_part.jsp" %>
+
+<%@ include file="../supporting/footer.jsp" %>
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
         integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
         crossorigin="anonymous"></script>

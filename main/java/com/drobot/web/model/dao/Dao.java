@@ -13,15 +13,13 @@ public interface Dao<E extends Entity> extends CloseableDao {
 
     boolean add(E entity) throws DaoException;
 
-    boolean remove(int id) throws DaoException;
-
     List<E> findAll(String sortBy, boolean reverse) throws DaoException;
 
     List<E> findAll(int start, int end, String sortBy, boolean reverse) throws DaoException;
 
     Optional<E> findById(int id) throws DaoException;
 
-    boolean update(E entity) throws DaoException;
+    boolean exists(int id) throws DaoException;
 
     int count() throws DaoException;
 }

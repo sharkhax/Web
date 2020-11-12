@@ -8,10 +8,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+/**
+ * User service ..
+ */
 public interface UserService {
     boolean add(String login, String email, String password, User.Role role) throws ServiceException;
-
-    boolean remove(int userId) throws ServiceException;
 
     List<User> findAll(String sortBy, boolean reverse) throws ServiceException;
 
@@ -37,15 +38,15 @@ public interface UserService {
 
     Optional<User> signIn(String login, String password) throws ServiceException;
 
-    boolean updateLogin(int userId, String newLogin) throws ServiceException;
+    boolean updatePassword(int userId, String newPassword) throws ServiceException;
+// FIXME: 10.11.2020
+    /*boolean updateLogin(int userId, String newLogin) throws ServiceException;
 
     boolean updateEmail(int userId, String newEmail) throws ServiceException;
 
-    boolean updatePassword(int userId, String newPassword) throws ServiceException;
-
     boolean updateRole(int userId, User.Role newRole) throws ServiceException;
 
-    boolean updateStatus(int userId, Entity.Status newStatus) throws ServiceException;
+    boolean updateStatus(int userId, Entity.Status newStatus) throws ServiceException;*/
 
     int count() throws ServiceException;
 
@@ -53,4 +54,10 @@ public interface UserService {
 
     boolean update(Map<String, String> newFields, Map<String, String> existingFields,
                    Map<String, String> currentFields) throws ServiceException;
+
+    boolean blockUser(int userId) throws ServiceException;
+
+    boolean unblockUser(int userId, int employeeId) throws ServiceException;
+
+    Optional<Entity.Status> findStatus(int userId) throws ServiceException;
 }

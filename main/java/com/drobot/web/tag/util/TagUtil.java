@@ -11,8 +11,14 @@ import java.io.IOException;
 import java.util.Locale;
 import java.util.ResourceBundle;
 
+/**
+ * Utility class for custom tags.
+ */
 public class TagUtil {
 
+    /**
+     * Represents a symbol of sorting in alphabetical order.
+     */
     public static final String SORT_ALPHA_DOWN_IMAGE = new StringBuilder(
             "<svg width=\"1em\" height=\"1em\" viewBox=\"0 0 16 16\" class=\"bi bi-sort-alpha-down\" ")
             .append("fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\">")
@@ -22,6 +28,10 @@ public class TagUtil {
             .append("<path d=\"M9.664 7l.418-1.371h1.781L12.281 7h1.121l-1.78-5.332h-1.235L8.597 7h1.067zM11 ")
             .append("2.687l.652 2.157h-1.351l.652-2.157H11zM9.027 14h3.934v-.867h-2.645v-.055l2.567-3.719v-.")
             .append("691H9.098v.867h2.507v.055l-2.578 3.719V14z\"/></svg>").toString();
+
+    /**
+     * Represents a symbol of sorting in reversed alphabetical order.
+     */
     public static final String SORT_ALPHA_UP_IMAGE = new StringBuilder(
             "<svg width=\"1em\" height=\"1em\" viewBox=\"0 0 16 16\" class=\"bi bi-sort-alpha-up-alt\" ")
             .append("fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\">")
@@ -31,6 +41,10 @@ public class TagUtil {
             .append("<path d=\"M9.027 7h3.934v-.867h-2.645v-.055l2.567-3.719v-.691H9.098v.867h2.507v.055L9.027 ")
             .append("6.309V7zm.637 7l.418-1.371h1.781L12.281 14h1.121l-1.78-5.332h-1.235L8.597 14h1.067zM11 ")
             .append("9.687l.652 2.157h-1.351l.652-2.156H11z\"/></svg>").toString();
+
+    /**
+     * Represents a symbol of sorting digits ascending.
+     */
     public static final String SORT_NUMERIC_DOWN_IMAGE = new StringBuilder(
             "<svg width=\"1em\" height=\"1em\" viewBox=\"0 0 16 16\" class=\"bi bi-sort-numeric-down\" ")
             .append("fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\">")
@@ -43,6 +57,10 @@ public class TagUtil {
             .append("1.027-.309 1.856-1.133 1.856-.43 0-.715-.227-.773-.45H9.598zm2.757-2.43c0 ")
             .append(".637-.43.973-.933.973-.516 0-.934-.34-.934-.98 0-.625.407-1 .926-1 .543 0 .941.375.941 1.008z\"/>")
             .append("</svg>").toString();
+
+    /**
+     * Represents a symbol of sorting digits descending.
+     */
     public static final String SORT_NUMERIC_UP_IMAGE = new StringBuilder(
             "<svg width=\"1em\" height=\"1em\" viewBox=\"0 0 16 16\" class=\"bi bi-sort-numeric-up-alt\" ")
             .append("fill=\"currentColor\" xmlns=\"http://www.w3.org/2000/svg\">")
@@ -67,6 +85,11 @@ public class TagUtil {
     private TagUtil() {
     }
 
+    /**
+     * Returns a ResourceBundle object by chosen locale.
+     * @param stringLocale String representation of Locale object.
+     * @return ResourceBundle object
+     */
     public static ResourceBundle getMessageBundle(String stringLocale) {
         String[] localeArr = stringLocale.split(LOCALE_SPLIT_REGEX);
         Locale locale = new Locale(localeArr[0], localeArr[1]);
@@ -74,6 +97,15 @@ public class TagUtil {
         return bundle;
     }
 
+    /**
+     * Creates a navigation for a specified table.
+     * @param pageContext PageContext object of the specified page.
+     * @param currentPage Integer value of the current number of page of the specified table.
+     * @param pagesNumber Integer value of total number of pages of the specified table.
+     * @param command String representation of a command,
+     *                which could be requested by clicking on the specific page button.
+     * @throws JspException If IOException was thrown while creating a pagination.
+     */
     public static void createPagination(PageContext pageContext, int currentPage, int pagesNumber,
                                         String command) throws JspException {
         try {
@@ -133,6 +165,14 @@ public class TagUtil {
         }
     }
 
+    /**
+     * Creates a button for the head of a table for its sorting.
+     * @param out JspWriter object for the specified page.
+     * @param content String representation of button's content (text inside a <button> tag).
+     * @param style String representation of button's style attribute.
+     * @param sortTag String representation of sorting tag to be requested by clicking on the button.
+     * @throws JspException If IOException was thrown while creating the button.
+     */
     public static void createTableHeadButton(JspWriter out, String content, String style, String sortTag)
             throws JspException {
         try {

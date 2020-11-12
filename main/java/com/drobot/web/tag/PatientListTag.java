@@ -18,8 +18,14 @@ import java.io.IOException;
 import java.util.List;
 import java.util.ResourceBundle;
 
+/**
+ * Custom tag that creates a table of patients.
+ */
 public class PatientListTag extends TagSupport {
 
+    /**
+     * Represents a number of rows in the table.
+     */
     public static final int ROWS_NUMBER = 10;
     private static final Logger LOGGER = LogManager.getLogger(PatientListTag.class);
     private static final String ID_KEY = "table.id";

@@ -5,13 +5,10 @@ import com.drobot.web.model.entity.User;
 import com.drobot.web.exception.DaoException;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 
 public interface UserDao extends Dao<User> {
     boolean add(User entity, String encPassword) throws DaoException;
-
-    boolean exists(int userId) throws DaoException;
 
     boolean existsEmail(String email) throws DaoException;
 
@@ -29,7 +26,9 @@ public interface UserDao extends Dao<User> {
 
     boolean updatePassword(int userId, String newEncPassword) throws DaoException;
 
-    boolean updateRole(int userId, User.Role newRole) throws DaoException;
+    boolean updateStatus(int userId, Entity.Status newStatus) throws DaoException;
 
-    boolean update(int userId, String newLogin, String newEmail, Entity.Status newStatus) throws DaoException;
+    boolean update(int userId, String newLogin, String newEmail) throws DaoException;
+
+    Optional<Entity.Status> findStatus(int userId) throws DaoException;
 }

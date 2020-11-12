@@ -8,6 +8,9 @@ import org.apache.logging.log4j.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * User validator class for checking users' fields values.
+ */
 public class UserValidator {
 
     private static final Logger LOGGER = LogManager.getLogger(UserValidator.class);
@@ -18,6 +21,11 @@ public class UserValidator {
     private UserValidator() {
     }
 
+    /**
+     * Checks if user's password is valid.
+     * @param password String representation of non-encrypted password.
+     * @return True if value is valid, false otherwise.
+     */
     public static boolean isPasswordValid(String password) {
         Pattern pattern = Pattern.compile(PASSWORD_REGEX);
         Matcher matcher = pattern.matcher(password);
@@ -27,6 +35,11 @@ public class UserValidator {
         return result;
     }
 
+    /**
+     * Checks if user's login is valid.
+     * @param login String representation of user's login.
+     * @return True if value is valid, false otherwise.
+     */
     public static boolean isLoginValid(String login) {
         boolean result = false;
         Pattern pattern = Pattern.compile(LOGIN_REGEX1);
@@ -41,6 +54,11 @@ public class UserValidator {
         return result;
     }
 
+    /**
+     * Checks if user's email is valid.
+     * @param email String representation of user's email.
+     * @return True if value is valid, false otherwise.
+     */
     public static boolean isEmailValid(String email) {
         EmailValidator validator = EmailValidator.getInstance();
         boolean result = validator.isValid(email);

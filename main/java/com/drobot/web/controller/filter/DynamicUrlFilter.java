@@ -180,13 +180,11 @@ public class DynamicUrlFilter extends AbstractSecurityFilter {
             String prevPage = (String) session.getAttribute(SessionAttribute.CURRENT_PAGE);
             if (!prevPage.matches(DynamicUrl.UPDATING_USER.getPattern())) {
                 session.setAttribute(SessionAttribute.VALIDATED, null);
-                LOGGER.log(Level.DEBUG, "\"VALIDATED\" is set to null");
             }
             LOGGER.log(Level.DEBUG, "Flag \"USER_EXISTS\" has been removed from the session");
             session.setAttribute(SessionAttribute.USER_EXISTS, null);
             String userRole = (String) session.getAttribute(SessionAttribute.USER_ROLE);
             page = JspPath.USER_UPDATING;
-            request.setAttribute(RequestParameter.USER_ID, userId);
             boolean condition = userRole != null && userRole.equals(SessionAttribute.ADMIN_ROLE);
             forwardOrError404(condition, page, request, response, session);
         } else {
@@ -198,7 +196,25 @@ public class DynamicUrlFilter extends AbstractSecurityFilter {
 
     private void doCaseUpdatingEmployee(HttpServletRequest request, HttpServletResponse response,
                                     HttpSession session) throws IOException, ServletException {
-
+        String page;
+        int employeeId = defineIdFromUri(request.getRequestURI());
+        Boolean employeeExists = (Boolean) session.getAttribute(SessionAttribute.EMPLOYEE_EXISTS);
+        if (employeeExists != null && employeeExists) {
+            String prevPage = (String) session.getAttribute(SessionAttribute.CURRENT_PAGE);
+            if (!prevPage.matches(DynamicUrl.UPDATING_EMPLOYEE.getPattern())) {
+                session.setAttribute(SessionAttribute.VALIDATED, null);
+            }
+            LOGGER.log(Level.DEBUG, "Flag \"EMPLOYEE_EXISTS\" has been removed from the session");
+            session.setAttribute(SessionAttribute.EMPLOYEE_EXISTS, null);
+            String userRole = (String) session.getAttribute(SessionAttribute.USER_ROLE);
+            page = JspPath.EMPLOYEE_UPDATING;
+            boolean condition = userRole != null && userRole.equals(SessionAttribute.ADMIN_ROLE);
+            forwardOrError404(condition, page, request, response, session);
+        } else {
+            LOGGER.log(Level.DEBUG, "Requesting the command to check user id");
+            page = UrlPattern.UPDATING_EMPLOYEE_REQUEST + employeeId;
+            forward(request, response, page);
+        }
     }
 
     private void doCaseUpdatingPatient(HttpServletRequest request, HttpServletResponse response,

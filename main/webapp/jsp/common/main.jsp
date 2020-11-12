@@ -1,26 +1,27 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="ctg" uri="custom_tag" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <fmt:setLocale value="${currentLocale}"/>
 <fmt:setBundle basename="locale.pagecontent"/>
 <html>
 <head>
-    <title><fmt:message key="table.recordListPageTitle"/></title>
+    <title><fmt:message key="main.pageTitle"/></title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
           integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
     <link href="${pageContext.request.contextPath}/css/custom.css" rel="stylesheet" type="text/css">
 </head>
 <body>
 
-<jsp:include page="background.jsp"/>
-<%@include file="header.jsp"%>
+<c:set var="is_main_page" value="true" scope="page"/>
+<jsp:include page="../supporting/background.jsp"/>
+<%@ include file="../supporting/header.jsp" %>
 
-<div style="width: 1200px; margin: 13px 10px">
-    <ctg:record_list/>
+<div class="main-menu list-group">
+    <ctg:main_menu/>
 </div>
 
-<%@include file="footer.jsp"%>
-
+<%@ include file="../supporting/footer.jsp" %>
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
         integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
         crossorigin="anonymous"></script>

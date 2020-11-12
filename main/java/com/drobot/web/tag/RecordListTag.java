@@ -6,8 +6,14 @@ import org.apache.logging.log4j.Logger;
 import javax.servlet.jsp.JspException;
 import javax.servlet.jsp.tagext.TagSupport;
 
+/**
+ * Custom tag that creates a table of records.
+ */
 public class RecordListTag extends TagSupport {
 
+    /**
+     * Represents a number of rows in the table.
+     */
     public static final int ROWS_NUMBER = 10;
     private static final Logger LOGGER = LogManager.getLogger(RecordListTag.class);
 

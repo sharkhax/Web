@@ -11,8 +11,8 @@
     <link href="${pageContext.request.contextPath}/css/custom.css" rel="stylesheet" type="text/css">
 </head>
 <body>
-<jsp:include page="background.jsp"/>
-<%@ include file="header.jsp" %>
+<jsp:include page="../supporting/background.jsp"/>
+<%@ include file="../supporting/header.jsp" %>
 
 <div style="width: 1200px;
     margin: 100px auto">
@@ -32,7 +32,7 @@
                                            pattern="[\w\-.]{5,16}"
                                            class="form-control is-invalid"
                                            id="inputLogin1"
-                                           aria-describedby="loginHelp1" minlength="5" maxlength="16"/>
+                                           minlength="5" maxlength="16"/>
                                     <div style="font-family: 'Times New Roman', sans-serif" class="invalid-feedback">
                                         <fmt:message key="userUpdating.loginExistsMsg"/>
                                     </div>
@@ -42,7 +42,7 @@
                                            pattern="[\w\-.]{5,16}"
                                            class="form-control is-valid"
                                            id="inputLogin1"
-                                           aria-describedby="loginHelp1" minlength="5" maxlength="16"/>
+                                           minlength="5" maxlength="16"/>
                                     <div style="font-family: 'Times New Roman', sans-serif" class="valid-feedback">
                                         <fmt:message key="userUpdating.loginDescribing"/>
                                     </div>
@@ -52,7 +52,7 @@
                                            pattern="[\w\-.]{5,16}"
                                            class="form-control"
                                            id="inputLogin1"
-                                           aria-describedby="loginHelp" minlength="5" maxlength="16"/>
+                                           aria-describedby="loginHelp1" minlength="5" maxlength="16"/>
                                     <small style="font-family: 'Times New Roman', sans-serif" id="loginHelp1"
                                            class="form-text text-muted"><fmt:message
                                             key="userUpdating.loginDescribing"/></small>
@@ -62,7 +62,7 @@
                                            pattern="[\w\-.]{5,16}"
                                            class="form-control is-invalid"
                                            id="inputLogin1"
-                                           aria-describedby="loginHelp1" minlength="5" maxlength="16"/>
+                                           minlength="5" maxlength="16"/>
                                     <div style="font-family: 'Times New Roman', sans-serif" class="invalid-feedback">
                                         <fmt:message key="userUpdating.loginDescribing"/>
                                     </div>
@@ -81,7 +81,7 @@
                                            required
                                            maxlength="50"/>
                                     <div style="font-family: 'Times New Roman', sans-serif" class="invalid-feedback">
-                                        <fmt:message key="userReg.emailExistsMsg"/></div>
+                                        <fmt:message key="userUpdating.emailExistsMsg"/></div>
                                 </c:when>
                                 <c:when test="${not empty userDataNewFields.email}">
                                     <input name="email" type="email" value="${userDataNewFields.email}"
@@ -103,60 +103,6 @@
                                     <div style="font-family: 'Times New Roman', sans-serif" class="invalid-feedback">
                                         example@example.com
                                     </div>
-                                </c:otherwise>
-                            </c:choose>
-                        </div>
-                        <div class="form-group col-md-4">
-                            <label for="inputStatus1"
-                                   style="font-family: 'Times New Roman', sans-serif; font-weight: bold "><fmt:message
-                                    key="userUpdating.status"/></label>
-                            <c:choose>
-                                <c:when test="${not empty userDataNewFields.userStatus}">
-                                    <select id="inputStatus1" name="userStatus" class="form-control is-valid">
-                                        <option></option>
-                                        <c:choose>
-                                            <c:when test="${userDataNewFields.userStatus eq 'ACTIVE'}">
-                                                <option style="font-family: 'Times New Roman', sans-serif"
-                                                        value="ACTIVE" selected>
-                                                    <fmt:message
-                                                            key="userUpdating.activeStatus"/></option>
-                                                <option style="font-family: 'Times New Roman', sans-serif"
-                                                        value="BLOCKED"><fmt:message
-                                                        key="userUpdating.blockedStatus"/></option>
-                                            </c:when>
-                                            <c:otherwise>
-                                                <option style="font-family: 'Times New Roman', sans-serif"
-                                                        value="ACTIVE"><fmt:message
-                                                        key="userUpdating.activeStatus"/></option>
-                                                <option style="font-family: 'Times New Roman', sans-serif"
-                                                        value="BLOCKED" selected>
-                                                    <fmt:message
-                                                            key="userUpdating.blockedStatus"/></option>
-                                            </c:otherwise>
-                                        </c:choose>
-                                    </select>
-                                </c:when>
-                                <c:when test="${not empty userDataEmptyFields.userStatus}">
-                                    <select id="inputStatus1" name="userStatus" class="form-control">
-                                        <option selected></option>
-                                        <option style="font-family: 'Times New Roman', sans-serif" value="ACTIVE">
-                                            <fmt:message
-                                                    key="userUpdating.activeStatus"/></option>
-                                        <option style="font-family: 'Times New Roman', sans-serif" value="BLOCKED">
-                                            <fmt:message
-                                                    key="userUpdating.blockedStatus"/></option>
-                                    </select>
-                                </c:when>
-                                <c:otherwise>
-                                    <select id="inputStatus1" name="userStatus" class="form-control is-invalid">
-                                        <option selected></option>
-                                        <option style="font-family: 'Times New Roman', sans-serif" value="ACTIVE">
-                                            <fmt:message
-                                                    key="userUpdating.activeStatus"/></option>
-                                        <option style="font-family: 'Times New Roman', sans-serif" value="BLOCKED">
-                                            <fmt:message
-                                                    key="userUpdating.blockedStatus"/></option>
-                                    </select>
                                 </c:otherwise>
                             </c:choose>
                         </div>
@@ -193,18 +139,6 @@
                                    id="inputEmail"
                                    maxlength="50"/>
                         </div>
-                        <div class="form-group col-md-4">
-                            <label for="inputStatus"
-                                   style="font-family: 'Times New Roman', sans-serif; font-weight: bold "><fmt:message
-                                    key="userUpdating.status"/></label>
-                            <select id="inputStatus" name="userStatus" class="form-control">
-                                <option selected></option>
-                                <option style="font-family: 'Times New Roman', sans-serif" value="ACTIVE"><fmt:message
-                                        key="userUpdating.activeStatus"/></option>
-                                <option style="font-family: 'Times New Roman', sans-serif" value="BLOCKED"><fmt:message
-                                        key="userUpdating.blockedStatus"/></option>
-                            </select>
-                        </div>
                     </div>
                 </div>
                 <button type="submit" class="btn btn-primary"><fmt:message key="userUpdating.submitButton"/></button>
@@ -212,8 +146,9 @@
         </c:otherwise>
     </c:choose>
 </div>
+
 <%@include file="user_info_part.jsp" %>
-<%@ include file="footer.jsp" %>
+<%@ include file="../supporting/footer.jsp" %>
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
         integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
         crossorigin="anonymous"></script>

@@ -24,10 +24,18 @@ public enum CommandType {
     USER_DATA(new UserDataCommand()),
     REDIRECT_TO_CHANGING_PASSWORD(new RedirectToChangingPasswordCommand()),
     RECORD_DATA(new RecordDataCommand()),
-    REDIRECT_TO_UPDATE_USER_PAGE(new RedirectToUpdateUserPageCommand()),
+    REDIRECT_TO_UPDATE_USER_PAGE(new RedirectToUpdateUserCommand()),
     UPDATE_USER_PASSWORD(new UpdateUserPasswordCommand()),
     REDIRECT_TO_UPDATING_PASSWORD(new RedirectToUpdatingPasswordCommand()),
-    UPDATE_USER(new UpdateUserCommand());
+    UPDATE_USER(new UpdateUserCommand()),
+    REDIRECT_TO_UPDATE_EMPLOYEE_PAGE(new RedirectToUpdateEmployeeCommand()),
+    UNBLOCK_USER(new UnblockUserCommand()),
+    BLOCK_USER(new BlockUserCommand()),
+    FIRE_EMPLOYEE(new FireEmployeeCommand()),
+    RESTORE_EMPLOYEE(new RestoreEmployeeCommand()),
+    SEND_TO_VACATION(new SendToVacationCommand()),
+    RETURN_FROM_VACATION(new ReturnFromVacationCommand()),
+    UPDATE_PATIENT(new UpdatePatientCommand());
 
     private final ActionCommand command;
 

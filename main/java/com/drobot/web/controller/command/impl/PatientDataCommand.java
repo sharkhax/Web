@@ -34,9 +34,8 @@ public class PatientDataCommand implements ActionCommand {
         try {
             patientId = Integer.parseInt(stringPatientId != null ? stringPatientId : "");
         } catch (NumberFormatException e) {
-            page = UrlPattern.PATIENT_LIST;
-            LOGGER.log(Level.ERROR, "Incorrect patient id value, redirected to patient list");
-            return page;
+            LOGGER.log(Level.ERROR, "Incorrect patient id value, returning null");
+            return null;
         }
         PatientService patientService = PatientServiceImpl.INSTANCE;
         try {

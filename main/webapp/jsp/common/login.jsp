@@ -11,7 +11,7 @@
     <link href="${pageContext.request.contextPath}/css/custom.css" rel="stylesheet" type="text/css">
 </head>
 <body>
-<jsp:include page="background.jsp"/>
+<jsp:include page="../supporting/background.jsp"/>
 <div class="loginForm">
     <form action="mainController" method="post">
         <input type="hidden" name="command" value="login"/>

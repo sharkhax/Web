@@ -60,7 +60,7 @@ public enum UserDaoImpl implements UserDao {
                     "INNER JOIN hospital.statuses ON user_status = status_id " +
                     "INNER JOIN hospital.user_employee ON user_id = inter_user_id WHERE user_status = ? ORDER BY ";
     private final String UPDATE_STATEMENT =
-            "UPDATE hospital.users SET login = ?, email = ?, user_status = ? WHERE user_id = ?;";
+            "UPDATE hospital.users SET login = ?, email = ? WHERE user_id = ?;";
     private final String DEFINE_ROLE_STATEMENT =
             "SELECT user_id, password, role, status_name FROM hospital.users " +
                     "INNER JOIN hospital.statuses ON user_status = status_id WHERE login = ?;";
@@ -74,6 +74,9 @@ public enum UserDaoImpl implements UserDao {
             .append("INNER JOIN hospital.statuses ON user_status = status_id ")
             .append("INNER JOIN hospital.user_employee ON user_id = inter_user_id ORDER BY  LIMIT ?, ?;");
     private final String COUNT_STATEMENT = "SELECT COUNT(*) as label FROM hospital.users;";
+    private final String UPDATE_STATUS_STATEMENT = "UPDATE hospital.users SET user_status = ? WHERE user_id = ?;";
+    private final String FIND_STATUS_STATEMENT = "SELECT status_name FROM hospital.users INNER JOIN hospital.statuses " +
+            "ON user_status = status_id WHERE user_id = ?;";
 
     @Override
     public boolean exists(int userId) throws DaoException {
@@ -224,34 +227,6 @@ public enum UserDaoImpl implements UserDao {
     }
 
     @Override
-    public boolean remove(int userId) throws DaoException {
-        boolean result = false;
-        Connection connection = null;
-        PreparedStatement statement = null;
-        try {
-            connection = ConnectionPool.INSTANCE.getConnection();
-            Optional<Entity.Status> optionalStatus = findAndGetStatus(userId, connection);
-            if (optionalStatus.isPresent()) {
-                if (optionalStatus.get() != Entity.Status.UNREMOVABLE) {
-                    statement = connection.prepareStatement(DELETE_STATEMENT);
-                    statement.setInt(1, userId);
-                    statement.execute();
-                    result = true;
-                    LOGGER.log(Level.DEBUG, "User has been successfully removed");
-                } else {
-                    LOGGER.log(Level.DEBUG, "User status is unremovable");
-                }
-            }
-        } catch (SQLException | ConnectionPoolException e) {
-            throw new DaoException(e);
-        } finally {
-            close(statement);
-            close(connection);
-        }
-        return result;
-    }
-
-    @Override
     public List<User> findAll(String sortBy, boolean reverse) throws DaoException {
         List<User> result;
         Connection connection = null;
@@ -326,7 +301,6 @@ public enum UserDaoImpl implements UserDao {
         return result;
     }
 
-    @Override
     public boolean update(User user) throws DaoException { // FIXME: 10.11.2020
         /*boolean result;
         Connection connection = null;
@@ -404,12 +378,29 @@ public enum UserDaoImpl implements UserDao {
     }
 
     @Override
-    public boolean updateRole(int userId, User.Role newRole) throws DaoException {
-        return false;
+    public boolean updateStatus(int userId, Entity.Status newStatus) throws DaoException {
+        boolean result;
+        Connection connection = null;
+        PreparedStatement statement = null;
+        try {
+            connection = ConnectionPool.INSTANCE.getConnection();
+            statement = connection.prepareStatement(UPDATE_STATUS_STATEMENT);
+            statement.setInt(1, newStatus.getStatusId());
+            statement.setInt(2, userId);
+            statement.execute();
+            LOGGER.log(Level.DEBUG, "User's " + userId + " status has been updated");
+            result = true;
+        } catch (SQLException | ConnectionPoolException e) {
+            throw new DaoException(e);
+        } finally {
+            close(statement);
+            close(connection);
+        }
+        return result;
     }
 
     @Override
-    public boolean update(int userId, String newLogin, String newEmail, Entity.Status newStatus)
+    public boolean update(int userId, String newLogin, String newEmail)
             throws DaoException {
         boolean result;
         Connection connection = null;
@@ -419,8 +410,7 @@ public enum UserDaoImpl implements UserDao {
             statement = connection.prepareStatement(UPDATE_STATEMENT);
             statement.setString(1, newLogin);
             statement.setString(2, newEmail);
-            statement.setInt(3, newStatus.getStatusId());
-            statement.setInt(4, userId);
+            statement.setInt(3, userId);
             statement.execute();
             result = true;
             LOGGER.log(Level.DEBUG, "User has been updated");
@@ -433,6 +423,32 @@ public enum UserDaoImpl implements UserDao {
         return result;
     }
 
+    @Override
+    public Optional<Entity.Status> findStatus(int userId) throws DaoException {
+        Optional<Entity.Status> result;
+        Connection connection = null;
+        PreparedStatement statement = null;
+        try {
+            connection = ConnectionPool.INSTANCE.getConnection();
+            statement = connection.prepareStatement(FIND_STATUS_STATEMENT);
+            statement.setInt(1, userId);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                Entity.Status status = Entity.Status.valueOf(resultSet.getString(1));
+                result = Optional.of(status);
+                LOGGER.log(Level.DEBUG, "Status has been found");
+            } else {
+                LOGGER.log(Level.DEBUG, "User hasn't been found");
+                result = Optional.empty();
+            }
+        } catch (SQLException | ConnectionPoolException e) {
+            throw new DaoException(e);
+        } finally {
+            close(statement);
+            close(connection);
+        }
+        return result;
+    }
 
     private void fillStatement(User user, String encPassword, PreparedStatement statement) throws SQLException {
         if (statement != null) {

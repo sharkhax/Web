@@ -17,14 +17,13 @@ import org.apache.logging.log4j.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
 @CommandAccessLevel(AccessType.ADMIN)
-public class RedirectToUpdateUserPageCommand implements ActionCommand {
+public class RedirectToUpdateUserCommand implements ActionCommand {
 
-    private static final Logger LOGGER = LogManager.getLogger(RedirectToUpdateUserPageCommand.class);
+    private static final Logger LOGGER = LogManager.getLogger(RedirectToUpdateUserCommand.class);
 
     @Override
     public String execute(HttpServletRequest request) throws CommandException {
@@ -47,6 +46,7 @@ public class RedirectToUpdateUserPageCommand implements ActionCommand {
                     User user = optional.orElseThrow();
                     Map<String, String> fields = userService.packUserInfoMap(user);
                     session.setAttribute(SessionAttribute.USER_DATA_FIELDS, fields);
+                    session.setAttribute(SessionAttribute.USER_INFO_ID, userId);
                     LOGGER.log(Level.DEBUG, "User data fields have been refilled");
                 }
                 StringBuilder sb = new StringBuilder(UrlPattern.UPDATING_USER);
@@ -56,7 +56,7 @@ public class RedirectToUpdateUserPageCommand implements ActionCommand {
                 LOGGER.log(Level.DEBUG, "Flag \"USER_EXISTS\" has been set to true");
                 session.setAttribute(SessionAttribute.USER_EXISTS, true);
             } else {
-                LOGGER.log(Level.DEBUG, "User with id " + userId + " doesn't exist, returning null");
+                LOGGER.log(Level.DEBUG, "User with id " + stringUserId + " doesn't exist, returning null");
                 page = null;
             }
         } catch (ServiceException e) {

@@ -8,6 +8,7 @@ import com.drobot.web.controller.command.ActionCommand;
 import com.drobot.web.controller.command.CommandAccessLevel;
 import com.drobot.web.exception.CommandException;
 import com.drobot.web.exception.ServiceException;
+import com.drobot.web.model.entity.User;
 import com.drobot.web.model.service.UserService;
 import com.drobot.web.model.service.impl.UserServiceImpl;
 import org.apache.logging.log4j.Level;
@@ -18,6 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @CommandAccessLevel(AccessType.ADMIN)
 public class UpdateUserCommand implements ActionCommand {
@@ -33,7 +35,6 @@ public class UpdateUserCommand implements ActionCommand {
         int userId = Integer.parseInt(currentFields.get(RequestParameter.USER_ID));
         String newLogin = request.getParameter(RequestParameter.LOGIN);
         String newEmail = request.getParameter(RequestParameter.EMAIL);
-        String newStatus = request.getParameter(RequestParameter.USER_STATUS);
         Map<String, String> newFields = new HashMap<>();
         Map<String, String> emptyFields = new HashMap<>();
         if (newLogin.isEmpty()) {
@@ -46,11 +47,6 @@ public class UpdateUserCommand implements ActionCommand {
         } else {
             newFields.put(RequestParameter.EMAIL, newEmail);
         }
-        if (newStatus.isEmpty()) {
-            emptyFields.put(RequestParameter.USER_STATUS, "true");
-        } else {
-            newFields.put(RequestParameter.USER_STATUS, newStatus);
-        }
         if (newFields.isEmpty()) {
             StringBuilder sb = new StringBuilder(UrlPattern.USER_INFO);
             page = sb.deleteCharAt(sb.length() - 1).append(userId).toString();
@@ -60,8 +56,14 @@ public class UpdateUserCommand implements ActionCommand {
             Map<String, String> existingFields = new HashMap<>();
             try {
                 if (userService.update(newFields, existingFields, currentFields)) {
-                    page = UrlPattern.USER_INFO_REQUEST + userId;
                     LOGGER.log(Level.DEBUG, "User has been updated successfully");
+                    Optional<User> optionalUser = userService.findById(userId);
+                    User user = optionalUser.orElseThrow();
+                    Map<String, String> fields = userService.packUserInfoMap(user);
+                    session.setAttribute(SessionAttribute.USER_DATA_FIELDS, fields);
+                    LOGGER.log(Level.DEBUG, "User fields have been replaced");
+                    StringBuilder sb = new StringBuilder(UrlPattern.USER_INFO);
+                    page = sb.deleteCharAt(sb.length() - 1).append(userId).toString();
                 } else {
                     StringBuilder sb = new StringBuilder(UrlPattern.UPDATING_USER);
                     int indexOfAsterisk = sb.indexOf(UrlPattern.ASTERISK);

@@ -43,13 +43,16 @@ public enum EmployeeDaoImpl implements EmployeeDao {
                     "hire_date, dismiss_date, status_name, inter_user_id FROM hospital.employees " +
                     "INNER JOIN hospital.statuses ON employee_status = status_id " +
                     "INNER JOIN hospital.user_employee ON employee_id = inter_employee_id WHERE employee_id = ?;";
-    private final String UPDATE_STATEMENT =
-            "UPDATE hospital.employees SET employee_name = ?, employee_surname = ?, employee_age = ?, " +
-                    "employee_gender = ?, position = ?, hire_date = ?, dismiss_date = ?, employee_status = ? " +
-                    "WHERE employee_id = ?;";
     private final String EXISTS_NAME_STATEMENT =
             "SELECT COUNT(*) as label FROM hospital.employees WHERE employee_name = ? AND employee_surname = ?;";
     private final String COUNT_STATEMENT = "SELECT COUNT(*) as label FROM hospital.employees;";
+    private final String FIND_STATUS_STATEMENT =
+            "SELECT status_name FROM hospital.employees " +
+                    "INNER JOIN hospital.statuses ON employee_status = status_id WHERE employee_id = ?;";
+    private final String UPDATE_STATUS_STATEMENT =
+            "UPDATE hospital.employees SET employee_status = ? WHERE employee_id = ?;";
+    private final String SET_DISMISS_DATE_STATEMENT =
+            "UPDATE hospital.employees SET dismiss_date = ? WHERE employee_id = ?;";
 
     @Override
     public boolean exists(String name, String surname) throws DaoException {
@@ -71,6 +74,21 @@ public enum EmployeeDaoImpl implements EmployeeDao {
             throw new DaoException(e);
         } finally {
             close(statement);
+            close(connection);
+        }
+        return result;
+    }
+
+    @Override
+    public boolean exists(int employeeId) throws DaoException {
+        boolean result;
+        Connection connection = null;
+        try {
+            connection = ConnectionPool.INSTANCE.getConnection();
+            result = exists(employeeId, connection);
+        } catch (SQLException | ConnectionPoolException e) {
+            throw new DaoException(e);
+        } finally {
             close(connection);
         }
         return result;
@@ -138,6 +156,78 @@ public enum EmployeeDaoImpl implements EmployeeDao {
     }
 
     @Override
+    public Optional<Entity.Status> findStatus(int employeeId) throws DaoException {
+        Optional<Entity.Status> result;
+        Connection connection = null;
+        PreparedStatement statement = null;
+        try {
+            connection = ConnectionPool.INSTANCE.getConnection();
+            statement = connection.prepareStatement(FIND_STATUS_STATEMENT);
+            statement.setInt(1, employeeId);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                String stringStatus = resultSet.getString(1);
+                Entity.Status status = Entity.Status.valueOf(stringStatus);
+                result = Optional.of(status);
+                LOGGER.log(Level.DEBUG, "Status has been found");
+            } else {
+                LOGGER.log(Level.DEBUG, "Employee with id " + employeeId + " hasn't been found");
+                result = Optional.empty();
+            }
+        } catch (SQLException | ConnectionPoolException e) {
+            throw new DaoException(e);
+        } finally {
+            close(statement);
+            close(connection);
+        }
+        return result;
+    }
+
+    @Override
+    public boolean updateStatus(int employeeId, Entity.Status newStatus) throws DaoException {
+        boolean result;
+        Connection connection = null;
+        PreparedStatement statement = null;
+        try {
+            connection = ConnectionPool.INSTANCE.getConnection();
+            statement = connection.prepareStatement(UPDATE_STATUS_STATEMENT);
+            statement.setInt(1, newStatus.getStatusId());
+            statement.setInt(2, employeeId);
+            statement.execute();
+            LOGGER.log(Level.DEBUG, "Employee's status has been updated");
+            result = true;
+        } catch (SQLException | ConnectionPoolException e) {
+            throw new DaoException(e);
+        } finally {
+            close(statement);
+            close(connection);
+        }
+        return result;
+    }
+
+    @Override
+    public boolean setDismissDate(int employeeId, long dismissDateMillis) throws DaoException {
+        boolean result;
+        Connection connection = null;
+        PreparedStatement statement = null;
+        try {
+            connection = ConnectionPool.INSTANCE.getConnection();
+            statement = connection.prepareStatement(SET_DISMISS_DATE_STATEMENT);
+            statement.setLong(1, dismissDateMillis);
+            statement.setInt(2, employeeId);
+            statement.execute();
+            LOGGER.log(Level.DEBUG, "Dismiss date has been set");
+            result = true;
+        } catch (SQLException | ConnectionPoolException e) {
+            throw new DaoException(e);
+        } finally {
+            close(statement);
+            close(connection);
+        }
+        return result;
+    }
+
+    @Override
     public boolean add(Employee employee) throws DaoException {
         boolean result = false;
         Connection connection = null;
@@ -150,29 +240,6 @@ public enum EmployeeDaoImpl implements EmployeeDao {
                 statement.execute();
                 result = true;
                 LOGGER.log(Level.DEBUG, "Employee has been add");
-            }
-        } catch (SQLException | ConnectionPoolException e) {
-            throw new DaoException(e);
-        } finally {
-            close(statement);
-            close(connection);
-        }
-        return result;
-    }
-
-    @Override
-    public boolean remove(int employeeId) throws DaoException {
-        boolean result = false;
-        Connection connection = null;
-        PreparedStatement statement = null;
-        try {
-            connection = ConnectionPool.INSTANCE.getConnection();
-            if (exists(employeeId, connection)) {
-                statement = connection.prepareStatement(SET_STATUS_TO_ARCHIVE_STATEMENT);
-                statement.setInt(1, employeeId);
-                statement.execute();
-                result = true;
-                LOGGER.log(Level.INFO, "Employee " + employeeId + " has been sent to archive");
             }
         } catch (SQLException | ConnectionPoolException e) {
             throw new DaoException(e);
@@ -236,7 +303,8 @@ public enum EmployeeDaoImpl implements EmployeeDao {
         return result;
     }
 
-    @Override
+    // FIXME: 10.11.2020
+    /*@Override
     public boolean update(Employee employee) throws DaoException {
         boolean result = false;
         Connection connection = null;
@@ -258,7 +326,7 @@ public enum EmployeeDaoImpl implements EmployeeDao {
             close(connection);
         }
         return result;
-    }
+    }*/
 
     @Override
     public int count() throws DaoException {
@@ -280,7 +348,6 @@ public enum EmployeeDaoImpl implements EmployeeDao {
         }
         return result;
     }
-
 
     private boolean exists(int employeeId, Connection connection) throws SQLException {
         boolean result = false;
@@ -321,7 +388,8 @@ public enum EmployeeDaoImpl implements EmployeeDao {
         }
     }
 
-    private void fillUpdateStatement(PreparedStatement statement, Employee employee) throws SQLException {
+    // FIXME: 10.11.2020
+    /*private void fillUpdateStatement(PreparedStatement statement, Employee employee) throws SQLException {
         if (statement != null) {
             int employeeId = employee.getId();
             String name = employee.getName();
@@ -345,7 +413,7 @@ public enum EmployeeDaoImpl implements EmployeeDao {
         } else {
             LOGGER.log(Level.ERROR, "Statement is null, can't be filled");
         }
-    }
+    }*/
 
     private List<Employee> createEmployeeListFromResultSet(ResultSet resultSet) throws SQLException {
         List<Employee> result = new ArrayList<>();

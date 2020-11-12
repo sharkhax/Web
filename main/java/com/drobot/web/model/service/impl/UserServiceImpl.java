@@ -4,8 +4,9 @@ import com.drobot.web.controller.RequestParameter;
 import com.drobot.web.exception.DaoException;
 import com.drobot.web.exception.ServiceException;
 import com.drobot.web.model.dao.ColumnName;
-import com.drobot.web.model.dao.Dao;
+import com.drobot.web.model.dao.EmployeeDao;
 import com.drobot.web.model.dao.UserDao;
+import com.drobot.web.model.dao.impl.EmployeeDaoImpl;
 import com.drobot.web.model.dao.impl.UserDaoImpl;
 import com.drobot.web.model.entity.Entity;
 import com.drobot.web.model.entity.User;
@@ -39,17 +40,6 @@ public enum UserServiceImpl implements UserService {
                 User user = new User(login, email, role);
                 result = userDao.add(user, encryptedPassword);
             }
-        } catch (DaoException e) {
-            throw new ServiceException(e);
-        }
-        return result;
-    }
-
-    @Override
-    public boolean remove(int userId) throws ServiceException {
-        boolean result;
-        try {
-            result = userDao.remove(userId);
         } catch (DaoException e) {
             throw new ServiceException(e);
         }
@@ -236,6 +226,22 @@ public enum UserServiceImpl implements UserService {
     }
 
     @Override
+    public boolean updatePassword(int userId, String newPassword) throws ServiceException {
+        boolean result = false;
+        try {
+            if (UserValidator.isPasswordValid(newPassword)) {
+                if (userDao.exists(userId)) {
+                    String encryptedPassword = Encrypter.encrypt(newPassword);
+                    result = userDao.updatePassword(userId, encryptedPassword);
+                }
+            }
+        } catch (DaoException e) {
+            throw new ServiceException(e);
+        }
+        return result;
+    }
+// FIXME: 10.11.2020
+    /*@Override
     public boolean updateLogin(int userId, String newLogin) throws ServiceException {
         boolean result = false;
         try {
@@ -271,22 +277,6 @@ public enum UserServiceImpl implements UserService {
                     } else {
                         LOGGER.log(Level.DEBUG, "Such user email is already set");
                     }
-                }
-            }
-        } catch (DaoException e) {
-            throw new ServiceException(e);
-        }
-        return result;
-    }
-
-    @Override
-    public boolean updatePassword(int userId, String newPassword) throws ServiceException {
-        boolean result = false;
-        try {
-            if (UserValidator.isPasswordValid(newPassword)) {
-                if (userDao.exists(userId)) {
-                    String encryptedPassword = Encrypter.encrypt(newPassword);
-                    result = userDao.updatePassword(userId, encryptedPassword);
                 }
             }
         } catch (DaoException e) {
@@ -333,7 +323,7 @@ public enum UserServiceImpl implements UserService {
             throw new ServiceException(e);
         }
         return result;
-    }
+    }*/
 
     @Override
     public int count() throws ServiceException {
@@ -373,7 +363,6 @@ public enum UserServiceImpl implements UserService {
         int userId = Integer.parseInt(currentFields.get(RequestParameter.USER_ID));
         String login = null;
         String email = null;
-        Entity.Status status = null;
         boolean isValid = true;
         boolean noMatches = true;
         try {
@@ -403,17 +392,8 @@ public enum UserServiceImpl implements UserService {
             } else {
                 email = currentFields.get(RequestParameter.EMAIL);
             }
-            if (newFields.containsKey(RequestParameter.USER_STATUS)) {
-                if (mapService.checkStatus(newFields)) {
-                    status = Entity.Status.valueOf(newFields.get(RequestParameter.USER_STATUS));
-                } else {
-                    isValid = false;
-                }
-            } else {
-                status = Entity.Status.valueOf(currentFields.get(RequestParameter.USER_STATUS));
-            }
             if (isValid && noMatches) {
-                result = userDao.update(userId, login, email, status);
+                result = userDao.update(userId, login, email);
             }
         } catch (DaoException e) {
             throw new ServiceException(e);
@@ -421,6 +401,56 @@ public enum UserServiceImpl implements UserService {
         return result;
     }
 
+    @Override
+    public boolean blockUser(int userId) throws ServiceException {
+        boolean result;
+        try {
+            result = userDao.updateStatus(userId, Entity.Status.BLOCKED);
+            if (result) {
+                LOGGER.log(Level.DEBUG, "User " + userId + " has been blocked");
+            }
+        } catch (DaoException e) {
+            throw new ServiceException(e);
+        }
+        return result;
+    }
+
+    @Override
+    public boolean unblockUser(int userId, int employeeId) throws ServiceException {
+        boolean result = false;
+        EmployeeDao employeeDao = EmployeeDaoImpl.INSTANCE;
+        try {
+            Optional<Entity.Status> optionalStatus = employeeDao.findStatus(employeeId);
+            if (optionalStatus.isPresent()) {
+                Entity.Status employeeStatus = optionalStatus.get();
+                if (employeeStatus != Entity.Status.ARCHIVE) {
+                    result = userDao.updateStatus(userId, Entity.Status.ACTIVE);
+                    LOGGER.log(Level.DEBUG, "User " + userId + " has been unblocked");
+                } else {
+                    LOGGER.log(Level.DEBUG, "Employee's status is ARCHIVE, user cannot be unblocked");
+                }
+            }
+        } catch (DaoException e) {
+            throw new ServiceException(e);
+        }
+        return result;
+    }
+
+    @Override
+    public Optional<Entity.Status> findStatus(int userId) throws ServiceException {
+        Optional<Entity.Status> result;
+        try {
+            if (userId > 0) {
+                result = userDao.findStatus(userId);
+            } else {
+                result = Optional.empty();
+                LOGGER.log(Level.DEBUG, "Incorrect user id value");
+            }
+        } catch (DaoException e) {
+            throw new ServiceException(e);
+        }
+        return result;
+    }
 
     private boolean checkSortingTag(String sortBy) {
         return sortBy.equals(ColumnName.USER_ID)

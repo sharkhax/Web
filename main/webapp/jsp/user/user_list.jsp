@@ -5,21 +5,21 @@
 <fmt:setBundle basename="locale.pagecontent"/>
 <html>
 <head>
-    <title><fmt:message key="table.patientListTitle"/></title>
+    <title><fmt:message key="table.userListPageTitle"/></title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
           integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
     <link href="${pageContext.request.contextPath}/css/custom.css" rel="stylesheet" type="text/css">
 </head>
 <body>
 
-<jsp:include page="background.jsp"/>
-<%@include file="header.jsp" %>
+<jsp:include page="../supporting/background.jsp"/>
+<%@include file="../supporting/header.jsp" %>
 
 <div style="width: 1200px; margin: 13px 10px">
-    <ctg:patient_list/>
+    <ctg:user_list/>
 </div>
 
-<%@include file="footer.jsp" %>
+<%@include file="../supporting/footer.jsp" %>
 
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
         integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
@@ -31,8 +31,8 @@
         integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
         crossorigin="anonymous"></script>
 <script type="text/javascript">
-    function goToPatientInfo(id) {
-        document.location.href = "${pageContext.request.contextPath}/mainController?command=patient_data&requestedPatientInfoId=" + id;
+    function goToUserInfo(id) {
+        document.location.href = "${pageContext.request.contextPath}/mainController?command=user_data&requestedUserInfoId=" + id;
     }
 </script>
 

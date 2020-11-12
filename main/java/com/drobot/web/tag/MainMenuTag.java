@@ -13,6 +13,9 @@ import javax.servlet.jsp.tagext.TagSupport;
 import java.io.IOException;
 import java.util.ResourceBundle;
 
+/**
+ * Custom tag that creates main menu buttons.
+ */
 public class MainMenuTag extends TagSupport {
 
     private static final Logger LOGGER = LogManager.getLogger(MainMenuTag.class);

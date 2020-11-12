@@ -232,4 +232,24 @@ public final class SessionAttribute {
      * Represents map of user's fields that were not updated at its updating form page.
      */
     public static final String USER_DATA_EMPTY_FIELDS = "userDataEmptyFields";
+
+    /**
+     * Flag that shows that concrete employee exists. Should be removed from session in filter after checking.
+     */
+    public static final String EMPLOYEE_EXISTS = "employeeExists";
+
+    /**
+     * Represents map of employee's new fields at its updating form page.
+     */
+    public static final String EMPLOYEE_DATA_NEW_FIELDS = "employeeDataNewFields";
+
+    /**
+     * Represents map of employee's new fields that are already used at its updating form page.
+     */
+    public static final String EMPLOYEE_DATA_EXISTING_FIELDS = "employeeDataExistingFields";
+
+    /**
+     * Represents map of employee's fields that were not updated at its updating form page.
+     */
+    public static final String EMPLOYEE_DATA_EMPTY_FIELDS = "employeeDataEmptyFields";
 }

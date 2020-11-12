@@ -6,32 +6,12 @@
 <fmt:setBundle basename="locale.pagecontent"/>
 <html>
 <head>
-    <title><fmt:message key="patientInfo.pageTitle"/></title>
+    <title>Title</title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
           integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
     <link href="${pageContext.request.contextPath}/css/custom.css" rel="stylesheet" type="text/css">
 </head>
 <body>
-
-<jsp:include page="background.jsp"/>
-<%@ include file="header.jsp" %>
-
-<div class="main-menu">
-    <div class="list-group">
-        <form action="${pageContext.request.contextPath}/mainController" method="post">
-            <input type="hidden" name="command" value="redirect_command"/>
-            <button class="list-group-item list-group-item-action" type="submit" name="r_page"
-                    value="/settings/changePassword" style="width: 90%;
-    color: #495057;
-    text-align: center;
-    background-color: #ffffffb5;
-    font-weight: bold;
-    font-family: 'Times New Roman', sans-serif">
-                <fmt:message key="settings.changePasswordButton"/>
-            </button>
-        </form>
-    </div>
-</div>
 
 <div style="background-color: #f4f4f4b8; width: 700px; margin-left: 2px">
     <dl class="row">
@@ -118,7 +98,6 @@
     </dl>
 </div>
 
-<%@ include file="footer.jsp" %>
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
         integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
         crossorigin="anonymous"></script>

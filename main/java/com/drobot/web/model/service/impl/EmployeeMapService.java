@@ -2,6 +2,7 @@ package com.drobot.web.model.service.impl;
 
 import com.drobot.web.controller.RequestParameter;
 import com.drobot.web.model.entity.Employee;
+import com.drobot.web.model.entity.Entity;
 import com.drobot.web.model.service.MapService;
 import com.drobot.web.model.util.DateConverter;
 import com.drobot.web.model.validator.EmployeeValidator;
@@ -126,22 +127,21 @@ public enum EmployeeMapService implements MapService {
         return result;
     }
 
-    // TODO: 18.10.2020
-    /*public boolean checkStatus(Map<String, String> fields) {
+
+    public boolean checkStatus(Map<String, String> fields) {
         boolean result = false;
-        if (fields != null && fields.containsKey(ColumnName.EMPLOYEE_STATUS)) {
+        if (fields != null && fields.containsKey(RequestParameter.EMPLOYEE_STATUS)) {
             result = true;
-            String stringStatus = fields.get(ColumnName.EMPLOYEE_STATUS);
+            String stringStatus = fields.get(RequestParameter.EMPLOYEE_STATUS);
             try {
-                int statusId = Integer.parseInt(stringStatus);
-                Entity.Status.defineStatus(statusId);
+                Entity.Status.valueOf(stringStatus);
             } catch (IllegalArgumentException e) {
                 result = false;
-                fields.put(ColumnName.EMPLOYEE_STATUS, "");
+                fields.put(RequestParameter.EMPLOYEE_STATUS, "");
             }
         }
         return result;
-    }*/
+    }
     
     private boolean checkNameOrSurname(Map<String, String> fields, String fieldName) {
         boolean result = false;

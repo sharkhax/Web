@@ -35,35 +35,15 @@ public class EmployeeDataCommand implements ActionCommand {
         try {
             employeeId = Integer.parseInt(stringEmployeeId != null ? stringEmployeeId : "");
         } catch (NumberFormatException e) {
-            page = UrlPattern.EMPLOYEE_LIST;
-            LOGGER.log(Level.ERROR, "Incorrect employee id value, redirected to employee list");
-            return page;
+            LOGGER.log(Level.ERROR, "Incorrect employee id value, returning null");
+            return null;
         }
         EmployeeService employeeService = EmployeeServiceImpl.INSTANCE;
         try {
             Optional<Employee> optionalEmployee = employeeService.findById(employeeId);
             if (optionalEmployee.isPresent()) {
                 Employee employee = optionalEmployee.get();
-                Map<String, String> fields = new HashMap<>();
-                fields.put(RequestParameter.EMPLOYEE_ID, String.valueOf(employeeId));
-                fields.put(RequestParameter.EMPLOYEE_NAME, employee.getName());
-                fields.put(RequestParameter.EMPLOYEE_SURNAME, employee.getSurname());
-                fields.put(RequestParameter.EMPLOYEE_AGE, String.valueOf(employee.getAge()));
-                fields.put(RequestParameter.EMPLOYEE_GENDER, String.valueOf(employee.getGender()));
-                fields.put(RequestParameter.EMPLOYEE_POSITION, employee.getPosition().toString());
-                long hireDateMillis = employee.getHireDateMillis();
-                String hireDate = DateConverter.millisToLocalDate(hireDateMillis).toString();
-                long dismissDateMillis = employee.getDismissDateMillis();
-                String dismissDate;
-                if (dismissDateMillis == 0L) {
-                    dismissDate = "-";
-                } else {
-                    dismissDate = DateConverter.millisToLocalDate(dismissDateMillis).toString();
-                }
-                fields.put(RequestParameter.HIRE_DATE, hireDate);
-                fields.put(RequestParameter.DISMISS_DATE, dismissDate);
-                fields.put(RequestParameter.EMPLOYEE_STATUS, employee.getStatus().toString());
-                fields.put(RequestParameter.USER_ID, String.valueOf(employee.getUserId()));
+                Map<String, String> fields = employeeService.packEmployeeIntoMap(employee);
                 HttpSession session = request.getSession();
                 session.setAttribute(SessionAttribute.EMPLOYEE_DATA_FIELDS, fields);
                 session.setAttribute(SessionAttribute.EMPLOYEE_INFO_ID, employeeId);

@@ -6,6 +6,70 @@ public class Employee extends Entity {
         DOCTOR, ASSISTANT
     }
 
+    public static class Builder {
+
+        private final Employee employee;
+
+
+        public Builder(Employee employee) {
+            this.employee = employee;
+        }
+
+        public Builder buildId(int employeeId) {
+            employee.setId(employeeId);
+            return this;
+        }
+
+        public Builder buildName(String name) {
+            employee.setName(name);
+            return this;
+        }
+
+        public Builder buildSurname(String surname) {
+            employee.setSurname(surname);
+            return this;
+        }
+
+        public Builder buildAge(int age) {
+            employee.setAge(age);
+            return this;
+        }
+
+        public Builder buildGender(char gender) {
+            employee.setGender(gender);
+            return this;
+        }
+
+        public Builder buildPosition(Position position) {
+            employee.setPosition(position);
+            return this;
+        }
+
+        public Builder buildHireDateMillis(long hireDateMillis) {
+            employee.setHireDateMillis(hireDateMillis);
+            return this;
+        }
+
+        public Builder buildDismissDateMillis(long dismissDateMillis) {
+            employee.setDismissDateMillis(dismissDateMillis);
+            return this;
+        }
+
+        public Builder buildStatus(Status status) {
+            employee.setStatus(status);
+            return this;
+        }
+
+        public Builder buildUserId(int userId) {
+            employee.setUserId(userId);
+            return this;
+        }
+
+        public Employee getEmployee() {
+            return employee;
+        }
+    }
+
     private String name;
     private String surname;
     private int age;
@@ -17,17 +81,6 @@ public class Employee extends Entity {
     private int userId;
 
     public Employee() {
-    }
-
-    public Employee(String name, String surname,
-                    int age, char gender, Position position,
-                    long hireDateMillis) {
-        this.name = name;
-        this.surname = surname;
-        this.age = age;
-        this.gender = gender;
-        this.position = position;
-        this.hireDateMillis = hireDateMillis;
     }
 
     public Employee(int employeeId, String name, String surname,

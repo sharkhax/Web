@@ -13,6 +13,7 @@ import com.drobot.web.model.dao.impl.EmployeeDaoImpl;
 import com.drobot.web.model.dao.impl.UserDaoImpl;
 import com.drobot.web.model.dao.impl.UserEmployeeDaoImpl;
 import com.drobot.web.model.entity.Employee;
+import com.drobot.web.model.entity.Entity;
 import com.drobot.web.model.entity.User;
 import com.drobot.web.model.service.UserEmployeeService;
 import com.drobot.web.model.util.DateConverter;

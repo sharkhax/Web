@@ -59,6 +59,11 @@ public enum PatientDaoImpl implements PatientDao {
     }
 
     @Override
+    public boolean exists(int patientId) throws DaoException {
+        throw new UnsupportedOperationException();
+    }
+
+    @Override
     public boolean add(Patient patient) throws DaoException {
         boolean result = false;
         Connection connection = null;
@@ -86,11 +91,6 @@ public enum PatientDaoImpl implements PatientDao {
             close(connection);
         }
         return result;
-    }
-
-    @Override
-    public boolean remove(int id) throws DaoException {
-        return false;
     }
 
     @Override
@@ -147,11 +147,6 @@ public enum PatientDaoImpl implements PatientDao {
             close(connection);
         }
         return result;
-    }
-
-    @Override
-    public boolean update(Patient patient) throws DaoException {
-        return false;
     }
 
     @Override
