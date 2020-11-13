@@ -17,7 +17,6 @@ import org.apache.logging.log4j.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -42,7 +41,7 @@ public class UserDataCommand implements ActionCommand {
             Optional<User> optionalUser = userService.findById(userId);
             if (optionalUser.isPresent()) {
                 User user = optionalUser.get();
-                Map<String, String> fields = userService.packUserInfoMap(user);
+                Map<String, String> fields = userService.packUserIntoMap(user);
                 HttpSession session = request.getSession();
                 session.setAttribute(SessionAttribute.USER_DATA_FIELDS, fields);
                 session.setAttribute(SessionAttribute.USER_INFO_ID, userId);

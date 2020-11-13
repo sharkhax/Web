@@ -75,13 +75,13 @@ public enum PatientMapService implements MapService {
 
     public boolean checkDiagnosis(Map<String, String> fields) {
         boolean result = false;
-        if (fields != null && fields.containsKey(RequestParameter.DIAGNOSIS)) {
-            String diagnosis = fields.get(RequestParameter.DIAGNOSIS);
+        if (fields != null && fields.containsKey(RequestParameter.PATIENT_DIAGNOSIS)) {
+            String diagnosis = fields.get(RequestParameter.PATIENT_DIAGNOSIS);
             if (PatientValidator.isDiagnosisValid(diagnosis)) {
                 result = true;
             } else {
                 result = false;
-                fields.put(RequestParameter.DIAGNOSIS, "");
+                fields.put(RequestParameter.PATIENT_DIAGNOSIS, "");
             }
         }
         return result;

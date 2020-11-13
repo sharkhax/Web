@@ -33,12 +33,12 @@ public class RegisterPatientCommand implements ActionCommand {
         String surname = request.getParameter(RequestParameter.PATIENT_SURNAME);
         String age = request.getParameter(RequestParameter.PATIENT_AGE);
         String gender = request.getParameter(RequestParameter.PATIENT_GENDER);
-        String diagnosis = request.getParameter(RequestParameter.DIAGNOSIS);
+        String diagnosis = request.getParameter(RequestParameter.PATIENT_DIAGNOSIS);
         fields.put(RequestParameter.PATIENT_NAME, name);
         fields.put(RequestParameter.PATIENT_SURNAME, surname);
         fields.put(RequestParameter.PATIENT_AGE, age);
         fields.put(RequestParameter.PATIENT_GENDER, gender);
-        fields.put(RequestParameter.DIAGNOSIS, diagnosis);
+        fields.put(RequestParameter.PATIENT_DIAGNOSIS, diagnosis);
         Map<String, String> existingFields = new HashMap<>();
         PatientService patientService = PatientServiceImpl.INSTANCE;
         try {

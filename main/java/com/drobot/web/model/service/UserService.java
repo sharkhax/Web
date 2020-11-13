@@ -9,11 +9,28 @@ import java.util.Map;
 import java.util.Optional;
 
 /**
- * User service ..
+ * Interface provides actions on user.
  */
 public interface UserService {
+
+    /**
+     * Adds user to the datasource.
+     * @param login String representation of user's login.
+     * @param email String representation of user's email.
+     * @param password String representation of user's non-encrypted password.
+     * @param role User.Role object of user's role.
+     * @return True if user has been added, false otherwise.
+     * @throws ServiceException If an exception was thrown while adding user.
+     */
     boolean add(String login, String email, String password, User.Role role) throws ServiceException;
 
+    /**
+     * Returns list of all users from datasource.
+     * @param sortBy String representation of list sorting tag.
+     * @param reverse Boolean flag to reverse the list.
+     * @return List object containing User objects.
+     * @throws ServiceException If an exception was thrown while finding users.
+     */
     List<User> findAll(String sortBy, boolean reverse) throws ServiceException;
 
     List<User> findAll(int start, int length, String sortBy, boolean reverse) throws ServiceException;
@@ -50,7 +67,7 @@ public interface UserService {
 
     int count() throws ServiceException;
 
-    Map<String, String> packUserInfoMap(User user);
+    Map<String, String> packUserIntoMap(User user);
 
     boolean update(Map<String, String> newFields, Map<String, String> existingFields,
                    Map<String, String> currentFields) throws ServiceException;

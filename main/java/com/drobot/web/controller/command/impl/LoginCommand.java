@@ -61,7 +61,6 @@ public class LoginCommand implements ActionCommand {
                     }
                 }
                 page = UrlPattern.MAIN_PAGE;
-                session.setAttribute(SessionAttribute.CURRENT_PAGE, UrlPattern.MAIN_PAGE);
                 session.setAttribute(SessionAttribute.WRONG_LOGIN_PASSWORD, null);
                 session.setAttribute(SessionAttribute.USER_BLOCKED, null);
                 Map<String, String> loginInfo = new HashMap<>();

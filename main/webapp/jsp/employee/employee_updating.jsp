@@ -145,7 +145,7 @@
                                     key="employeeUpdating.gender"/></label>
                             <c:choose>
                                 <c:when test="${not empty employeeDataNewFields.employeeGender}">
-                                    <select id="inputGender1" name="employeeGender" class="form-control is-invalid">
+                                    <select id="inputGender1" name="employeeGender" class="form-control is-valid">
                                         <option></option>
                                         <c:choose>
                                             <c:when test="${employeeDataNewFields.employeeGender eq 'M'}">

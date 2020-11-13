@@ -338,7 +338,7 @@ public enum UserServiceImpl implements UserService {
     }
 
     @Override
-    public Map<String, String> packUserInfoMap(User user) {
+    public Map<String, String> packUserIntoMap(User user) {
         Map<String, String> result = new HashMap<>();
         if (user != null) {
             int userId = user.getId();

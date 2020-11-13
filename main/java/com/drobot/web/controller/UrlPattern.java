@@ -39,5 +39,6 @@ public final class UrlPattern {
             "/mainController?command=redirect_to_update_user_page&userId=";
     public static final String UPDATING_EMPLOYEE_REQUEST =
             "/mainController?command=redirect_to_update_employee_page&employeeId=";
-
+    public static final String UPDATING_PATIENT_REQUEST =
+            "/mainController?command=redirect_to_update_patient_page&patientId=";
 }

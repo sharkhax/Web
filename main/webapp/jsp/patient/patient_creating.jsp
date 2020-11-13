@@ -82,13 +82,13 @@
                                 <fmt:message key="patientCreating.diagnosis"/>
                             </label>
                             <c:choose>
-                                <c:when test="${not empty patientCreatingFields.diagnosis}">
-                                    <input class="form-control is-valid" name="diagnosis" type="text"
+                                <c:when test="${not empty patientCreatingFields.patientDiagnosis}">
+                                    <input class="form-control is-valid" name="patientDiagnosis" type="text"
                                            pattern="[a-zA-Z\-', ]{2,45}" id="inputDiagnosis" required
-                                           value="${patientCreatingFields.diagnosis}"/>
+                                           value="${patientCreatingFields.patientDiagnosis}"/>
                                 </c:when>
                                 <c:otherwise>
-                                    <input class="form-control is-invalid" name="diagnosis" type="text"
+                                    <input class="form-control is-invalid" name="patientDiagnosis" type="text"
                                            pattern="[a-zA-Z\-', ]{2,45}" id="inputDiagnosis" required/>
                                     <div style="font-family: 'Times New Roman', sans-serif" class="invalid-feedback">
                                         <fmt:message key="patientCreating.invalidDiagnosis"/>
@@ -194,8 +194,8 @@
                                    style="font-weight: bold; font-family: 'Times New Roman', sans-serif">
                                 <fmt:message key="patientCreating.diagnosis"/>
                             </label>
-                            <input class="form-control" name="diagnosis" type="text" pattern="[a-zA-Z\-', ]{2,45}"
-                                   id="inputDiagnosis1" value="${patientCreatingFields.diagnosis}" required/>
+                            <input class="form-control" name="patientDiagnosis" type="text" pattern="[a-zA-Z\-', ]{2,45}"
+                                   id="inputDiagnosis1" value="${patientCreatingFields.patientDiagnosis}" required/>
                         </div>
                     </div>
                     <div class="form-row">

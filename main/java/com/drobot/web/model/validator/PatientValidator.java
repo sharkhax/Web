@@ -115,6 +115,7 @@ public class PatientValidator {
             Matcher matcher = pattern.matcher(diagnosis);
             result = matcher.matches();
             String log = result ? "Diagnosis is valid" : "Diagnosis is not valid";
+            LOGGER.log(Level.DEBUG, log);
         } else {
             LOGGER.log(Level.DEBUG, "Diagnosis is not valid, it's null");
         }

@@ -24,7 +24,7 @@ public class PatientCreator implements Creator<Patient> {
             String surname = fields.get(RequestParameter.PATIENT_SURNAME);
             int age = Integer.parseInt(fields.get(RequestParameter.PATIENT_AGE));
             char gender = fields.get(RequestParameter.PATIENT_GENDER).charAt(0);
-            String diagnosis = fields.get(RequestParameter.DIAGNOSIS);
+            String diagnosis = fields.get(RequestParameter.PATIENT_DIAGNOSIS);
             Patient patient = new Patient(name, surname, age, gender, diagnosis);
             result = Optional.of(patient);
         } else {

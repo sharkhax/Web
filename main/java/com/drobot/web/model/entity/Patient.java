@@ -13,6 +13,15 @@ public class Patient extends Entity {
     public Patient() {
     }
 
+    public Patient(int id, String name, String surname, int age, char gender, String diagnosis) {
+        super(id);
+        this.name = name;
+        this.surname = surname;
+        this.age = age;
+        this.gender = gender;
+        this.diagnosis = diagnosis;
+    }
+
     public Patient(String name, String surname, int age, char gender, String diagnosis) {
         this.name = name;
         this.surname = surname;

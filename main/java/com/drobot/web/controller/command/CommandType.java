@@ -35,7 +35,9 @@ public enum CommandType {
     RESTORE_EMPLOYEE(new RestoreEmployeeCommand()),
     SEND_TO_VACATION(new SendToVacationCommand()),
     RETURN_FROM_VACATION(new ReturnFromVacationCommand()),
-    UPDATE_PATIENT(new UpdatePatientCommand());
+    UPDATE_PATIENT(new UpdatePatientCommand()),
+    REDIRECT_TO_UPDATE_PATIENT_PAGE(new RedirectToUpdatePatientCommand()),
+    REDIRECT_TO_RECORD_CREATING_PAGE(new RedirectToRecordCreatingCommand());
 
     private final ActionCommand command;
 

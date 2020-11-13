@@ -167,8 +167,7 @@ public class EmployeeValidator {
 
     private static boolean isDateValid(long dateMillis, String minDateString) {
         boolean result;
-        long minDateDays = LocalDate.parse(minDateString).toEpochDay();
-        long minDateMillis = DateConverter.daysToMillis(minDateDays);
+        long minDateMillis = DateConverter.localDateToMillis(LocalDate.parse(minDateString));
         result = dateMillis > minDateMillis
                 && dateMillis < Instant.now().toEpochMilli();
         return result;

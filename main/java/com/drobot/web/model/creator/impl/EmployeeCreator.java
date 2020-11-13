@@ -32,8 +32,7 @@ public class EmployeeCreator implements Creator<Employee> {
             String stringPosition = fields.get(RequestParameter.EMPLOYEE_POSITION);
             Employee.Position position = Employee.Position.valueOf(stringPosition.toUpperCase());
             String stringDate = fields.get(RequestParameter.HIRE_DATE);
-            long hireDateDays = LocalDate.parse(stringDate).getLong(ChronoField.EPOCH_DAY);
-            long hireDateMillis = DateConverter.daysToMillis(hireDateDays);
+            long hireDateMillis = DateConverter.localDateToMillis(LocalDate.parse(stringDate));
             Employee.Builder builder = new Employee.Builder(new Employee());
             builder.buildName(name)
                     .buildSurname(surname)

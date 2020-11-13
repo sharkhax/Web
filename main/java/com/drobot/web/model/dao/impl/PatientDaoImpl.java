@@ -33,7 +33,12 @@ public enum PatientDaoImpl implements PatientDao {
     private final String FIND_BY_ID_STATEMENT = new StringBuilder(
             "SELECT patient_id, patient_name, patient_surname, patient_age, patient_gender, diagnosis, status_name, ")
             .append("record_id FROM hospital.patients INNER JOIN hospital.statuses ON patient_status = status_id ")
-            .append("LEFT JOIN hospital.patient_records ON patient_id = patient_id_fk WHERE patient_id = ?;").toString();
+            .append("LEFT JOIN hospital.patient_records ON patient_id = patient_id_fk WHERE patient_id = ?;")
+            .toString();
+    private final String EXISTS_ID_STATEMENT = "SELECT COUNT(*) as label FROM hospital.patients WHERE patient_id = ?;";
+    private final String UPDATE_STATEMENT =
+            "UPDATE hospital.patients SET patient_name = ?, patient_surname = ?, patient_age = ?, " +
+                    "patient_gender = ?, diagnosis = ? WHERE patient_id = ?;";
 
     @Override
     public boolean exists(String name, String surname) throws DaoException {
@@ -59,8 +64,56 @@ public enum PatientDaoImpl implements PatientDao {
     }
 
     @Override
+    public boolean update(Patient patient) throws DaoException {
+        boolean result;
+        Connection connection = null;
+        PreparedStatement statement = null;
+        try {
+            connection = ConnectionPool.INSTANCE.getConnection();
+            statement = connection.prepareStatement(UPDATE_STATEMENT);
+            statement.setString(1, patient.getName());
+            statement.setString(2, patient.getSurname());
+            statement.setString(3, String.valueOf(patient.getAge()));
+            statement.setString(4, String.valueOf(patient.getGender()));
+            statement.setString(5, patient.getDiagnosis());
+            statement.setString(6, String.valueOf(patient.getId()));
+            statement.execute();
+            LOGGER.log(Level.DEBUG, "Patient has been updated successfully");
+            result = true;
+        } catch (SQLException | ConnectionPoolException e) {
+            throw new DaoException(e);
+        } finally {
+            close(statement);
+            close(connection);
+        }
+        return result;
+    }
+
+    @Override
     public boolean exists(int patientId) throws DaoException {
-        throw new UnsupportedOperationException();
+        boolean result = false;
+        Connection connection = null;
+        PreparedStatement statement = null;
+        try {
+            connection = ConnectionPool.INSTANCE.getConnection();
+            statement = connection.prepareStatement(EXISTS_ID_STATEMENT);
+            statement.setInt(1, patientId);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                result = resultSet.getInt(1) != 0;
+                String log = result ? "Patient with id " + patientId + " has been found"
+                        : "Patient with id " + patientId + " hasn't been found";
+                LOGGER.log(Level.DEBUG, log);
+            } else {
+                LOGGER.log(Level.ERROR, "Result set is empty");
+            }
+        } catch (SQLException | ConnectionPoolException e) {
+            throw new DaoException(e);
+        } finally {
+            close(statement);
+            close(connection);
+        }
+        return result;
     }
 
     @Override
@@ -185,8 +238,8 @@ public enum PatientDaoImpl implements PatientDao {
                 int recordId = resultSet.getInt(8);
                 Patient patient = new Patient(id, name, surname, age, gender, diagnosis, status, recordId);
                 result.add(patient);
-                LOGGER.log(Level.DEBUG, result.size() + " patients have been found");
             } while (resultSet.next());
+            LOGGER.log(Level.DEBUG, result.size() + " patients have been found");
         } else {
             LOGGER.log(Level.WARN, "Result set is null or empty");
         }

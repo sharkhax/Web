@@ -59,7 +59,7 @@ public class UpdateUserCommand implements ActionCommand {
                     LOGGER.log(Level.DEBUG, "User has been updated successfully");
                     Optional<User> optionalUser = userService.findById(userId);
                     User user = optionalUser.orElseThrow();
-                    Map<String, String> fields = userService.packUserInfoMap(user);
+                    Map<String, String> fields = userService.packUserIntoMap(user);
                     session.setAttribute(SessionAttribute.USER_DATA_FIELDS, fields);
                     LOGGER.log(Level.DEBUG, "User fields have been replaced");
                     StringBuilder sb = new StringBuilder(UrlPattern.USER_INFO);

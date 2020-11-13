@@ -44,7 +44,7 @@ public class RedirectToUpdateUserCommand implements ActionCommand {
                 if (userInfoId == null || userId != userInfoId) {
                     Optional<User> optional = userService.findById(userId);
                     User user = optional.orElseThrow();
-                    Map<String, String> fields = userService.packUserInfoMap(user);
+                    Map<String, String> fields = userService.packUserIntoMap(user);
                     session.setAttribute(SessionAttribute.USER_DATA_FIELDS, fields);
                     session.setAttribute(SessionAttribute.USER_INFO_ID, userId);
                     LOGGER.log(Level.DEBUG, "User data fields have been refilled");

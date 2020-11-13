@@ -195,7 +195,7 @@ public class DynamicUrlFilter extends AbstractSecurityFilter {
     }
 
     private void doCaseUpdatingEmployee(HttpServletRequest request, HttpServletResponse response,
-                                    HttpSession session) throws IOException, ServletException {
+                                        HttpSession session) throws IOException, ServletException {
         String page;
         int employeeId = defineIdFromUri(request.getRequestURI());
         Boolean employeeExists = (Boolean) session.getAttribute(SessionAttribute.EMPLOYEE_EXISTS);
@@ -211,15 +211,34 @@ public class DynamicUrlFilter extends AbstractSecurityFilter {
             boolean condition = userRole != null && userRole.equals(SessionAttribute.ADMIN_ROLE);
             forwardOrError404(condition, page, request, response, session);
         } else {
-            LOGGER.log(Level.DEBUG, "Requesting the command to check user id");
+            LOGGER.log(Level.DEBUG, "Requesting the command to check employee id");
             page = UrlPattern.UPDATING_EMPLOYEE_REQUEST + employeeId;
             forward(request, response, page);
         }
     }
 
     private void doCaseUpdatingPatient(HttpServletRequest request, HttpServletResponse response,
-                                    HttpSession session) throws IOException, ServletException {
-
+                                       HttpSession session) throws IOException, ServletException {
+        String page;
+        int patientId = defineIdFromUri(request.getRequestURI());
+        Boolean patientExists = (Boolean) session.getAttribute(SessionAttribute.PATIENT_EXISTS);
+        if (patientExists != null && patientExists) {
+            String prevPage = (String) session.getAttribute(SessionAttribute.CURRENT_PAGE);
+            if (!prevPage.matches(DynamicUrl.UPDATING_PATIENT.getPattern())) {
+                session.setAttribute(SessionAttribute.VALIDATED, null);
+            }
+            LOGGER.log(Level.DEBUG, "Flag \"PATIENT_EXISTS\" has been removed from the session");
+            session.setAttribute(SessionAttribute.PATIENT_EXISTS, null);
+            String userRole = (String) session.getAttribute(SessionAttribute.USER_ROLE);
+            page = JspPath.PATIENT_UPDATING;
+            boolean condition = userRole != null
+                    && (userRole.equals(SessionAttribute.ADMIN_ROLE) || userRole.equals(SessionAttribute.DOCTOR_ROLE));
+            forwardOrError404(condition, page, request, response, session);
+        } else {
+            LOGGER.log(Level.DEBUG, "Requesting the command to check patient id");
+            page = UrlPattern.UPDATING_PATIENT_REQUEST + patientId;
+            forward(request, response, page);
+        }
     }
 }
 

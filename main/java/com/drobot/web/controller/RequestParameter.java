@@ -134,11 +134,6 @@ public final class RequestParameter {
     public static final String PATIENT_GENDER = "patientGender";
 
     /**
-     * Represents patient's diagnosis field at registration or updating forms or appropriate lists.
-     */
-    public static final String DIAGNOSIS = "diagnosis";
-
-    /**
      * Represents patient's ID field at registration or updating forms or appropriate lists.
      */
     public static final String PATIENT_ID = "patientId";

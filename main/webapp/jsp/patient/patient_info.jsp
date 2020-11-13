@@ -21,7 +21,7 @@
         <form action="${pageContext.request.contextPath}/mainController" method="post">
             <input type="hidden" name="patientId" value="${patientDataFields.patientId}"/>
             <button class="list-group-item list-group-item-action" type="submit" name="command"
-                    value="update_patient" style="width: 90%;
+                    value="redirect_to_update_patient_page" style="width: 90%;
     color: #495057;
     text-align: center;
     background-color: #ffffffb5;
@@ -29,6 +29,25 @@
     font-family: 'Times New Roman', sans-serif">
                 <fmt:message key="patientInfo.updatePatientButton"/>
             </button>
+            <button class="list-group-item list-group-item-action" type="submit" name="command"
+                    value="redirect_to_record_creating_page" style="width: 90%;
+    color: #495057;
+    text-align: center;
+    background-color: #ffffffb5;
+    font-weight: bold;
+    font-family: 'Times New Roman', sans-serif">
+                <fmt:message key="patientInfo.createRecordButton"/>
+            </button>
+            <button class="list-group-item list-group-item-action" type="submit" name="command"
+                    value="record_list_command" style="width: 90%;
+    color: #495057;
+    text-align: center;
+    background-color: #ffffffb5;
+    font-weight: bold;
+    font-family: 'Times New Roman', sans-serif">
+                <fmt:message key="patientInfo.recordListButton"/>
+            </button>
+            <ctg:patient_info_dynamic_buttons/>
         </form>
     </div>
 </div>

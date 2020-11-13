@@ -549,6 +549,7 @@ public enum UserDaoImpl implements UserDao {
         return result;
     }
 
+    // FIXME: 13.11.2020
     private Optional<Entity.Status> findAndGetStatus(int userId, Connection connection)
             throws SQLException {
         Optional<Entity.Status> result;

@@ -24,6 +24,7 @@ public enum PatientServiceImpl implements PatientService {
     INSTANCE;
 
     private final Logger LOGGER = LogManager.getLogger(PatientServiceImpl.class);
+    private final PatientDao patientDao = PatientDaoImpl.INSTANCE;
 
     @Override
     public boolean add(Map<String, String> fields, Map<String, String> existingFields) throws ServiceException {
@@ -101,6 +102,123 @@ public enum PatientServiceImpl implements PatientService {
             throw new ServiceException(e);
         }
         return optionalPatient;
+    }
+
+    @Override
+    public boolean exists(int patientId) throws ServiceException {
+        boolean result = false;
+        try {
+            if (patientId > 0) {
+                result = patientDao.exists(patientId);
+            } else {
+                LOGGER.log(Level.ERROR, "Invalid patient id: " + patientId);
+            }
+        } catch (DaoException e) {
+            throw new ServiceException(e);
+        }
+        return result;
+    }
+
+    @Override
+    public Map<String, String> packPatientIntoMap(Patient patient) {
+        Map<String, String> fields = new HashMap<>();
+        if (patient != null) {
+            int patientId = patient.getId();
+            String stringPatientId = patientId != 0 ? String.valueOf(patientId) : "";
+            fields.put(RequestParameter.PATIENT_ID, stringPatientId);
+            fields.put(RequestParameter.PATIENT_NAME, patient.getName());
+            fields.put(RequestParameter.PATIENT_SURNAME, patient.getSurname());
+            fields.put(RequestParameter.PATIENT_AGE, String.valueOf(patient.getAge()));
+            fields.put(RequestParameter.PATIENT_GENDER, String.valueOf(patient.getGender()));
+            fields.put(RequestParameter.PATIENT_DIAGNOSIS, patient.getDiagnosis());
+            fields.put(RequestParameter.PATIENT_STATUS, patient.getStatus().toString());
+            String stringRecordId;
+            int recordId = patient.getRecordId();
+            if (recordId == 0) {
+                stringRecordId = "-";
+            } else {
+                stringRecordId = String.valueOf(recordId);
+            }
+            fields.put(RequestParameter.LAST_RECORD_ID, stringRecordId);
+        }
+        return fields;
+    }
+
+    @Override
+    public boolean update(Map<String, String> newFields, Map<String, String> existingFields,
+                          Map<String, String> currentFields) throws ServiceException {
+        boolean result = false;
+        PatientMapService mapService = PatientMapService.INSTANCE;
+        int patientId = Integer.parseInt(currentFields.get(RequestParameter.PATIENT_ID));
+        String name = null;
+        String surname = null;
+        int age = 0;
+        char gender = ' ';
+        String diagnosis = null;
+        boolean isValid = true;
+        boolean noMatches = true;
+        try {
+            if (newFields.containsKey(RequestParameter.PATIENT_NAME)) {
+                if (mapService.checkName(newFields)) {
+                    name = newFields.get(RequestParameter.PATIENT_NAME);
+                } else {
+                    isValid = false;
+                }
+            }
+            if (newFields.containsKey(RequestParameter.PATIENT_SURNAME)) {
+                if (mapService.checkSurname(newFields)) {
+                    surname = newFields.get(RequestParameter.PATIENT_SURNAME);
+                } else {
+                    isValid = false;
+                }
+            }
+            if (name != null && surname != null) {
+                if (patientDao.exists(name, surname)) {
+                    noMatches = false;
+                    existingFields.put(RequestParameter.PATIENT_NAME, name);
+                    existingFields.put(RequestParameter.PATIENT_SURNAME, surname);
+                    name = null;
+                    surname = null;
+                }
+            } else {
+                surname = surname == null ? currentFields.get(RequestParameter.PATIENT_SURNAME) : null;
+                name = name == null ? currentFields.get(RequestParameter.PATIENT_NAME) : null;
+            }
+            if (newFields.containsKey(RequestParameter.PATIENT_AGE)) {
+                if (mapService.checkAge(newFields)) {
+                    age = Integer.parseInt(newFields.get(RequestParameter.PATIENT_AGE));
+                } else {
+                    isValid = false;
+                }
+            } else {
+                age = Integer.parseInt(currentFields.get(RequestParameter.PATIENT_AGE));
+            }
+            if (newFields.containsKey(RequestParameter.PATIENT_GENDER)) {
+                if (mapService.checkGender(newFields)) {
+                    gender = newFields.get(RequestParameter.PATIENT_GENDER).charAt(0);
+                } else {
+                    isValid = false;
+                }
+            } else {
+                gender = currentFields.get(RequestParameter.PATIENT_GENDER).charAt(0);
+            }
+            if (newFields.containsKey(RequestParameter.PATIENT_DIAGNOSIS)) {
+                if (mapService.checkDiagnosis(newFields)) {
+                    diagnosis = newFields.get(RequestParameter.PATIENT_DIAGNOSIS);
+                } else {
+                    isValid = false;
+                }
+            } else {
+                diagnosis = currentFields.get(RequestParameter.PATIENT_DIAGNOSIS);
+            }
+            if (isValid && noMatches) {
+                Patient patient = new Patient(patientId, name, surname, age, gender, diagnosis);
+                result = patientDao.update(patient);
+            }
+        } catch (DaoException e) {
+            throw new ServiceException(e);
+        }
+        return result;
     }
 
     private boolean checkSortingTag(String sortBy) {

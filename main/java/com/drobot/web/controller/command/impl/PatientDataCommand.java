@@ -17,7 +17,6 @@ import org.apache.logging.log4j.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
@@ -42,22 +41,7 @@ public class PatientDataCommand implements ActionCommand {
             Optional<Patient> optionalPatient = patientService.findById(patientId);
             if (optionalPatient.isPresent()) {
                 Patient patient = optionalPatient.get();
-                Map<String, String> fields = new HashMap<>();
-                fields.put(RequestParameter.PATIENT_ID, String.valueOf(patientId));
-                fields.put(RequestParameter.PATIENT_NAME, patient.getName());
-                fields.put(RequestParameter.PATIENT_SURNAME, patient.getSurname());
-                fields.put(RequestParameter.PATIENT_AGE, String.valueOf(patient.getAge()));
-                fields.put(RequestParameter.PATIENT_GENDER, String.valueOf(patient.getGender()));
-                fields.put(RequestParameter.PATIENT_DIAGNOSIS, patient.getDiagnosis());
-                fields.put(RequestParameter.PATIENT_STATUS, patient.getStatus().toString());
-                String stringRecordId;
-                int recordId = patient.getRecordId();
-                if (recordId == 0) {
-                    stringRecordId = "-";
-                } else {
-                    stringRecordId = String.valueOf(recordId);
-                }
-                fields.put(RequestParameter.LAST_RECORD_ID, stringRecordId);
+                Map<String, String> fields = patientService.packPatientIntoMap(patient);
                 HttpSession session = request.getSession();
                 session.setAttribute(SessionAttribute.PATIENT_DATA_FIELDS, fields);
                 session.setAttribute(SessionAttribute.PATIENT_INFO_ID, patientId);

@@ -41,4 +41,9 @@
         <tag-class>com.drobot.web.tag.EmployeeInfoDynamicButtonTag</tag-class>
         <body-content>empty</body-content>
     </tag>
+    <tag>
+        <name>patient_info_dynamic_buttons</name>
+        <tag-class>com.drobot.web.tag.PatientInfoDynamicButtonTag</tag-class>
+        <body-content>empty</body-content>
+    </tag>
 </taglib>

@@ -16,4 +16,11 @@ public interface PatientService {
     int count() throws ServiceException;
 
     Optional<Patient> findById(int patientId) throws ServiceException;
+
+    boolean exists(int patientId) throws ServiceException;
+
+    Map<String, String> packPatientIntoMap(Patient patient);
+
+    boolean update(Map<String, String> newFields, Map<String, String> existingFields,
+                   Map<String, String> currentFields) throws ServiceException;
 }
