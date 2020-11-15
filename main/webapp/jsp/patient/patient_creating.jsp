@@ -76,26 +76,6 @@
                                 </c:otherwise>
                             </c:choose>
                         </div>
-                        <div class="form-group col-md-4">
-                            <label for="inputDiagnosis"
-                                   style="font-weight: bold; font-family: 'Times New Roman', sans-serif">
-                                <fmt:message key="patientCreating.diagnosis"/>
-                            </label>
-                            <c:choose>
-                                <c:when test="${not empty patientCreatingFields.patientDiagnosis}">
-                                    <input class="form-control is-valid" name="patientDiagnosis" type="text"
-                                           pattern="[a-zA-Z\-', ]{2,45}" id="inputDiagnosis" required
-                                           value="${patientCreatingFields.patientDiagnosis}"/>
-                                </c:when>
-                                <c:otherwise>
-                                    <input class="form-control is-invalid" name="patientDiagnosis" type="text"
-                                           pattern="[a-zA-Z\-', ]{2,45}" id="inputDiagnosis" required/>
-                                    <div style="font-family: 'Times New Roman', sans-serif" class="invalid-feedback">
-                                        <fmt:message key="patientCreating.invalidDiagnosis"/>
-                                    </div>
-                                </c:otherwise>
-                            </c:choose>
-                        </div>
                     </div>
                     <div class="form-row">
                         <div class="form-group col-md-3">
@@ -188,14 +168,6 @@
                             <input name="patientSurname" type="text" class="form-control" id="inputSurname1"
                                    pattern="[a-zA-Z\-']{2,45}" value="${patientCreatingFields.patientSurname}"
                                    required/>
-                        </div>
-                        <div class="form-group col-md-4">
-                            <label for="inputDiagnosis1"
-                                   style="font-weight: bold; font-family: 'Times New Roman', sans-serif">
-                                <fmt:message key="patientCreating.diagnosis"/>
-                            </label>
-                            <input class="form-control" name="patientDiagnosis" type="text" pattern="[a-zA-Z\-', ]{2,45}"
-                                   id="inputDiagnosis1" value="${patientCreatingFields.patientDiagnosis}" required/>
                         </div>
                     </div>
                     <div class="form-row">

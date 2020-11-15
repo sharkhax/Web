@@ -31,14 +31,14 @@ public class RestoreEmployeeCommand implements ActionCommand {
         EmployeeService service = EmployeeServiceImpl.INSTANCE;
         try {
             if (service.restoreEmployee(employeeId)) {
-                LOGGER.log(Level.DEBUG, "Employee has been restored successfully");
                 HttpSession session = request.getSession();
                 Map<String, String> employeeFields =
                         (Map<String, String>) session.getAttribute(SessionAttribute.EMPLOYEE_DATA_FIELDS);
                 employeeFields.replace(RequestParameter.EMPLOYEE_STATUS, Entity.Status.ACTIVE.toString());
                 session.setAttribute(SessionAttribute.EMPLOYEE_DATA_FIELDS, employeeFields);
+                LOGGER.log(Level.INFO, "Employee has been restored successfully");
             } else {
-                LOGGER.log(Level.ERROR, "Employee has not restored fired");
+                LOGGER.log(Level.ERROR, "Employee has not been restored");
             }
             StringBuilder sb = new StringBuilder(UrlPattern.EMPLOYEE_INFO);
             page = sb.deleteCharAt(sb.length() - 1).append(employeeId).toString();

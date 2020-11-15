@@ -20,25 +20,7 @@
     <div class="list-group">
         <form action="${pageContext.request.contextPath}/mainController" method="post">
             <input type="hidden" name="userId" value="${userDataFields.userId}"/>
-            <button class="list-group-item list-group-item-action" type="submit"
-                    name="command" value="redirect_to_updating_password" style="width: 90%;
-    color: #495057;
-    text-align: center;
-    background-color: #ffffffb5;
-    font-weight: bold;
-    font-family: 'Times New Roman', sans-serif">
-                <fmt:message key="userInfo.changePasswordButton"/>
-            </button>
-            <button class="list-group-item list-group-item-action" type="submit"
-                    name="command" value="redirect_to_update_user_page" style="width: 90%;
-    color: #495057;
-    text-align: center;
-    background-color: #ffffffb5;
-    font-weight: bold;
-    font-family: 'Times New Roman', sans-serif">
-                <fmt:message key="userInfo.updateUserButton"/>
-            </button>
-            <ctg:user_info_dynamic_buttons/>
+            <ctg:user_info_menu/>
         </form>
     </div>
 </div>

@@ -47,11 +47,11 @@ public class EmployeeDataCommand implements ActionCommand {
                 HttpSession session = request.getSession();
                 session.setAttribute(SessionAttribute.EMPLOYEE_DATA_FIELDS, fields);
                 session.setAttribute(SessionAttribute.EMPLOYEE_INFO_ID, employeeId);
-                LOGGER.log(Level.DEBUG, "Employee data has been got");
                 StringBuilder sb = new StringBuilder(UrlPattern.EMPLOYEE_INFO);
                 page = sb.deleteCharAt(sb.length() - 1).append(employeeId).toString();
+                LOGGER.log(Level.INFO, "Employee data has been got");
             } else {
-                LOGGER.log(Level.DEBUG, "No employee found");
+                LOGGER.log(Level.INFO, "No employee found");
                 page = null;
             }
         } catch (ServiceException e) {

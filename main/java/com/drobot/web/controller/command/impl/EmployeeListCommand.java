@@ -67,7 +67,7 @@ public class EmployeeListCommand implements ActionCommand {
         } catch (ServiceException e) {
             throw new CommandException(e);
         }
-        LOGGER.log(Level.DEBUG, "Employee list has been got");
+        LOGGER.log(Level.INFO, "Employee list has been got");
         return page;
     }
 }

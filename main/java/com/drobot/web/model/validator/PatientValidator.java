@@ -14,7 +14,7 @@ public class PatientValidator {
 
     private static final Logger LOGGER = LogManager.getLogger(PatientValidator.class);
     private static final String NAME_REGEX = "[a-zA-Z-']{2,45}";
-    private static final String DIAGNOSIS_REGEX = "[a-zA-Z-']{2,45}";
+    private static final String DIAGNOSIS_REGEX = "[a-zA-Z-' ]{2,45}";
     private static final int MIN_AGE = 18;
     private static final int MAX_AGE = 99;
     private static final char[] AVAILABLE_GENDERS = {'M', 'F'};

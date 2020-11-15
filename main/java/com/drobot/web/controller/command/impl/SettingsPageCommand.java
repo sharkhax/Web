@@ -28,9 +28,6 @@ public class SettingsPageCommand implements ActionCommand {
         UserEmployeeService userEmployeeService = UserEmployeeServiceImpl.INSTANCE;
         HttpSession session = request.getSession();
         Map<String, String> loginInfo = (Map<String, String>) session.getAttribute(SessionAttribute.LOGIN_INFO);
-        if (loginInfo == null) {
-            throw new CommandException("Login info is null");
-        }
         int userId = Integer.parseInt(loginInfo.get(SessionAttribute.USER_ID));
         try {
             Map<String, String> fields = userEmployeeService.loadUserData(userId);

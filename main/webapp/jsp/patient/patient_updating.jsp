@@ -235,33 +235,6 @@
                             </c:choose>
                         </div>
                     </div>
-                    <div class="form-row">
-                        <div class="form-group col-md-4">
-                            <label for="inputDiagnosis1"
-                                   style="font-weight: bold; font-family: 'Times New Roman', sans-serif"><fmt:message
-                                    key="patientUpdating.diagnosis"/></label>
-                            <c:choose>
-                                <c:when test="${not empty patientDataNewFields.patientDiagnosis}">
-                                    <input class="form-control is-valid" name="patientDiagnosis" type="text"
-                                           pattern="[a-zA-Z\-', ]{2,45}"
-                                           id="inputDiagnosis1"/>
-                                </c:when>
-                                <c:when test="${not empty patientDataEmptyFields.patientDiagnosis}">
-                                    <input class="form-control" name="patientDiagnosis" type="text"
-                                           pattern="[a-zA-Z\-', ]{2,45}"
-                                           id="inputDiagnosis1"/>
-                                </c:when>
-                                <c:otherwise>
-                                    <input class="form-control is-invalid" name="patientDiagnosis" type="text"
-                                           pattern="[a-zA-Z\-', ]{2,45}"
-                                           id="inputDiagnosis1"/>
-                                    <div style="font-family: 'Times New Roman', sans-serif" class="invalid-feedback">
-                                        <fmt:message key="patientUpdating.invalidDiagnosis"/>
-                                    </div>
-                                </c:otherwise>
-                            </c:choose>
-                        </div>
-                    </div>
                 </div>
                 <button type="submit" class="btn btn-primary"><fmt:message
                         key="patientUpdating.submitButton"/></button>
@@ -335,15 +308,6 @@
                                     </c:otherwise>
                                 </c:choose>
                             </select>
-                        </div>
-                    </div>
-                    <div class="form-row">
-                        <div class="form-group col-md-4">
-                            <label for="inputDiagnosis"
-                                   style="font-weight: bold; font-family: 'Times New Roman', sans-serif"><fmt:message
-                                    key="patientUpdating.diagnosis"/></label>
-                            <input class="form-control" name="patientDiagnosis" type="text" pattern="[a-zA-Z\-', ]{2,45}"
-                                   id="inputDiagnosis"/>
                         </div>
                     </div>
                 </div>

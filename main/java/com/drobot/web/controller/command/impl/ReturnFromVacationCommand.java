@@ -31,14 +31,14 @@ public class ReturnFromVacationCommand implements ActionCommand {
         try {
             EmployeeService employeeService = EmployeeServiceImpl.INSTANCE;
             if (employeeService.returnFromVacation(employeeId)) {
-                LOGGER.log(Level.DEBUG, "Employee has been returned from vacation");
                 HttpSession session = request.getSession();
                 Map<String, String> employeeFields =
                         (Map<String, String>) session.getAttribute(SessionAttribute.EMPLOYEE_DATA_FIELDS);
                 employeeFields.replace(RequestParameter.EMPLOYEE_STATUS, Entity.Status.ACTIVE.toString());
                 session.setAttribute(SessionAttribute.EMPLOYEE_DATA_FIELDS, employeeFields);
+                LOGGER.log(Level.INFO, "Employee has been returned from vacation");
             } else {
-                LOGGER.log(Level.DEBUG, "Employee hasn't been returned from vacation");
+                LOGGER.log(Level.ERROR, "Employee hasn't been returned from vacation");
             }
             StringBuilder sb = new StringBuilder(UrlPattern.EMPLOYEE_INFO);
             page = sb.deleteCharAt(sb.length() - 1).append(employeeId).toString();

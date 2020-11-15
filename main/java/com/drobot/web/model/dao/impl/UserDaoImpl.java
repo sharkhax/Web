@@ -28,37 +28,43 @@ public enum UserDaoImpl implements UserDao {
     private final String ADD_STATEMENT =
             "INSERT INTO hospital.users(login, email, password, role) VALUES(?, ?, ?, ?);";
     private final String CONTAINS_ID_STATEMENT =
-            "SELECT COUNT(*) as label FROM hospital.users WHERE user_id = ?;";
+            "SELECT COUNT(*) AS label FROM hospital.users WHERE user_id = ?;";
     private final String CONTAINS_EMAIL_STATEMENT =
             "SELECT COUNT(*) as label FROM hospital.users WHERE email = ?;";
     private final String CONTAINS_LOGIN_STATEMENT =
             "SELECT COUNT(*) as label FROM hospital.users WHERE login = ?;";
     private final String DELETE_STATEMENT =
             "DELETE FROM hospital.users WHERE user_id = ?;";
-    private final String FIND_ALL_STATEMENT =
-            "SELECT user_id, login, email, role, status_name, inter_employee_id FROM hospital.users " +
-                    "INNER JOIN hospital.statuses ON user_status = status_id " +
-                    "INNER JOIN hospital.user_employee ON user_id = inter_user_id ORDER BY ";
-    private final String FIND_BY_ID_STATEMENT =
-            "SELECT user_id, login, email, role, status_name, inter_employee_id FROM hospital.users " +
-                    "INNER JOIN hospital.statuses ON user_status = status_id " +
-                    "INNER JOIN hospital.user_employee ON user_id = inter_user_id WHERE user_id = ?;";
-    private final String FIND_BY_LOGIN_STATEMENT =
-            "SELECT user_id, login, email, role, status_name, inter_employee_id FROM hospital.users " +
-                    "INNER JOIN hospital.statuses ON user_status = status_id " +
-                    "INNER JOIN hospital.user_employee ON user_id = inter_user_id WHERE login = ?;";
-    private final String FIND_BY_EMAIL_STATEMENT =
-            "SELECT user_id, login, email, role, status_name, inter_employee_id FROM hospital.users " +
-                    "INNER JOIN hospital.statuses ON user_status = status_id " +
-                    "INNER JOIN hospital.user_employee ON user_id = inter_user_id WHERE email = ?;";
-    private final String FIND_BY_ROLE_STATEMENT =
-            "SELECT user_id, login, email, role, status_name, inter_employee_id FROM hospital.users " +
-                    "INNER JOIN hospital.statuses ON user_status = status_id " +
-                    "INNER JOIN hospital.user_employee ON user_id = inter_user_id WHERE role = ? ORDER BY ";
-    private final String FIND_BY_STATUS_STATEMENT =
-            "SELECT user_id, login, email, role, status_name, inter_employee_id FROM hospital.users " +
-                    "INNER JOIN hospital.statuses ON user_status = status_id " +
-                    "INNER JOIN hospital.user_employee ON user_id = inter_user_id WHERE user_status = ? ORDER BY ";
+    private final String FIND_ALL_STATEMENT = new StringBuilder(
+            "SELECT user_id, login, email, role, status_name, inter_employee_id FROM hospital.users ")
+            .append("INNER JOIN hospital.statuses ON user_status = status_id ")
+            .append("INNER JOIN hospital.user_employee ON user_id = inter_user_id ORDER BY ")
+            .toString();
+    private final String FIND_BY_ID_STATEMENT = new StringBuilder(
+            "SELECT user_id, login, email, role, status_name, inter_employee_id FROM hospital.users ")
+            .append("INNER JOIN hospital.statuses ON user_status = status_id ")
+            .append("INNER JOIN hospital.user_employee ON user_id = inter_user_id WHERE user_id = ?;")
+            .toString();
+    private final String FIND_BY_LOGIN_STATEMENT = new StringBuilder(
+            "SELECT user_id, login, email, role, status_name, inter_employee_id FROM hospital.users ")
+            .append("INNER JOIN hospital.statuses ON user_status = status_id ")
+            .append("INNER JOIN hospital.user_employee ON user_id = inter_user_id WHERE login = ?;")
+            .toString();
+    private final String FIND_BY_EMAIL_STATEMENT = new StringBuilder(
+            "SELECT user_id, login, email, role, status_name, inter_employee_id FROM hospital.users ")
+            .append("INNER JOIN hospital.statuses ON user_status = status_id ")
+            .append("INNER JOIN hospital.user_employee ON user_id = inter_user_id WHERE email = ?;")
+            .toString();
+    private final String FIND_BY_ROLE_STATEMENT = new StringBuilder(
+            "SELECT user_id, login, email, role, status_name, inter_employee_id FROM hospital.users ")
+            .append("INNER JOIN hospital.statuses ON user_status = status_id ")
+            .append("INNER JOIN hospital.user_employee ON user_id = inter_user_id WHERE role = ? ORDER BY ")
+            .toString();
+    private final String FIND_BY_STATUS_STATEMENT = new StringBuilder(
+            "SELECT user_id, login, email, role, status_name, inter_employee_id FROM hospital.users ")
+            .append("INNER JOIN hospital.statuses ON user_status = status_id ")
+            .append("INNER JOIN hospital.user_employee ON user_id = inter_user_id WHERE user_status = ? ORDER BY ")
+            .toString();
     private final String UPDATE_STATEMENT =
             "UPDATE hospital.users SET login = ?, email = ? WHERE user_id = ?;";
     private final String DEFINE_ROLE_STATEMENT =
@@ -69,11 +75,12 @@ public enum UserDaoImpl implements UserDao {
                     " WHERE user_id = ?;";
     private final String UPDATE_PASSWORD_STATEMENT =
             "UPDATE hospital.users SET password = ? WHERE user_id = ?;";
-    private final StringBuilder FIND_ALL_LIMIT_STATEMENT = new StringBuilder(
+    private final String FIND_ALL_LIMIT_STATEMENT = new StringBuilder(
             "SELECT user_id, login, email, role, status_name, inter_employee_id FROM hospital.users ")
             .append("INNER JOIN hospital.statuses ON user_status = status_id ")
-            .append("INNER JOIN hospital.user_employee ON user_id = inter_user_id ORDER BY  LIMIT ?, ?;");
-    private final String COUNT_STATEMENT = "SELECT COUNT(*) as label FROM hospital.users;";
+            .append("INNER JOIN hospital.user_employee ON user_id = inter_user_id ORDER BY * LIMIT ?, ?;")
+            .toString();
+    private final String COUNT_STATEMENT = "SELECT COUNT(*) AS label FROM hospital.users;";
     private final String UPDATE_STATUS_STATEMENT = "UPDATE hospital.users SET user_status = ? WHERE user_id = ?;";
     private final String FIND_STATUS_STATEMENT = "SELECT status_name FROM hospital.users INNER JOIN hospital.statuses " +
             "ON user_status = status_id WHERE user_id = ?;";
@@ -260,7 +267,9 @@ public enum UserDaoImpl implements UserDao {
             if (reverse) {
                 sortBy = sortBy + SPACE + DESC;
             }
-            String sql = new StringBuilder(FIND_ALL_LIMIT_STATEMENT).insert(213, sortBy).toString();
+            StringBuilder sqlBuilder = new StringBuilder(FIND_ALL_LIMIT_STATEMENT);
+            int indexOfAsterisk = sqlBuilder.lastIndexOf(ASTERISK);
+            String sql = sqlBuilder.replace(indexOfAsterisk, indexOfAsterisk + 1, sortBy).toString();
             statement = connection.prepareStatement(sql);
             statement.setInt(1, start);
             statement.setInt(2, end);

@@ -13,7 +13,7 @@ public enum PatientMapService implements MapService {
     @Override
     public boolean isMapValid(Map<String, String> fields) {
         boolean result = checkName(fields) & checkSurname(fields)
-                & checkGender(fields) & checkAge(fields) & checkDiagnosis(fields);
+                & checkGender(fields) & checkAge(fields);
         return result;
     }
 

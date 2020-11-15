@@ -8,9 +8,11 @@ import com.drobot.web.controller.command.ActionCommand;
 import com.drobot.web.controller.command.CommandAccessLevel;
 import com.drobot.web.exception.CommandException;
 import com.drobot.web.exception.ServiceException;
-import com.drobot.web.model.entity.Patient;
+import com.drobot.web.model.entity.Entity;
 import com.drobot.web.model.service.PatientService;
+import com.drobot.web.model.service.RecordService;
 import com.drobot.web.model.service.impl.PatientServiceImpl;
+import com.drobot.web.model.service.impl.RecordServiceImpl;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -18,39 +20,30 @@ import org.apache.logging.log4j.Logger;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.Map;
-import java.util.Optional;
 
-@CommandAccessLevel({AccessType.ADMIN, AccessType.DOCTOR, AccessType.ASSISTANT})
-public class PatientDataCommand implements ActionCommand {
+@CommandAccessLevel({AccessType.ADMIN, AccessType.DOCTOR})
+public class DischargePatientCommand implements ActionCommand {
 
-    private static final Logger LOGGER = LogManager.getLogger(PatientDataCommand.class);
+    private static final Logger LOGGER = LogManager.getLogger(DischargePatientCommand.class);
 
     @Override
     public String execute(HttpServletRequest request) throws CommandException {
         String page;
-        String stringPatientId = request.getParameter(RequestParameter.PATIENT_INFO_ID);
-        int patientId;
+        int patientId = Integer.parseInt(request.getParameter(RequestParameter.PATIENT_ID));
+        PatientService recordService = PatientServiceImpl.INSTANCE;
         try {
-            patientId = Integer.parseInt(stringPatientId != null ? stringPatientId : "");
-        } catch (NumberFormatException e) {
-            LOGGER.log(Level.ERROR, "Incorrect patient id value, returning null");
-            return null;
-        }
-        PatientService patientService = PatientServiceImpl.INSTANCE;
-        try {
-            Optional<Patient> optionalPatient = patientService.findById(patientId);
-            if (optionalPatient.isPresent()) {
-                Patient patient = optionalPatient.get();
-                Map<String, String> fields = patientService.packPatientIntoMap(patient);
+            if (recordService.discharge(patientId)) {
                 HttpSession session = request.getSession();
-                session.setAttribute(SessionAttribute.PATIENT_DATA_FIELDS, fields);
-                session.setAttribute(SessionAttribute.PATIENT_INFO_ID, patientId);
+                Map<String, String> patientFields =
+                        (Map<String, String>) session.getAttribute(SessionAttribute.PATIENT_DATA_FIELDS);
+                patientFields.replace(RequestParameter.PATIENT_STATUS, Entity.Status.ARCHIVE.toString());
+                session.setAttribute(SessionAttribute.PATIENT_DATA_FIELDS, patientFields);
                 StringBuilder sb = new StringBuilder(UrlPattern.PATIENT_INFO);
                 page = sb.deleteCharAt(sb.length() - 1).append(patientId).toString();
-                LOGGER.log(Level.INFO, "Patient data has been got");
+                LOGGER.log(Level.INFO, "Patient has been discharged");
             } else {
-                LOGGER.log(Level.INFO, "No patient found");
                 page = null;
+                LOGGER.log(Level.INFO, "Patient has not been discharged, no access");
             }
         } catch (ServiceException e) {
             throw new CommandException(e);

@@ -34,19 +34,18 @@ public class UnblockUserCommand implements ActionCommand {
         UserService userService = UserServiceImpl.INSTANCE;
         try {
             if (userService.unblockUser(userId, employeeId)) {
-                LOGGER.log(Level.DEBUG, "User has been unblocked successfully");
                 userFields.replace(RequestParameter.USER_STATUS, Entity.Status.ACTIVE.toString());
                 session.setAttribute(SessionAttribute.USER_DATA_FIELDS, userFields);
                 LOGGER.log(Level.DEBUG, "User data fields have been updated");
-                StringBuilder sb = new StringBuilder(UrlPattern.USER_INFO);
-                page = sb.deleteCharAt(sb.length() - 1).append(userId).toString();
+                LOGGER.log(Level.INFO, "User has been unblocked successfully");
             } else {
-                LOGGER.log(Level.FATAL, "User has not been unblocked");
-                throw new CommandException("User has not been unblocked");
+                LOGGER.log(Level.ERROR, "User has not been unblocked");
             }
         } catch (ServiceException e) {
             throw new CommandException(e);
         }
+        StringBuilder sb = new StringBuilder(UrlPattern.USER_INFO);
+        page = sb.deleteCharAt(sb.length() - 1).append(userId).toString();
         return page;
     }
 }

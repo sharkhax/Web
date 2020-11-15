@@ -177,4 +177,24 @@ public final class RequestParameter {
      * Represents requested user's ID at user's info page.
      */
     public static final String USER_INFO_ID = "requestedUserInfoId";
+
+    /**
+     * Represents attending doctor's name field at record creating page.
+     */
+    public static final String ATTENDING_DOCTOR_NAME = "doctorName";
+
+    /**
+     * Represents attending doctor's surname at record creating page.
+     */
+    public static final String ATTENDING_DOCTOR_SURNAME = "doctorSurname";
+
+    /**
+     * Represents attending doctor's id field at record creating page.
+     */
+    public static final String ATTENDING_DOCTOR_ID = "doctorId";
+
+    /**
+     * Represents treatment field of patient record at creation page or appropriate lists.
+     */
+    public static final String PATIENT_TREATMENT = "patientTreatment";
 }

@@ -133,7 +133,11 @@ public class PatientListTag extends TagSupport {
                         out.write("<td>" + currentPatient.getSurname() + "</td>");
                         out.write("<td>" + currentPatient.getAge() + "</td>");
                         out.write("<td>" + currentPatient.getGender() + "</td>");
-                        out.write("<td>" + currentPatient.getDiagnosis() + "</td>");
+                        String diagnosis = currentPatient.getDiagnosis();
+                        if (diagnosis == null || diagnosis.isEmpty()) {
+                            diagnosis = "-";
+                        }
+                        out.write("<td>" + diagnosis + "</td>");
                         Entity.Status status = currentPatient.getStatus();
                         boolean isEven = i % 2 == 0;
                         String cellStyle = defineStyle(status, isEven);

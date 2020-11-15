@@ -28,7 +28,6 @@ public class ServletSecurityEmployeeFilter extends AbstractSecurityFilter {
         HttpSession session = request.getSession();
         String uri = request.getRequestURI();
         switch (uri) {
-            case UrlPattern.RECORD_LIST -> doCaseRecordList(request, response, session); // TODO: 27.10.2020
             case UrlPattern.PERSONAL_SETTINGS -> doCasePersonalSettings(request, response, session);
             case UrlPattern.CHANGING_PASSWORD -> doCasePasswordChanging(request, response, session);
             case UrlPattern.PATIENT_CREATING -> doCasePatientCreating(request, response, session);
@@ -39,27 +38,18 @@ public class ServletSecurityEmployeeFilter extends AbstractSecurityFilter {
         }
     }
 
-    private void doCaseRecordList(HttpServletRequest request, HttpServletResponse response,
-                                  HttpSession session) throws IOException, ServletException {
-        String userRole = (String) session.getAttribute(SessionAttribute.USER_ROLE);
-        String page = JspPath.RECORD_LIST;
-        boolean condition = userRole != null && (userRole.equals(SessionAttribute.ASSISTANT_ROLE)
-                || userRole.equals(SessionAttribute.DOCTOR_ROLE)
-                || userRole.equals(SessionAttribute.ADMIN_ROLE));
-        forwardOrError404(condition, page, request, response, session);
-    }
-
     private void doCasePersonalSettings(HttpServletRequest request, HttpServletResponse response,
                                         HttpSession session) throws IOException, ServletException {
         String userRole = (String) session.getAttribute(SessionAttribute.USER_ROLE);
         String page = JspPath.PERSONAL_SETTINGS;
         if (session.getAttribute(SessionAttribute.PERSONAL_SETTINGS_DATA) == null) {
-            executeCommand(CommandType.SETTINGS_PAGE, request);
+            forward(request, response, UrlPattern.PERSONAL_SETTINGS_REQUEST);
+        } else {
+            boolean condition = userRole != null && (userRole.equals(SessionAttribute.ASSISTANT_ROLE)
+                    || userRole.equals(SessionAttribute.DOCTOR_ROLE)
+                    || userRole.equals(SessionAttribute.ADMIN_ROLE));
+            forwardOrError404(condition, page, request, response, session);
         }
-        boolean condition = userRole != null && (userRole.equals(SessionAttribute.ASSISTANT_ROLE)
-                || userRole.equals(SessionAttribute.DOCTOR_ROLE)
-                || userRole.equals(SessionAttribute.ADMIN_ROLE));
-        forwardOrError404(condition, page, request, response, session);
     }
 
     private void doCasePasswordChanging(HttpServletRequest request, HttpServletResponse response,
@@ -113,9 +103,10 @@ public class ServletSecurityEmployeeFilter extends AbstractSecurityFilter {
         String userRole = (String) session.getAttribute(SessionAttribute.USER_ROLE);
         String page = JspPath.PATIENT_LIST;
         if (session.getAttribute(SessionAttribute.PATIENT_LIST) == null) {
-            executeCommand(CommandType.PATIENT_LIST_COMMAND, request);
+            forward(request, response, UrlPattern.PATIENT_LIST_REQUEST);
+        } else {
+            boolean condition = userRole != null && !userRole.equals(SessionAttribute.GUEST_ROLE);
+            forwardOrError404(condition, page, request, response, session);
         }
-        boolean condition = userRole != null && !userRole.equals(SessionAttribute.GUEST_ROLE);
-        forwardOrError404(condition, page, request, response, session);
     }
 }

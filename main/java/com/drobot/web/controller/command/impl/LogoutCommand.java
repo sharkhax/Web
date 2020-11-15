@@ -21,7 +21,7 @@ public class LogoutCommand implements ActionCommand {
     public String execute(HttpServletRequest request) {
         String page = JspPath.LOGIN;
         HttpSession session = request.getSession();
-        Object currentLocale = session.getAttribute(SessionAttribute.CURRENT_LOCALE);
+        String currentLocale = (String) session.getAttribute(SessionAttribute.CURRENT_LOCALE);
         session.invalidate();
         session = request.getSession();
         session.setAttribute(SessionAttribute.CURRENT_LOCALE, currentLocale);

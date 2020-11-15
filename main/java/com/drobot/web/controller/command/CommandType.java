@@ -37,7 +37,10 @@ public enum CommandType {
     RETURN_FROM_VACATION(new ReturnFromVacationCommand()),
     UPDATE_PATIENT(new UpdatePatientCommand()),
     REDIRECT_TO_UPDATE_PATIENT_PAGE(new RedirectToUpdatePatientCommand()),
-    REDIRECT_TO_RECORD_CREATING_PAGE(new RedirectToRecordCreatingCommand());
+    REDIRECT_TO_RECORD_CREATING_PAGE(new RedirectToRecordCreatingCommand()),
+    DISCHARGE_PATIENT(new DischargePatientCommand()),
+    EXECUTE_PROCEDURE(new ExecuteProcedureCommand()),
+    EXECUTE_SURGERY(new ExecuteSurgeryCommand());
 
     private final ActionCommand command;
 

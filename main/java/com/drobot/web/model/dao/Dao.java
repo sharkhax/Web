@@ -10,6 +10,7 @@ public interface Dao<E extends Entity> extends CloseableDao {
     String SPACE = " ";
     String SEMICOLON = ";";
     String DESC = "DESC";
+    String ASTERISK = "*";
 
     boolean add(E entity) throws DaoException;
 

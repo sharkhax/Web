@@ -37,7 +37,6 @@ public class UpdatePatientCommand implements ActionCommand {
         String newSurname = request.getParameter(RequestParameter.PATIENT_SURNAME);
         String newAge = request.getParameter(RequestParameter.PATIENT_AGE);
         String newGender = request.getParameter(RequestParameter.PATIENT_GENDER);
-        String newDiagnosis = request.getParameter(RequestParameter.PATIENT_DIAGNOSIS);
         Map<String, String> newFields = new HashMap<>();
         Map<String, String> emptyFields = new HashMap<>();
         if (newName.isEmpty()) {
@@ -60,11 +59,6 @@ public class UpdatePatientCommand implements ActionCommand {
         } else {
             newFields.put(RequestParameter.PATIENT_GENDER, newGender);
         }
-        if (newDiagnosis.isEmpty()) {
-            emptyFields.put(RequestParameter.PATIENT_DIAGNOSIS, "true");
-        } else {
-            newFields.put(RequestParameter.PATIENT_DIAGNOSIS, newDiagnosis);
-        }
         if (newFields.isEmpty()) {
             StringBuilder sb = new StringBuilder(UrlPattern.PATIENT_INFO);
             page = sb.deleteCharAt(sb.length() - 1).append(patientId).toString();
@@ -81,6 +75,7 @@ public class UpdatePatientCommand implements ActionCommand {
                     LOGGER.log(Level.DEBUG, "Patient fields have been replaced");
                     StringBuilder sb = new StringBuilder(UrlPattern.PATIENT_INFO);
                     page = sb.deleteCharAt(sb.length() - 1).append(patientId).toString();
+                    LOGGER.log(Level.INFO, "Patient has been updated successfully");
                 } else {
                     StringBuilder sb = new StringBuilder(UrlPattern.UPDATING_PATIENT);
                     int indexOfAsterisk = sb.indexOf(UrlPattern.ASTERISK);
@@ -91,6 +86,7 @@ public class UpdatePatientCommand implements ActionCommand {
                     session.setAttribute(SessionAttribute.VALIDATED, true);
                     session.setAttribute(SessionAttribute.PATIENT_EXISTS, true);
                     LOGGER.log(Level.DEBUG, "Flag \"PATIENT_EXISTS\" is set to true");
+                    LOGGER.log(Level.INFO, "Patient has not been updated");
                 }
             } catch (ServiceException e) {
                 throw new CommandException(e);

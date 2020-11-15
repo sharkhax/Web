@@ -56,7 +56,6 @@ public class UpdateUserCommand implements ActionCommand {
             Map<String, String> existingFields = new HashMap<>();
             try {
                 if (userService.update(newFields, existingFields, currentFields)) {
-                    LOGGER.log(Level.DEBUG, "User has been updated successfully");
                     Optional<User> optionalUser = userService.findById(userId);
                     User user = optionalUser.orElseThrow();
                     Map<String, String> fields = userService.packUserIntoMap(user);
@@ -64,6 +63,7 @@ public class UpdateUserCommand implements ActionCommand {
                     LOGGER.log(Level.DEBUG, "User fields have been replaced");
                     StringBuilder sb = new StringBuilder(UrlPattern.USER_INFO);
                     page = sb.deleteCharAt(sb.length() - 1).append(userId).toString();
+                    LOGGER.log(Level.INFO, "User has been updated successfully");
                 } else {
                     StringBuilder sb = new StringBuilder(UrlPattern.UPDATING_USER);
                     int indexOfAsterisk = sb.indexOf(UrlPattern.ASTERISK);
@@ -74,6 +74,7 @@ public class UpdateUserCommand implements ActionCommand {
                     session.setAttribute(SessionAttribute.VALIDATED, true);
                     session.setAttribute(SessionAttribute.USER_EXISTS, true);
                     LOGGER.log(Level.DEBUG, "Flag \"USER_EXISTS\" is set to true");
+                    LOGGER.log(Level.INFO, "User has not been updated");
                 }
             } catch (ServiceException e) {
                 throw new CommandException(e);

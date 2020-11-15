@@ -67,7 +67,7 @@ public class PatientListCommand implements ActionCommand {
         } catch (ServiceException e) {
             throw new CommandException(e);
         }
-        LOGGER.log(Level.DEBUG, "Patient list has been got");
+        LOGGER.log(Level.INFO, "Patient list has been got");
         return page;
     }
 }

@@ -45,11 +45,11 @@ public class UserDataCommand implements ActionCommand {
                 HttpSession session = request.getSession();
                 session.setAttribute(SessionAttribute.USER_DATA_FIELDS, fields);
                 session.setAttribute(SessionAttribute.USER_INFO_ID, userId);
-                LOGGER.log(Level.DEBUG, "User data has been got");
                 StringBuilder sb = new StringBuilder(UrlPattern.USER_INFO);
                 page = sb.deleteCharAt(sb.length() - 1).append(userId).toString();
+                LOGGER.log(Level.INFO, "User data has been got");
             } else {
-                LOGGER.log(Level.DEBUG, "No user found");
+                LOGGER.log(Level.INFO, "No user found");
                 page = null;
             }
         } catch (ServiceException e) {

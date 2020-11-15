@@ -118,32 +118,34 @@ public enum EmployeeServiceImpl implements EmployeeService {
         long hireDate = 0;
         boolean isValid = true;
         boolean noMatches = true;
+        boolean isNameChanged = false;
         try {
             if (newFields.containsKey(RequestParameter.EMPLOYEE_NAME)) {
                 if (employeeMapService.checkName(newFields)) {
                     name = newFields.get(RequestParameter.EMPLOYEE_NAME);
+                    isNameChanged = true;
                 } else {
                     isValid = false;
                 }
+            } else {
+                name = currentFields.get(RequestParameter.EMPLOYEE_NAME);
             }
             if (newFields.containsKey(RequestParameter.EMPLOYEE_SURNAME)) {
                 if (employeeMapService.checkSurname(newFields)) {
                     surname = newFields.get(RequestParameter.EMPLOYEE_SURNAME);
+                    isNameChanged = true;
                 } else {
                     isValid = false;
                 }
-            }
-            if (name != null && surname != null) {
-                if (employeeDao.exists(name, surname)) {
-                    noMatches = false;
-                    existingFields.put(RequestParameter.EMPLOYEE_NAME, name);
-                    existingFields.put(RequestParameter.EMPLOYEE_SURNAME, surname);
-                    name = null;
-                    surname = null;
-                }
             } else {
-                surname = surname == null ? currentFields.get(RequestParameter.EMPLOYEE_SURNAME) : null;
-                name = name == null ? currentFields.get(RequestParameter.EMPLOYEE_NAME) : null;
+                surname = currentFields.get(RequestParameter.EMPLOYEE_SURNAME);
+            }
+            if (isNameChanged && employeeDao.exists(name, surname)) {
+                noMatches = false;
+                existingFields.put(RequestParameter.EMPLOYEE_NAME, name);
+                existingFields.put(RequestParameter.EMPLOYEE_SURNAME, surname);
+                name = null;
+                surname = null;
             }
             if (newFields.containsKey(RequestParameter.EMPLOYEE_AGE)) {
                 if (employeeMapService.checkAge(newFields)) {
@@ -350,6 +352,22 @@ public enum EmployeeServiceImpl implements EmployeeService {
         boolean result;
         try {
             result = employeeDao.updateStatus(employeeId, Entity.Status.ACTIVE);
+        } catch (DaoException e) {
+            throw new ServiceException(e);
+        }
+        return result;
+    }
+
+    @Override
+    public Optional<Employee> findByUserId(int userId) throws ServiceException {
+        Optional<Employee> result;
+        try {
+            if (userId > 0) {
+                result = employeeDao.findByUserId(userId);
+            } else {
+                LOGGER.log(Level.DEBUG, "Invalid user id value");
+                result = Optional.empty();
+            }
         } catch (DaoException e) {
             throw new ServiceException(e);
         }

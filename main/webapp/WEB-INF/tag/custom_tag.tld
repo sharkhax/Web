@@ -32,18 +32,18 @@
         <body-content>empty</body-content>
     </tag>
     <tag>
-        <name>user_info_dynamic_buttons</name>
-        <tag-class>com.drobot.web.tag.UserInfoDynamicButtonTag</tag-class>
+        <name>user_info_menu</name>
+        <tag-class>com.drobot.web.tag.UserInfoMenuTag</tag-class>
         <body-content>empty</body-content>
     </tag>
     <tag>
-        <name>employee_info_dynamic_buttons</name>
-        <tag-class>com.drobot.web.tag.EmployeeInfoDynamicButtonTag</tag-class>
+        <name>employee_info_menu</name>
+        <tag-class>com.drobot.web.tag.EmployeeInfoMenuTag</tag-class>
         <body-content>empty</body-content>
     </tag>
     <tag>
-        <name>patient_info_dynamic_buttons</name>
-        <tag-class>com.drobot.web.tag.PatientInfoDynamicButtonTag</tag-class>
+        <name>patient_info_menu</name>
+        <tag-class>com.drobot.web.tag.PatientInfoMenuTag</tag-class>
         <body-content>empty</body-content>
     </tag>
 </taglib>

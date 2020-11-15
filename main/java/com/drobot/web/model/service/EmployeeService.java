@@ -36,4 +36,6 @@ public interface EmployeeService {
     boolean sendToVacation(int employeeId) throws ServiceException;
 
     boolean returnFromVacation(int employeeId) throws ServiceException;
+
+    Optional<Employee> findByUserId(int userId) throws ServiceException;
 }

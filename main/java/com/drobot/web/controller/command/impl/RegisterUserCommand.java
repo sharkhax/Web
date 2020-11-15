@@ -54,12 +54,12 @@ public class RegisterUserCommand implements ActionCommand {
                 session.setAttribute(SessionAttribute.USER_REGISTRATION_FIELDS, null);
                 session.setAttribute(SessionAttribute.USER_REGISTRATION_EXISTING_FIELDS, null);
                 page = UrlPattern.USER_REGISTRATION_SUCCESS;
-                LOGGER.log(Level.DEBUG, "Registered successfully");
+                LOGGER.log(Level.INFO, "Registered successfully");
             } else {
                 session.setAttribute(SessionAttribute.USER_REGISTRATION_FIELDS, fields);
                 session.setAttribute(SessionAttribute.USER_REGISTRATION_EXISTING_FIELDS, existingFields);
                 page = UrlPattern.USER_REGISTRATION_FAIL;
-                LOGGER.log(Level.DEBUG, "Registration failed");
+                LOGGER.log(Level.INFO, "Registration failed");
             }
         } catch (ServiceException e) {
             throw new CommandException(e);

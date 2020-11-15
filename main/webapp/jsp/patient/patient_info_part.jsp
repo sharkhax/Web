@@ -66,7 +66,16 @@
             </span>
         </dt>
         <dd class="col-sm-9">
-            <span style="font-family: 'Times New Roman', sans-serif">${patientDataFields.patientDiagnosis}</span>
+            <span style="font-family: 'Times New Roman', sans-serif">
+                <c:choose>
+                    <c:when test="${not empty patientDataFields.patientDiagnosis}">
+                        ${patientDataFields.patientDiagnosis}
+                    </c:when>
+                    <c:otherwise>
+                        -
+                    </c:otherwise>
+                </c:choose>
+            </span>
         </dd>
 
         <dt class="col-sm-3">
@@ -80,12 +89,12 @@
 
         <dt class="col-sm-3">
             <span style="font-family: 'Times New Roman', sans-serif; font-weight: bold">
-                <fmt:message key="patientInfo.currentRecordId"/>
+                <fmt:message key="patientInfo.lastRecordId"/>
             </span>
         </dt>
         <dd class="col-sm-9">
             <c:choose>
-                <c:when test="${not empty patientDataFields.lastRecordId and not patientDataFields.lastRecordId eq '-'}">
+                <c:when test="${not patientDataFields.lastRecordId eq '-'}">
                     <a href="${pageContext.request.contextPath}/mainController?command=record_data&requestedRecordInfoId=${patientDataFields.lastRecordId}">
                         <span style="font-family: 'Times New Roman', sans-serif">${patientDataFields.lastRecordId}</span>
                     </a>

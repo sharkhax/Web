@@ -25,4 +25,5 @@ public final class JspPath {
     public static final String USER_UPDATING = "/jsp/user/user_updating.jsp";
     public static final String EMPLOYEE_UPDATING = "/jsp/employee/employee_updating.jsp";
     public static final String PATIENT_UPDATING = "/jsp/patient/patient_updating.jsp";
+    public static final String RECORD_CREATING = "/jsp/patient/record_creating.jsp";
 }

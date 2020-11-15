@@ -74,14 +74,4 @@ public abstract class AbstractSecurityFilter implements Filter {
         }
         forward(request, response, page);
     }
-
-    protected String executeCommand(CommandType commandType, HttpServletRequest request) throws ServletException {
-        try {
-            ActionCommand command = commandType.getCommand();
-            return command.execute(request);
-        } catch (CommandException e) {
-            LOGGER.log(Level.ERROR, "Redirecting to the error page", e);
-            throw new ServletException(e);
-        }
-    }
 }

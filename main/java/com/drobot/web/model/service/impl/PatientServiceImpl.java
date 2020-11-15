@@ -8,6 +8,7 @@ import com.drobot.web.model.creator.impl.PatientCreator;
 import com.drobot.web.model.dao.ColumnName;
 import com.drobot.web.model.dao.PatientDao;
 import com.drobot.web.model.dao.impl.PatientDaoImpl;
+import com.drobot.web.model.entity.Entity;
 import com.drobot.web.model.entity.Patient;
 import com.drobot.web.model.service.PatientService;
 import org.apache.logging.log4j.Level;
@@ -130,7 +131,8 @@ public enum PatientServiceImpl implements PatientService {
             fields.put(RequestParameter.PATIENT_SURNAME, patient.getSurname());
             fields.put(RequestParameter.PATIENT_AGE, String.valueOf(patient.getAge()));
             fields.put(RequestParameter.PATIENT_GENDER, String.valueOf(patient.getGender()));
-            fields.put(RequestParameter.PATIENT_DIAGNOSIS, patient.getDiagnosis());
+            String diagnosis = patient.getDiagnosis();
+            fields.put(RequestParameter.PATIENT_DIAGNOSIS, diagnosis == null ? "" : diagnosis);
             fields.put(RequestParameter.PATIENT_STATUS, patient.getStatus().toString());
             String stringRecordId;
             int recordId = patient.getRecordId();
@@ -154,35 +156,36 @@ public enum PatientServiceImpl implements PatientService {
         String surname = null;
         int age = 0;
         char gender = ' ';
-        String diagnosis = null;
         boolean isValid = true;
         boolean noMatches = true;
+        boolean isNameChanged = false;
         try {
             if (newFields.containsKey(RequestParameter.PATIENT_NAME)) {
                 if (mapService.checkName(newFields)) {
                     name = newFields.get(RequestParameter.PATIENT_NAME);
+                    isNameChanged = true;
                 } else {
                     isValid = false;
                 }
+            } else {
+                name = currentFields.get(RequestParameter.PATIENT_NAME);
             }
             if (newFields.containsKey(RequestParameter.PATIENT_SURNAME)) {
                 if (mapService.checkSurname(newFields)) {
                     surname = newFields.get(RequestParameter.PATIENT_SURNAME);
+                    isNameChanged = true;
                 } else {
                     isValid = false;
                 }
-            }
-            if (name != null && surname != null) {
-                if (patientDao.exists(name, surname)) {
-                    noMatches = false;
-                    existingFields.put(RequestParameter.PATIENT_NAME, name);
-                    existingFields.put(RequestParameter.PATIENT_SURNAME, surname);
-                    name = null;
-                    surname = null;
-                }
             } else {
-                surname = surname == null ? currentFields.get(RequestParameter.PATIENT_SURNAME) : null;
-                name = name == null ? currentFields.get(RequestParameter.PATIENT_NAME) : null;
+                surname = currentFields.get(RequestParameter.PATIENT_SURNAME);
+            }
+            if (isNameChanged && patientDao.exists(name, surname)) {
+                noMatches = false;
+                existingFields.put(RequestParameter.PATIENT_NAME, name);
+                existingFields.put(RequestParameter.PATIENT_SURNAME, surname);
+                name = null;
+                surname = null;
             }
             if (newFields.containsKey(RequestParameter.PATIENT_AGE)) {
                 if (mapService.checkAge(newFields)) {
@@ -202,21 +205,48 @@ public enum PatientServiceImpl implements PatientService {
             } else {
                 gender = currentFields.get(RequestParameter.PATIENT_GENDER).charAt(0);
             }
-            if (newFields.containsKey(RequestParameter.PATIENT_DIAGNOSIS)) {
-                if (mapService.checkDiagnosis(newFields)) {
-                    diagnosis = newFields.get(RequestParameter.PATIENT_DIAGNOSIS);
-                } else {
-                    isValid = false;
-                }
-            } else {
-                diagnosis = currentFields.get(RequestParameter.PATIENT_DIAGNOSIS);
-            }
             if (isValid && noMatches) {
-                Patient patient = new Patient(patientId, name, surname, age, gender, diagnosis);
+                Patient patient = new Patient(patientId, name, surname, age, gender);
                 result = patientDao.update(patient);
             }
         } catch (DaoException e) {
             throw new ServiceException(e);
+        }
+        return result;
+    }
+
+    @Override
+    public Optional<Entity.Status> findStatus(int patientId) throws ServiceException {
+        Optional<Entity.Status> result;
+        try {
+            if (patientId > 0) {
+                result = patientDao.findStatus(patientId);
+            } else {
+                LOGGER.log(Level.DEBUG, "Invalid patient id value");
+                result = Optional.empty();
+            }
+        } catch (DaoException e) {
+            throw new ServiceException(e);
+        }
+        return result;
+    }
+
+    @Override
+    public boolean discharge(int patientId) throws ServiceException {
+        boolean result = false;
+        Optional<Entity.Status> optionalStatus = findStatus(patientId);
+        if (optionalStatus.isPresent()) {
+            Entity.Status status = optionalStatus.get();
+            if (status == Entity.Status.WAITING_FOR_DECISION) {
+                Entity.Status newStatus = Entity.Status.ARCHIVE;
+                try {
+                    result = patientDao.updateStatus(patientId, newStatus);
+                } catch (DaoException e) {
+                    throw new ServiceException(e);
+                }
+            } else {
+                LOGGER.log(Level.DEBUG, "Incorrect current status");
+            }
         }
         return result;
     }

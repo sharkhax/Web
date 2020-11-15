@@ -31,14 +31,14 @@ public class SendToVacationCommand implements ActionCommand {
         try {
             EmployeeService employeeService = EmployeeServiceImpl.INSTANCE;
             if (employeeService.sendToVacation(employeeId)) {
-                LOGGER.log(Level.DEBUG, "Employee has been sent to vacation");
                 HttpSession session = request.getSession();
                 Map<String, String> employeeFields =
                         (Map<String, String>) session.getAttribute(SessionAttribute.EMPLOYEE_DATA_FIELDS);
                 employeeFields.replace(RequestParameter.EMPLOYEE_STATUS, Entity.Status.VACATION.toString());
                 session.setAttribute(SessionAttribute.EMPLOYEE_DATA_FIELDS, employeeFields);
+                LOGGER.log(Level.INFO, "Employee has been sent to vacation");
             } else {
-                LOGGER.log(Level.DEBUG, "Employee hasn't been sent to vacation");
+                LOGGER.log(Level.ERROR, "Employee hasn't been sent to vacation");
             }
             StringBuilder sb = new StringBuilder(UrlPattern.EMPLOYEE_INFO);
             page = sb.deleteCharAt(sb.length() - 1).append(employeeId).toString();

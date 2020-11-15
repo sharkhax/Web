@@ -21,31 +21,33 @@ public enum EmployeeDaoImpl implements EmployeeDao {
 
     private final Logger LOGGER = LogManager.getLogger(EmployeeDaoImpl.class);
     private final String EXISTS_STATEMENT =
-            "SELECT COUNT(*) as label FROM hospital.employees WHERE employee_id = ?;";
+            "SELECT COUNT(*) AS label FROM hospital.employees WHERE employee_id = ?;";
     private final String ADD_STATEMENT =
             "INSERT INTO hospital.employees(employee_name, employee_surname, employee_age, " +
                     "employee_gender, position, hire_date) VALUES(?, ?, ?, ?, ?, ?);";
-    private final String SET_STATUS_TO_ARCHIVE_STATEMENT =
-            "UPDATE hospital.employees SET employee_status = " + Entity.Status.ARCHIVE.getStatusId()
-                    + " WHERE employee_id = ?;";
-    private final String FIND_ALL_STATEMENT =
-            "SELECT employee_id, employee_name, employee_surname, employee_age, employee_gender, position, " +
-                    "hire_date, dismiss_date, status_name, inter_user_id FROM hospital.employees " +
-                    "INNER JOIN hospital.statuses ON employee_status = status_id " +
-                    "INNER JOIN hospital.user_employee ON employee_id = inter_employee_id ORDER BY ";
+    private final String SET_STATUS_TO_ARCHIVE_STATEMENT = new StringBuilder(
+            "UPDATE hospital.employees SET employee_status = ")
+            .append(Entity.Status.ARCHIVE.getStatusId())
+            .append(" WHERE employee_id = ?;").toString();
+    private final String FIND_ALL_STATEMENT = new StringBuilder(
+            "SELECT employee_id, employee_name, employee_surname, employee_age, employee_gender, position, ")
+            .append("hire_date, dismiss_date, status_name, inter_user_id FROM hospital.employees ")
+            .append("INNER JOIN hospital.statuses ON employee_status = status_id ")
+            .append("INNER JOIN hospital.user_employee ON employee_id = inter_employee_id ORDER BY ").toString();
     private final StringBuilder FIND_ALL_LIMIT_STATEMENT = new StringBuilder(
             "SELECT employee_id, employee_name, employee_surname, employee_age, employee_gender, position, ")
-                    .append("hire_date, dismiss_date, status_name, inter_user_id FROM hospital.employees ")
-                    .append("INNER JOIN hospital.statuses ON employee_status = status_id ")
-                    .append("INNER JOIN hospital.user_employee ON employee_id = inter_employee_id ORDER BY  LIMIT ?, ?;");
-    private final String FIND_BY_ID_STATEMENT =
-            "SELECT employee_id, employee_name, employee_surname, employee_age, employee_gender, position, " +
-                    "hire_date, dismiss_date, status_name, inter_user_id FROM hospital.employees " +
-                    "INNER JOIN hospital.statuses ON employee_status = status_id " +
-                    "INNER JOIN hospital.user_employee ON employee_id = inter_employee_id WHERE employee_id = ?;";
+            .append("hire_date, dismiss_date, status_name, inter_user_id FROM hospital.employees ")
+            .append("INNER JOIN hospital.statuses ON employee_status = status_id ")
+            .append("INNER JOIN hospital.user_employee ON employee_id = inter_employee_id ORDER BY * LIMIT ?, ?;");
+    private final String FIND_BY_ID_STATEMENT = new StringBuilder(
+            "SELECT employee_id, employee_name, employee_surname, employee_age, employee_gender, position, ")
+            .append("hire_date, dismiss_date, status_name, inter_user_id FROM hospital.employees ")
+            .append("INNER JOIN hospital.statuses ON employee_status = status_id ")
+            .append("INNER JOIN hospital.user_employee ON employee_id = inter_employee_id WHERE employee_id = ?;")
+            .toString();
     private final String EXISTS_NAME_STATEMENT =
-            "SELECT COUNT(*) as label FROM hospital.employees WHERE employee_name = ? AND employee_surname = ?;";
-    private final String COUNT_STATEMENT = "SELECT COUNT(*) as label FROM hospital.employees;";
+            "SELECT COUNT(*) AS label FROM hospital.employees WHERE employee_name = ? AND employee_surname = ?;";
+    private final String COUNT_STATEMENT = "SELECT COUNT(*) AS label FROM hospital.employees;";
     private final String FIND_STATUS_STATEMENT =
             "SELECT status_name FROM hospital.employees " +
                     "INNER JOIN hospital.statuses ON employee_status = status_id WHERE employee_id = ?;";
@@ -53,6 +55,13 @@ public enum EmployeeDaoImpl implements EmployeeDao {
             "UPDATE hospital.employees SET employee_status = ? WHERE employee_id = ?;";
     private final String SET_DISMISS_DATE_STATEMENT =
             "UPDATE hospital.employees SET dismiss_date = ? WHERE employee_id = ?;";
+    private final String FIND_BY_USER_ID_STATEMENT = new StringBuilder(
+            "SELECT employee_id, employee_name, employee_surname, employee_age, employee_gender, position, ")
+            .append("hire_date, dismiss_date, status_name, inter_user_id FROM hospital.employees ")
+            .append("INNER JOIN hospital.statuses ON employee_status = status_id ")
+            .append("INNER JOIN hospital.user_employee ON employee_id = inter_employee_id WHERE inter_user_id = ?;")
+            .toString();
+    private final String FIND_POSITION_STATEMENT = "SELECT position FROM hospital.employees WHERE employee_id = ?;";
 
     @Override
     public boolean exists(String name, String surname) throws DaoException {
@@ -104,7 +113,9 @@ public enum EmployeeDaoImpl implements EmployeeDao {
             if (reverse) {
                 sortBy = sortBy + SPACE + DESC;
             }
-            String sql = new StringBuilder(FIND_ALL_LIMIT_STATEMENT).insert(308, sortBy).toString();
+            StringBuilder sqlBuilder = new StringBuilder(FIND_ALL_LIMIT_STATEMENT);
+            int indexOfAsterisk = sqlBuilder.lastIndexOf(ASTERISK);
+            String sql = sqlBuilder.replace(indexOfAsterisk, indexOfAsterisk + 1, sortBy).toString();
             statement = connection.prepareStatement(sql);
             statement.setInt(1, start);
             statement.setInt(2, end);
@@ -152,7 +163,27 @@ public enum EmployeeDaoImpl implements EmployeeDao {
 
     @Override
     public Optional<Employee> findByUserId(int userId) throws DaoException {
-        return Optional.empty();
+        Optional<Employee> result;
+        Connection connection = null;
+        PreparedStatement statement = null;
+        try {
+            connection = ConnectionPool.INSTANCE.getConnection();
+            statement = connection.prepareStatement(FIND_BY_USER_ID_STATEMENT);
+            statement.setInt(1, userId);
+            ResultSet resultSet = statement.executeQuery();
+            List<Employee> employeeList = createEmployeeListFromResultSet(resultSet);
+            if (employeeList.isEmpty()) {
+                result = Optional.empty();
+            } else {
+                result = Optional.of(employeeList.get(0));
+            }
+        } catch (SQLException | ConnectionPoolException e) {
+            throw new DaoException(e);
+        } finally {
+            close(statement);
+            close(connection);
+        }
+        return result;
     }
 
     @Override
@@ -172,6 +203,33 @@ public enum EmployeeDaoImpl implements EmployeeDao {
                 LOGGER.log(Level.DEBUG, "Status has been found");
             } else {
                 LOGGER.log(Level.DEBUG, "Employee with id " + employeeId + " hasn't been found");
+                result = Optional.empty();
+            }
+        } catch (SQLException | ConnectionPoolException e) {
+            throw new DaoException(e);
+        } finally {
+            close(statement);
+            close(connection);
+        }
+        return result;
+    }
+
+    @Override
+    public Optional<Employee.Position> findPosition(int employeeId) throws DaoException {
+        Optional<Employee.Position> result;
+        Connection connection = null;
+        PreparedStatement statement = null;
+        try {
+            connection = ConnectionPool.INSTANCE.getConnection();
+            statement = connection.prepareStatement(FIND_POSITION_STATEMENT);
+            statement.setInt(1, employeeId);
+            ResultSet resultSet = statement.executeQuery();
+            if (resultSet.next()) {
+                LOGGER.log(Level.DEBUG, "Employee's position has been found");
+                Employee.Position position = Employee.Position.valueOf(resultSet.getString(1));
+                result = Optional.of(position);
+            } else {
+                LOGGER.log(Level.DEBUG, "Employee has not been found");
                 result = Optional.empty();
             }
         } catch (SQLException | ConnectionPoolException e) {

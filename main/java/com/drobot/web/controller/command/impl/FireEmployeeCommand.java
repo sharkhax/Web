@@ -37,10 +37,10 @@ public class FireEmployeeCommand implements ActionCommand {
         try {
             EmployeeService employeeService = EmployeeServiceImpl.INSTANCE;
             if (employeeService.fireEmployee(employeeId, userId)) {
-                LOGGER.log(Level.DEBUG, "Employee has been fired successfully");
                 employeeFields.replace(RequestParameter.EMPLOYEE_STATUS, Entity.Status.ARCHIVE.toString());
                 session.setAttribute(SessionAttribute.EMPLOYEE_DATA_FIELDS, employeeFields);
                 LOGGER.log(Level.DEBUG, "Employee fields have been updated");
+                LOGGER.log(Level.INFO, "Employee has been fired successfully");
             } else {
                 LOGGER.log(Level.ERROR, "Employee has not been fired");
             }

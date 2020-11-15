@@ -1,6 +1,7 @@
 package com.drobot.web.model.service;
 
 import com.drobot.web.exception.ServiceException;
+import com.drobot.web.model.entity.Entity;
 import com.drobot.web.model.entity.Patient;
 
 import java.util.List;
@@ -23,4 +24,8 @@ public interface PatientService {
 
     boolean update(Map<String, String> newFields, Map<String, String> existingFields,
                    Map<String, String> currentFields) throws ServiceException;
+
+    Optional<Entity.Status> findStatus(int patientId) throws ServiceException;
+
+    boolean discharge(int patientId) throws ServiceException;
 }

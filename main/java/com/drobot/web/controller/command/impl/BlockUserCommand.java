@@ -31,22 +31,21 @@ public class BlockUserCommand implements ActionCommand {
         UserService userService = UserServiceImpl.INSTANCE;
         try {
             if (userService.blockUser(userId)) {
-                LOGGER.log(Level.DEBUG, "User has been blocked successfully");
                 HttpSession session = request.getSession();
                 Map<String, String> fields =
                         (Map<String, String>) session.getAttribute(SessionAttribute.USER_DATA_FIELDS);
                 fields.replace(RequestParameter.USER_STATUS, Entity.Status.BLOCKED.toString());
                 session.setAttribute(SessionAttribute.USER_DATA_FIELDS, fields);
                 LOGGER.log(Level.DEBUG, "User data fields have been updated");
-                StringBuilder sb = new StringBuilder(UrlPattern.USER_INFO);
-                page = sb.deleteCharAt(sb.length() - 1).append(userId).toString();
+                LOGGER.log(Level.INFO, "User has been blocked successfully");
             } else {
-                LOGGER.log(Level.FATAL, "User has not been blocked");
-                throw new CommandException("User has not been blocked");
+                LOGGER.log(Level.ERROR, "User has not been blocked");
             }
         } catch (ServiceException e) {
             throw new CommandException(e);
         }
+        StringBuilder sb = new StringBuilder(UrlPattern.USER_INFO);
+        page = sb.deleteCharAt(sb.length() - 1).append(userId).toString();
         return page;
     }
 }

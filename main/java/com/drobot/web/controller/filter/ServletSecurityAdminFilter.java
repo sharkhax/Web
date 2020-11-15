@@ -74,10 +74,11 @@ public class ServletSecurityAdminFilter extends AbstractSecurityFilter {
         String userRole = (String) session.getAttribute(SessionAttribute.USER_ROLE);
         String page = JspPath.EMPLOYEE_LIST;
         if (session.getAttribute(SessionAttribute.EMPLOYEE_LIST) == null) {
-            executeCommand(CommandType.EMPLOYEE_LIST_COMMAND, request); // TODO: 07.11.2020 лучше делать редирект или просто обращение к команде?
+            forward(request, response, UrlPattern.EMPLOYEE_LIST_REQUEST);
+        } else {
+            boolean condition = userRole.equals(SessionAttribute.ADMIN_ROLE);
+            forwardOrError404(condition, page, request, response, session);
         }
-        boolean condition = userRole.equals(SessionAttribute.ADMIN_ROLE);
-        forwardOrError404(condition, page, request, response, session);
     }
 
     private void doCaseUserList(HttpServletRequest request, HttpServletResponse response,
@@ -85,9 +86,10 @@ public class ServletSecurityAdminFilter extends AbstractSecurityFilter {
         String userRole = (String) session.getAttribute(SessionAttribute.USER_ROLE);
         String page = JspPath.USER_LIST;
         if (session.getAttribute(SessionAttribute.USER_LIST) == null) {
-            executeCommand(CommandType.USER_LIST_COMMAND, request);
+            forward(request, response, UrlPattern.USER_LIST_REQUEST);
+        } else {
+            boolean condition = userRole.equals(SessionAttribute.ADMIN_ROLE);
+            forwardOrError404(condition, page, request, response, session);
         }
-        boolean condition = userRole.equals(SessionAttribute.ADMIN_ROLE);
-        forwardOrError404(condition, page, request, response, session);
     }
 }

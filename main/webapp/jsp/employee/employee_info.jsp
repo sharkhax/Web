@@ -20,16 +20,7 @@
     <div class="list-group">
         <form action="${pageContext.request.contextPath}/mainController" method="post">
             <input type="hidden" name="employeeId" value="${employeeDataFields.employeeId}"/>
-            <button class="list-group-item list-group-item-action" type="submit" name="command"
-                    value="redirect_to_update_employee_page" style="width: 90%;
-    color: #495057;
-    text-align: center;
-    background-color: #ffffffb5;
-    font-weight: bold;
-    font-family: 'Times New Roman', sans-serif">
-                <fmt:message key="employeeInfo.updateEmployeeButton"/>
-            </button>
-            <ctg:employee_info_dynamic_buttons/>
+            <ctg:employee_info_menu/>
         </form>
     </div>
 </div>

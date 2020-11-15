@@ -272,4 +272,19 @@ public final class SessionAttribute {
      * Represents map of patient's fields, that were not updated, at its updating form page.
      */
     public static final String PATIENT_DATA_EMPTY_FIELDS = "patientDataEmptyFields";
+
+    /**
+     * Represents map of data for creating record page.
+     */
+    public static final String CREATING_RECORD_DATA = "recordCreating";
+
+    /**
+     * Flag that shows that record creation is allowed. Should be removed from session in filter after checking.
+     */
+    public static final String RECORD_CREATION_ALLOWED = "recordCreationAllowed";
+
+    /**
+     * Represents map of fields at record creating page.
+     */
+    public static final String RECORD_CREATING_FIELDS = "recordCreatingFields";
 }

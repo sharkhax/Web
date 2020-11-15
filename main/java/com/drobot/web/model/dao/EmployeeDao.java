@@ -27,6 +27,8 @@ public interface EmployeeDao extends Dao<Employee> {
 
     Optional<Entity.Status> findStatus(int employeeId) throws DaoException;
 
+    Optional<Employee.Position> findPosition(int employeeId) throws DaoException;
+
     boolean updateStatus(int employeeId, Entity.Status newStatus) throws DaoException;
 
     boolean setDismissDate(int employeeId, long dismissDateMillis) throws DaoException;

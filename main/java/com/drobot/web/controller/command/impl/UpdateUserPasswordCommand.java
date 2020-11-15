@@ -42,9 +42,9 @@ public class UpdateUserPasswordCommand implements ActionCommand {
             if (userService.updatePassword(userId, newPassword)) {
                 sb = new StringBuilder(UrlPattern.USER_INFO);
                 page = sb.deleteCharAt(sb.length() - 1).append(userId).toString();
-                LOGGER.log(Level.DEBUG, "Password has been changed");
+                LOGGER.log(Level.INFO, "Password has been changed");
             } else {
-                LOGGER.log(Level.DEBUG, "New password is invalid");
+                LOGGER.log(Level.INFO, "New password is invalid");
                 HttpSession session = request.getSession();
                 session.setAttribute(SessionAttribute.VALIDATED, true);
                 sb = new StringBuilder(UrlPattern.ADMIN_CHANGING_PASSWORD);

@@ -12,17 +12,21 @@ public final class UrlPattern {
     public static final String USER_REGISTRATION_SUCCESS = "/mainPage/userRegistration/success";
     public static final String USER_REGISTRATION_FAIL = "/mainPage/userRegistration/fail";
     public static final String USER_LIST = "/mainPage/users";
+    public static final String USER_LIST_REQUEST = "/mainController?command=user_list_command";
     public static final String EMPLOYEE_LIST = "/mainPage/employees";
-    public static final String RECORD_LIST = "/mainPage/records";
+    public static final String EMPLOYEE_LIST_REQUEST = "//mainController?command=employee_list_command";
+    public static final String RECORD_LIST = "/mainPage/patients/*/records";
     public static final String PERSONAL_SETTINGS = "/settings";
+    public static final String PERSONAL_SETTINGS_REQUEST = "/mainController?command=settings_page";
     public static final String CHANGING_PASSWORD = "/settings/changePassword";
-    //public static final String RECORD_CREATING = "/mainPage/recordCreating";
-    //public static final String RECORD_CREATING_SUCCESS = "/mainPage/recordCreating/success";
-    //public static final String RECORD_CREATING_FAIL = "/mainPage/recordCreating/fail";
+    public static final String RECORD_CREATING = "/mainPage/patients/*/createRecord";
+    public static final String RECORD_CREATING_REQUEST =
+            "/mainController?command=redirect_to_record_creating_page&patientId=";
     public static final String PATIENT_CREATING = "/mainPage/newPatient";
     public static final String PATIENT_CREATING_SUCCESS = "/mainPage/newPatient/success";
     public static final String PATIENT_CREATING_FAIL = "/mainPage/newPatient/fail";
     public static final String PATIENT_LIST = "/mainPage/patients";
+    public static final String PATIENT_LIST_REQUEST = "/mainController?command=patient_list_command";
     public static final String USER_INFO = "/mainPage/users/*";
     public static final String USER_INFO_REQUEST = "/mainController?command=user_data&requestedUserInfoId=";
     public static final String EMPLOYEE_INFO = "/mainPage/employees/*";
