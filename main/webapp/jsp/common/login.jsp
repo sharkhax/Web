@@ -77,7 +77,6 @@
         </c:choose>
     </form>
 
-
     <div class="col-2 loginMessages">
         <c:if test="${invalidLoginOrPass eq true}">
             <span style="color: white; font-size: 14pt; font-weight: bold "><fmt:message key="login.invalidLoginOrPass"/></span>

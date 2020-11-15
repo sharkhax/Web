@@ -29,10 +29,17 @@ public class UpdateUserCommand implements ActionCommand {
     @Override
     public String execute(HttpServletRequest request) throws CommandException {
         String page;
+        String stringUserId = request.getParameter(RequestParameter.USER_ID);
+        int userId;
+        try {
+            userId = Integer.parseInt(stringUserId);
+        } catch (NumberFormatException e) {
+            LOGGER.log(Level.ERROR, "Incorrect user id value");
+            return null;
+        }
         HttpSession session = request.getSession();
         Map<String, String> currentFields =
                 (Map<String, String>) session.getAttribute(SessionAttribute.USER_DATA_FIELDS);
-        int userId = Integer.parseInt(currentFields.get(RequestParameter.USER_ID));
         String newLogin = request.getParameter(RequestParameter.LOGIN);
         String newEmail = request.getParameter(RequestParameter.EMAIL);
         Map<String, String> newFields = new HashMap<>();

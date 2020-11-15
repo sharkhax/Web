@@ -29,7 +29,14 @@ public class DischargePatientCommand implements ActionCommand {
     @Override
     public String execute(HttpServletRequest request) throws CommandException {
         String page;
-        int patientId = Integer.parseInt(request.getParameter(RequestParameter.PATIENT_ID));
+        String stringPatientId = request.getParameter(RequestParameter.PATIENT_ID);
+        int patientId;
+        try {
+            patientId = Integer.parseInt(stringPatientId);
+        } catch (NumberFormatException e) {
+            LOGGER.log(Level.ERROR, "Incorrect patient id value");
+            return null;
+        }
         PatientService recordService = PatientServiceImpl.INSTANCE;
         try {
             if (recordService.discharge(patientId)) {

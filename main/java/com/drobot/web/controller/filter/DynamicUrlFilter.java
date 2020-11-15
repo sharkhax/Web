@@ -35,7 +35,8 @@ public class DynamicUrlFilter extends AbstractSecurityFilter {
         UPDATING_USER("/mainPage/users/[0-9]+/update"),
         UPDATING_EMPLOYEE("/mainPage/employees/[0-9]+/update"),
         UPDATING_PATIENT("/mainPage/patients/[0-9]+/update"),
-        CREATING_RECORD("/mainPage/patients/[0-9]+/createRecord");
+        CREATING_RECORD("/mainPage/patients/[0-9]+/createRecord"),
+        RECORD_LIST("/mainPage/patients/[0-9]+/records");
 
         private final String pattern;
 
@@ -66,6 +67,7 @@ public class DynamicUrlFilter extends AbstractSecurityFilter {
                 case UPDATING_EMPLOYEE -> doCaseUpdatingEmployee(request, response, session);
                 case UPDATING_PATIENT -> doCaseUpdatingPatient(request, response, session);
                 case CREATING_RECORD -> doCaseCreatingRecord(request, response, session);
+                case RECORD_LIST -> doCaseRecordList(request, response, session);
                 default -> throw new EnumConstantNotPresentException(DynamicUrl.class, dynamicUrl.name());
             }
         } else {
@@ -160,8 +162,8 @@ public class DynamicUrlFilter extends AbstractSecurityFilter {
             if (!prevPage.matches(DynamicUrl.CHANGING_PASSWORD.getPattern())) {
                 session.setAttribute(SessionAttribute.VALIDATED, null);
             }
-            LOGGER.log(Level.DEBUG, "Flag \"USER_EXISTS\" has been removed from the session");
             session.setAttribute(SessionAttribute.USER_EXISTS, null);
+            LOGGER.log(Level.DEBUG, "Flag \"USER_EXISTS\" has been removed from the session");
             String userRole = (String) session.getAttribute(SessionAttribute.USER_ROLE);
             page = JspPath.ADMIN_CHANGING_PASSWORD;
             request.setAttribute(RequestParameter.USER_ID, userId);
@@ -184,8 +186,8 @@ public class DynamicUrlFilter extends AbstractSecurityFilter {
             if (!prevPage.matches(DynamicUrl.UPDATING_USER.getPattern())) {
                 session.setAttribute(SessionAttribute.VALIDATED, null);
             }
-            LOGGER.log(Level.DEBUG, "Flag \"USER_EXISTS\" has been removed from the session");
             session.setAttribute(SessionAttribute.USER_EXISTS, null);
+            LOGGER.log(Level.DEBUG, "Flag \"USER_EXISTS\" has been removed from the session");
             String userRole = (String) session.getAttribute(SessionAttribute.USER_ROLE);
             page = JspPath.USER_UPDATING;
             boolean condition = userRole != null && userRole.equals(SessionAttribute.ADMIN_ROLE);
@@ -207,8 +209,8 @@ public class DynamicUrlFilter extends AbstractSecurityFilter {
             if (!prevPage.matches(DynamicUrl.UPDATING_EMPLOYEE.getPattern())) {
                 session.setAttribute(SessionAttribute.VALIDATED, null);
             }
-            LOGGER.log(Level.DEBUG, "Flag \"EMPLOYEE_EXISTS\" has been removed from the session");
             session.setAttribute(SessionAttribute.EMPLOYEE_EXISTS, null);
+            LOGGER.log(Level.DEBUG, "Flag \"EMPLOYEE_EXISTS\" has been removed from the session");
             String userRole = (String) session.getAttribute(SessionAttribute.USER_ROLE);
             page = JspPath.EMPLOYEE_UPDATING;
             boolean condition = userRole != null && userRole.equals(SessionAttribute.ADMIN_ROLE);
@@ -230,8 +232,8 @@ public class DynamicUrlFilter extends AbstractSecurityFilter {
             if (!prevPage.matches(DynamicUrl.UPDATING_PATIENT.getPattern())) {
                 session.setAttribute(SessionAttribute.VALIDATED, null);
             }
-            LOGGER.log(Level.DEBUG, "Flag \"PATIENT_EXISTS\" has been removed from the session");
             session.setAttribute(SessionAttribute.PATIENT_EXISTS, null);
+            LOGGER.log(Level.DEBUG, "Flag \"PATIENT_EXISTS\" has been removed from the session");
             String userRole = (String) session.getAttribute(SessionAttribute.USER_ROLE);
             page = JspPath.PATIENT_UPDATING;
             boolean condition = userRole != null
@@ -254,8 +256,8 @@ public class DynamicUrlFilter extends AbstractSecurityFilter {
             if (!prevPage.matches(DynamicUrl.CREATING_RECORD.getPattern())) {
                 session.setAttribute(SessionAttribute.VALIDATED, null);
             }
-            LOGGER.log(Level.DEBUG, "Flag \"RECORD_CREATION_ALLOWED\" has been removed from the session");
             session.setAttribute(SessionAttribute.RECORD_CREATION_ALLOWED, null);
+            LOGGER.log(Level.DEBUG, "Flag \"RECORD_CREATION_ALLOWED\" has been removed from the session");
             String userRole = (String) session.getAttribute(SessionAttribute.USER_ROLE);
             page = JspPath.RECORD_CREATING;
             boolean condition = userRole != null
@@ -264,6 +266,26 @@ public class DynamicUrlFilter extends AbstractSecurityFilter {
         } else {
             LOGGER.log(Level.DEBUG, "Requesting the command to check patient and user id");
             page = UrlPattern.RECORD_CREATING_REQUEST + patientId;
+            forward(request, response, page);
+        }
+    }
+
+    private void doCaseRecordList(HttpServletRequest request, HttpServletResponse response,
+                                      HttpSession session) throws IOException, ServletException {
+        String page;
+        int patientId = defineIdFromUri(request.getRequestURI());
+        Boolean patientExists = (Boolean) session.getAttribute(SessionAttribute.PATIENT_EXISTS);
+        if (patientExists != null && patientExists) {
+            session.setAttribute(SessionAttribute.PATIENT_EXISTS, null);
+            LOGGER.log(Level.DEBUG, "Flag \"PATIENT_EXISTS\" has been removed from the session");
+            String userRole = (String) session.getAttribute(SessionAttribute.USER_ROLE);
+            page = JspPath.RECORD_LIST;
+            boolean condition = userRole != null && !userRole.equals(SessionAttribute.GUEST_ROLE);
+            request.setAttribute(RequestParameter.PATIENT_ID, patientId);
+            forwardOrError404(condition, page, request, response, session);
+        } else {
+            LOGGER.log(Level.DEBUG, "Requesting the command to check patient id");
+            page = UrlPattern.RECORD_LIST_REQUEST + patientId;
             forward(request, response, page);
         }
     }

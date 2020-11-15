@@ -62,8 +62,8 @@ public class EmployeeListCommand implements ActionCommand {
         try {
             List<Employee> employeeList = employeeService.findAll(start, end, sortBy, reverseSorting);
             session.setAttribute(SessionAttribute.EMPLOYEE_LIST, employeeList);
-            int usersNumber = employeeService.count();
-            session.setAttribute(SessionAttribute.EMPLOYEES_NUMBER, usersNumber);
+            int employeesNumber = employeeService.count();
+            session.setAttribute(SessionAttribute.EMPLOYEES_NUMBER, employeesNumber);
         } catch (ServiceException e) {
             throw new CommandException(e);
         }

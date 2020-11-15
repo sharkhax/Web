@@ -27,7 +27,14 @@ public class BlockUserCommand implements ActionCommand {
     @Override
     public String execute(HttpServletRequest request) throws CommandException {
         String page;
-        int userId = Integer.parseInt(request.getParameter(RequestParameter.USER_ID));
+        String stringUserId = request.getParameter(RequestParameter.USER_ID);
+        int userId;
+        try {
+            userId = Integer.parseInt(stringUserId);
+        } catch (NumberFormatException e) {
+            LOGGER.log(Level.ERROR, "Incorrect user id value");
+            return null;
+        }
         UserService userService = UserServiceImpl.INSTANCE;
         try {
             if (userService.blockUser(userId)) {

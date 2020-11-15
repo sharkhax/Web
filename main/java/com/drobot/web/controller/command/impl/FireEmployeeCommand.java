@@ -29,10 +29,17 @@ public class FireEmployeeCommand implements ActionCommand {
     @Override
     public String execute(HttpServletRequest request) throws CommandException {
         String page;
+        String stringEmployeeId = request.getParameter(RequestParameter.EMPLOYEE_ID);
+        int employeeId;
+        try {
+            employeeId = Integer.parseInt(stringEmployeeId);
+        } catch (NumberFormatException e) {
+            LOGGER.log(Level.ERROR, "Incorrect employee id value");
+            return null;
+        }
         HttpSession session = request.getSession();
         Map<String, String> employeeFields =
                 (Map<String, String>) session.getAttribute(SessionAttribute.EMPLOYEE_DATA_FIELDS);
-        int employeeId = Integer.parseInt(request.getParameter(RequestParameter.EMPLOYEE_ID));
         int userId = Integer.parseInt(employeeFields.get(RequestParameter.USER_ID));
         try {
             EmployeeService employeeService = EmployeeServiceImpl.INSTANCE;

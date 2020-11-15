@@ -375,16 +375,22 @@ public enum EmployeeServiceImpl implements EmployeeService {
     }
 
     private boolean checkSortingTag(String sortBy) {
-        return sortBy.equals(ColumnName.EMPLOYEE_ID)
-                || sortBy.equals(ColumnName.EMPLOYEE_NAME)
-                || sortBy.equals(ColumnName.EMPLOYEE_SURNAME)
-                || sortBy.equals(ColumnName.EMPLOYEE_AGE)
-                || sortBy.equals(ColumnName.EMPLOYEE_GENDER)
-                || sortBy.equals(ColumnName.EMPLOYEE_POSITION)
-                || sortBy.equals(ColumnName.EMPLOYEE_HIRE_DATE)
-                || sortBy.equals(ColumnName.EMPLOYEE_DISMISS_DATE)
-                || sortBy.equals(ColumnName.EMPLOYEE_STATUS)
-                || sortBy.equals(ColumnName.INTER_USER_ID);
+        boolean result = false;
+        if (sortBy != null) {
+            result = sortBy.equals(ColumnName.EMPLOYEE_ID)
+                    || sortBy.equals(ColumnName.EMPLOYEE_NAME)
+                    || sortBy.equals(ColumnName.EMPLOYEE_SURNAME)
+                    || sortBy.equals(ColumnName.EMPLOYEE_AGE)
+                    || sortBy.equals(ColumnName.EMPLOYEE_GENDER)
+                    || sortBy.equals(ColumnName.EMPLOYEE_POSITION)
+                    || sortBy.equals(ColumnName.EMPLOYEE_HIRE_DATE)
+                    || sortBy.equals(ColumnName.EMPLOYEE_DISMISS_DATE)
+                    || sortBy.equals(ColumnName.EMPLOYEE_STATUS)
+                    || sortBy.equals(ColumnName.INTER_USER_ID);
+        } else {
+            LOGGER.log(Level.DEBUG, "Sorting tag is null");
+        }
+        return result;
     }
 
     private boolean setInstantDismissDate(int employeeId) throws DaoException {

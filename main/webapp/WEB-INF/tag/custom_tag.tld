@@ -25,6 +25,11 @@
         <name>record_list</name>
         <tag-class>com.drobot.web.tag.RecordListTag</tag-class>
         <body-content>empty</body-content>
+        <attribute>
+            <name>patientId</name>
+            <required>true</required>
+            <rtexprvalue>true</rtexprvalue>
+        </attribute>
     </tag>
     <tag>
         <name>patient_list</name>

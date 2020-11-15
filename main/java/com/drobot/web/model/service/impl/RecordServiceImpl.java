@@ -3,17 +3,12 @@ package com.drobot.web.model.service.impl;
 import com.drobot.web.controller.RequestParameter;
 import com.drobot.web.exception.DaoException;
 import com.drobot.web.exception.ServiceException;
+import com.drobot.web.model.dao.ColumnName;
 import com.drobot.web.model.dao.EmployeeDao;
-import com.drobot.web.model.dao.PatientDao;
 import com.drobot.web.model.dao.RecordDao;
 import com.drobot.web.model.dao.impl.EmployeeDaoImpl;
-import com.drobot.web.model.dao.impl.PatientDaoImpl;
 import com.drobot.web.model.dao.impl.RecordDaoImpl;
-import com.drobot.web.model.entity.Employee;
-import com.drobot.web.model.entity.Entity;
-import com.drobot.web.model.entity.Patient;
-import com.drobot.web.model.entity.PatientRecord;
-import com.drobot.web.model.entity.Treatment;
+import com.drobot.web.model.entity.*;
 import com.drobot.web.model.service.EmployeeService;
 import com.drobot.web.model.service.PatientService;
 import com.drobot.web.model.service.RecordService;
@@ -67,8 +62,30 @@ public enum RecordServiceImpl implements RecordService {
     }
 
     @Override
-    public List<PatientRecord> findAll(int start, int length, String sortBy) throws ServiceException {
-        return null;
+    public List<SpecifiedRecord> findByPatientId(int patientId, int start, int end, String sortBy, boolean reverse)
+            throws ServiceException {
+        List<SpecifiedRecord> result;
+        if (patientId > 0) {
+            if (start >= 0 && end > start) {
+                if (checkSortingTagForSpecifiedRecord(sortBy)) {
+                    try {
+                        result = recordDao.findByPatientId(patientId, start, end, sortBy, reverse);
+                    } catch (DaoException e) {
+                        throw new ServiceException(e);
+                    }
+                } else {
+                    result = List.of();
+                    LOGGER.log(Level.ERROR, "Invalid sorting tag");
+                }
+            } else {
+                result = List.of();
+                LOGGER.log(Level.ERROR, "Invalid start or end values");
+            }
+        } else {
+            result = List.of();
+            LOGGER.log(Level.DEBUG, "Patient id is not valid");
+        }
+        return result;
     }
 
     @Override
@@ -139,7 +156,7 @@ public enum RecordServiceImpl implements RecordService {
         boolean result = false;
         try {
             if (patientId > 0 && executorUserId > 0) {
-                Optional<PatientRecord> optional = recordDao.findByPatientId(patientId);
+                Optional<PatientRecord> optional = recordDao.findLast(patientId);
                 if (optional.isPresent()) {
                     PatientRecord record = optional.get();
                     int recordId = record.getId();
@@ -176,7 +193,7 @@ public enum RecordServiceImpl implements RecordService {
         boolean result = false;
         try {
             if (patientId > 0 && executorUserId > 0) {
-                Optional<PatientRecord> optional = recordDao.findByPatientId(patientId);
+                Optional<PatientRecord> optional = recordDao.findLast(patientId);
                 if (optional.isPresent()) {
                     PatientRecord record = optional.get();
                     int recordId = record.getId();
@@ -209,6 +226,35 @@ public enum RecordServiceImpl implements RecordService {
             }
         } catch (DaoException e) {
             throw new ServiceException(e);
+        }
+        return result;
+    }
+
+    @Override
+    public int count(int patientId) throws ServiceException {
+        int result = 0;
+        try {
+            if (patientId > 0) {
+                result = recordDao.count(patientId);
+            } else {
+                LOGGER.log(Level.DEBUG, "Patient id value is invalid");
+            }
+        } catch (DaoException e) {
+            throw new ServiceException(e);
+        }
+        return result;
+    }
+
+    private boolean checkSortingTagForSpecifiedRecord(String sortBy) {
+        boolean result = false;
+        if (sortBy != null) {
+            result = sortBy.equals(ColumnName.RECORD_ID)
+                    || sortBy.equals(ColumnName.DOCTOR_NAME)
+                    || sortBy.equals(ColumnName.EXECUTOR_NAME)
+                    || sortBy.equals(ColumnName.TREATMENT_NAME)
+                    || sortBy.equals(ColumnName.DIAGNOSIS);
+        } else {
+            LOGGER.log(Level.DEBUG, "Sorting tag is null");
         }
         return result;
     }

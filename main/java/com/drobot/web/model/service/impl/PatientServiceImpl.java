@@ -34,7 +34,6 @@ public enum PatientServiceImpl implements PatientService {
         Optional<Patient> optionalPatient = patientCreator.create(fields);
         if (optionalPatient.isPresent()) {
             Patient patient = optionalPatient.get();
-            PatientDao patientDao = PatientDaoImpl.INSTANCE;
             String name = patient.getName();
             String surname = patient.getSurname();
             boolean noMatches = true;
@@ -60,15 +59,14 @@ public enum PatientServiceImpl implements PatientService {
         try {
             if (start >= 0 && end > start) {
                 if (checkSortingTag(sortBy)) {
-                    PatientDao patientDao = PatientDaoImpl.INSTANCE;
                     result = patientDao.findAll(start, end, sortBy, reverse);
                 } else {
                     result = List.of();
-                    LOGGER.log(Level.ERROR, "Invalid sorting tag");
+                    LOGGER.log(Level.DEBUG, "Invalid sorting tag");
                 }
             } else {
                 result = List.of();
-                LOGGER.log(Level.ERROR, "Invalid start or end values");
+                LOGGER.log(Level.DEBUG, "Invalid start or end values");
             }
         } catch (DaoException e) {
             throw new ServiceException(e);
@@ -80,8 +78,7 @@ public enum PatientServiceImpl implements PatientService {
     public int count() throws ServiceException {
         int result;
         try {
-            PatientDao userDao = PatientDaoImpl.INSTANCE;
-            result = userDao.count();
+            result = patientDao.count();
         } catch (DaoException e) {
             throw new ServiceException(e);
         }
@@ -91,13 +88,12 @@ public enum PatientServiceImpl implements PatientService {
     @Override
     public Optional<Patient> findById(int patientId) throws ServiceException {
         Optional<Patient> optionalPatient;
-        PatientDao patientDao = PatientDaoImpl.INSTANCE;
         try {
             if (patientId > 0) {
                 optionalPatient = patientDao.findById(patientId);
             } else {
                 optionalPatient = Optional.empty();
-                LOGGER.log(Level.ERROR, "Invalid patient id: " + patientId);
+                LOGGER.log(Level.DEBUG, "Invalid patient id: " + patientId);
             }
         } catch (DaoException e) {
             throw new ServiceException(e);
@@ -112,7 +108,7 @@ public enum PatientServiceImpl implements PatientService {
             if (patientId > 0) {
                 result = patientDao.exists(patientId);
             } else {
-                LOGGER.log(Level.ERROR, "Invalid patient id: " + patientId);
+                LOGGER.log(Level.DEBUG, "Invalid patient id: " + patientId);
             }
         } catch (DaoException e) {
             throw new ServiceException(e);
@@ -252,13 +248,19 @@ public enum PatientServiceImpl implements PatientService {
     }
 
     private boolean checkSortingTag(String sortBy) {
-        return sortBy.equals(ColumnName.PATIENT_ID)
-                || sortBy.equals(ColumnName.PATIENT_NAME)
-                || sortBy.equals(ColumnName.PATIENT_SURNAME)
-                || sortBy.equals(ColumnName.PATIENT_AGE)
-                || sortBy.equals(ColumnName.PATIENT_GENDER)
-                || sortBy.equals(ColumnName.PATIENT_DIAGNOSIS)
-                || sortBy.equals(ColumnName.PATIENT_STATUS)
-                || sortBy.equals(ColumnName.RECORD_ID);
+        boolean result = false;
+        if (sortBy != null) {
+            result = sortBy.equals(ColumnName.PATIENT_ID)
+                    || sortBy.equals(ColumnName.PATIENT_NAME)
+                    || sortBy.equals(ColumnName.PATIENT_SURNAME)
+                    || sortBy.equals(ColumnName.PATIENT_AGE)
+                    || sortBy.equals(ColumnName.PATIENT_GENDER)
+                    || sortBy.equals(ColumnName.DIAGNOSIS)
+                    || sortBy.equals(ColumnName.PATIENT_STATUS)
+                    || sortBy.equals(ColumnName.RECORD_ID);
+        } else {
+            LOGGER.log(Level.DEBUG, "Sorting tag is null");
+        }
+        return result;
     }
 }

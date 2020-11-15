@@ -29,10 +29,17 @@ public class UpdatePatientCommand implements ActionCommand {
     @Override
     public String execute(HttpServletRequest request) throws CommandException {
         String page;
+        String stringPatientId = request.getParameter(RequestParameter.PATIENT_ID);
+        int patientId;
+        try {
+            patientId = Integer.parseInt(stringPatientId);
+        } catch (NumberFormatException e) {
+            LOGGER.log(Level.ERROR, "Incorrect patient id value");
+            return null;
+        }
         HttpSession session = request.getSession();
         Map<String, String> currentFields =
                 (Map<String, String>) session.getAttribute(SessionAttribute.PATIENT_DATA_FIELDS);
-        int patientId = Integer.parseInt(currentFields.get(RequestParameter.PATIENT_ID));
         String newName = request.getParameter(RequestParameter.PATIENT_NAME);
         String newSurname = request.getParameter(RequestParameter.PATIENT_SURNAME);
         String newAge = request.getParameter(RequestParameter.PATIENT_AGE);

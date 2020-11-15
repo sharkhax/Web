@@ -197,4 +197,9 @@ public final class RequestParameter {
      * Represents treatment field of patient record at creation page or appropriate lists.
      */
     public static final String PATIENT_TREATMENT = "patientTreatment";
+
+//    /**
+//     * Represents a field of employee's name, who cured a patient, at record table page.
+//     */
+//    public static final String EXECUTOR_NAME = "executorName";
 }

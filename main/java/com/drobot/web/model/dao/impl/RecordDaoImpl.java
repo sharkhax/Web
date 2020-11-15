@@ -5,6 +5,7 @@ import com.drobot.web.exception.DaoException;
 import com.drobot.web.model.dao.RecordDao;
 import com.drobot.web.model.entity.Entity;
 import com.drobot.web.model.entity.PatientRecord;
+import com.drobot.web.model.entity.SpecifiedRecord;
 import com.drobot.web.model.entity.Treatment;
 import com.drobot.web.model.pool.ConnectionPool;
 import org.apache.logging.log4j.Level;
@@ -33,9 +34,20 @@ public enum RecordDaoImpl implements RecordDao {
             "executor_id, diagnosis FROM hospital.patient_records WHERE record_id = ?;";
     private final String UPDATE_EXECUTOR_STATEMENT =
             "UPDATE hospital.patient_records SET executor_id = ? WHERE record_id = ?;";
-    private final String FIND_BY_PATIENT_ID_STATEMENT =
+    private final String FIND_LAST_BY_PATIENT_ID_STATEMENT =
             "SELECT record_id, patient_id_fk, attending_doctor_id, curing_id, executor_id, diagnosis " +
                     "FROM hospital.patient_records WHERE patient_id_fk = ? ORDER BY record_id DESC LIMIT 1;";
+    private final String FIND_BY_PATIENT_ID_STATEMENT = new StringBuilder(
+            "SELECT record_id, doctor.employee_name AS doctor_name, doctor.employee_surname, treatment_name, ")
+            .append("executor.employee_name AS executor_name, executor.employee_surname, diagnosis ")
+            .append("FROM hospital.patient_records ")
+            .append("INNER JOIN hospital.employees AS doctor ON attending_doctor_id = doctor.employee_id ")
+            .append("LEFT JOIN hospital.employees AS executor ON executor_id = executor.employee_id ")
+            .append("INNER JOIN hospital.treatments AS curing_id ON treatment_id = curing_id ")
+            .append("WHERE patient_id_fk = ? ORDER BY * LIMIT ?, ?;")
+            .toString();
+    private final String COUNT_BY_PATIENT_ID_STATEMENT =
+            "SELECT COUNT(*) AS label FROM hospital.patient_records WHERE patient_id_fk = ?;";
 
     @Override
     public boolean add(PatientRecord record) {
@@ -70,9 +82,41 @@ public enum RecordDaoImpl implements RecordDao {
         return 0;
     }
 
+
+
     @Override
-    public Optional<PatientRecord> findByPatientId(int patientId) throws DaoException {
-        return findBySomeId(patientId, FIND_BY_PATIENT_ID_STATEMENT);
+    public Optional<PatientRecord> findLast(int patientId) throws DaoException {
+        return findBySomeId(patientId, FIND_LAST_BY_PATIENT_ID_STATEMENT);
+    }
+
+    @Override
+    public List<SpecifiedRecord> findByPatientId(int patientId, int start, int end, String sortBy, boolean reverse)
+            throws DaoException {
+        List<SpecifiedRecord> result;
+        Connection connection = null;
+        PreparedStatement statement = null;
+        try {
+            connection = ConnectionPool.INSTANCE.getConnection();
+            StringBuilder sqlBuilder = new StringBuilder(FIND_BY_PATIENT_ID_STATEMENT);
+            if (reverse) {
+                sortBy = sortBy + SPACE + DESC;
+            }
+            int indexOfAsterisk = sqlBuilder.lastIndexOf(ASTERISK);
+            String sql = sqlBuilder.replace(indexOfAsterisk, indexOfAsterisk + 1, sortBy).toString();
+            statement = connection.prepareStatement(sql);
+            statement.setInt(1, patientId);
+            statement.setInt(2, start);
+            statement.setInt(3, end);
+            ResultSet resultSet = statement.executeQuery();
+            result = createSpecifiedRecordListFromResultSet(resultSet);
+        } catch (SQLException | ConnectionPoolException e) {
+            rollback(connection);
+            throw new DaoException(e);
+        } finally {
+            close(statement);
+            close(connection);
+        }
+        return result;
     }
 
     @Override
@@ -169,6 +213,28 @@ public enum RecordDaoImpl implements RecordDao {
         return result;
     }
 
+    @Override
+    public int count(int patientId) throws DaoException {
+        int result;
+        Connection connection = null;
+        PreparedStatement statement = null;
+        try {
+            connection = ConnectionPool.INSTANCE.getConnection();
+            statement = connection.prepareStatement(COUNT_BY_PATIENT_ID_STATEMENT);
+            statement.setInt(1, patientId);
+            ResultSet resultSet = statement.executeQuery();
+            resultSet.next();
+            result = resultSet.getInt(1);
+            LOGGER.log(Level.DEBUG, "Users have been counted");
+        } catch (SQLException | ConnectionPoolException e) {
+            throw new DaoException(e);
+        } finally {
+            close(statement);
+            close(connection);
+        }
+        return result;
+    }
+
     private List<PatientRecord> createRecordListFromResultSet(ResultSet resultSet) throws SQLException {
         List<PatientRecord> result = new ArrayList<>();
         if (resultSet != null && resultSet.next()) {
@@ -182,6 +248,29 @@ public enum RecordDaoImpl implements RecordDao {
                 PatientRecord patientRecord =
                         new PatientRecord(recordId, patientId, doctorId, curingId, executorId, diagnosis);
                 result.add(patientRecord);
+            } while (resultSet.next());
+            LOGGER.log(Level.DEBUG, result.size() + " records have been found");
+        } else {
+            LOGGER.log(Level.DEBUG, "ResultSet is null or empty");
+        }
+        return result;
+    }
+
+    private List<SpecifiedRecord> createSpecifiedRecordListFromResultSet(ResultSet resultSet) throws SQLException {
+        List<SpecifiedRecord> result = new ArrayList<>();
+        if (resultSet != null && resultSet.next()) {
+            do {
+                int recordId = resultSet.getInt(1);
+                String doctorName = resultSet.getString(2);
+                String doctorSurname = resultSet.getString(3);
+                String stringTreatment = resultSet.getString(4);
+                String executorName = resultSet.getString(5);
+                String executorSurname = resultSet.getString(6);
+                String diagnosis = resultSet.getString(7);
+                Treatment treatment = Treatment.valueOf(stringTreatment);
+                SpecifiedRecord record = new SpecifiedRecord(
+                        recordId, doctorName, doctorSurname, treatment, executorName, executorSurname, diagnosis);
+                result.add(record);
             } while (resultSet.next());
             LOGGER.log(Level.DEBUG, result.size() + " records have been found");
         } else {

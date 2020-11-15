@@ -31,7 +31,7 @@ public class PatientDataCommand implements ActionCommand {
         String stringPatientId = request.getParameter(RequestParameter.PATIENT_INFO_ID);
         int patientId;
         try {
-            patientId = Integer.parseInt(stringPatientId != null ? stringPatientId : "");
+            patientId = Integer.parseInt(stringPatientId);
         } catch (NumberFormatException e) {
             LOGGER.log(Level.ERROR, "Incorrect patient id value, returning null");
             return null;

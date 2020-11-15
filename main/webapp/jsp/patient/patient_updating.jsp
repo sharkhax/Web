@@ -20,6 +20,7 @@
         <c:when test="${validated eq true}">
             <form action="${pageContext.request.contextPath}/mainController" method="post">
                 <input type="hidden" name="command" value="update_patient"/>
+                <input type="hidden" name="patientId" value="${patientInfoId}">
                 <div style="background-color: #f4f4f4b8">
                     <div class="form-row">
                         <div class="form-group col-md-3">
@@ -243,6 +244,7 @@
         <c:otherwise>
             <form action="${pageContext.request.contextPath}/mainController" method="post">
                 <input type="hidden" name="command" value="update_patient"/>
+                <input type="hidden" name="patientId" value="${patientInfoId}">
                 <div style="background-color: #f4f4f4b8">
                     <div class="form-row">
                         <div class="form-group col-md-3">
@@ -319,7 +321,7 @@
 </div>
 
 <%@include file="patient_info_part.jsp" %>
-<%@ include file="../supporting/footer.jsp" %>
+
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
         integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
         crossorigin="anonymous"></script>

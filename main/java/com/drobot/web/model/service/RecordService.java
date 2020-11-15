@@ -1,7 +1,7 @@
 package com.drobot.web.model.service;
 
 import com.drobot.web.exception.ServiceException;
-import com.drobot.web.model.entity.PatientRecord;
+import com.drobot.web.model.entity.SpecifiedRecord;
 import com.drobot.web.model.entity.Treatment;
 
 import java.util.List;
@@ -12,7 +12,8 @@ public interface RecordService {
 
     boolean add(Map<String, String> fields) throws ServiceException;
 
-    List<PatientRecord> findAll(int start, int length, String sortBy) throws ServiceException;
+    List<SpecifiedRecord> findByPatientId(int patientId, int start, int end, String sortBy, boolean reverse)
+            throws ServiceException;
 
     Map<String, String> findDataForNewRecord(int patientId, int userId) throws ServiceException;
 
@@ -21,4 +22,6 @@ public interface RecordService {
     boolean executeProcedure(int recordId, int executorUserId) throws ServiceException;
 
     boolean executeSurgery(int recordId, int executorUserId) throws ServiceException;
+
+    int count(int patientId) throws ServiceException;
 }

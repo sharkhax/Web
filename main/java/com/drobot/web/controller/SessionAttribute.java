@@ -119,6 +119,11 @@ public final class SessionAttribute {
     public static final String EMPLOYEE_LIST_CURRENT_PAGE = "employeeListCurrentPage";
 
     /**
+     * Represents number of current page at list of records page.
+     */
+    public static final String RECORD_LIST_CURRENT_PAGE = "recordListCurrentPage";
+
+    /**
      * Represents sorting tag for list of employees at appropriate page.
      */
     public static final String EMPLOYEE_LIST_SORT_BY = "employeeListSortBy";
@@ -129,6 +134,11 @@ public final class SessionAttribute {
     public static final String PATIENT_LIST = "patient_list";
 
     /**
+     * Represents list of records at appropriate page.
+     */
+    public static final String RECORD_LIST = "record_list";
+
+    /**
      * Represents number of current page at list of patients page.
      */
     public static final String PATIENT_LIST_CURRENT_PAGE = "patientListCurrentPage";
@@ -137,6 +147,11 @@ public final class SessionAttribute {
      * Represents sorting tag for list of patients at appropriate page.
      */
     public static final String PATIENT_LIST_SORT_BY = "patientListSortBy";
+
+    /**
+     * Represents sorting tag for list of records at appropriate page.
+     */
+    public static final String RECORD_LIST_SORT_BY = "recordListSortBy";
 
     /**
      * Represents general number of users at user list page.
@@ -154,6 +169,11 @@ public final class SessionAttribute {
     public static final String PATIENTS_NUMBER = "patientsNumber";
 
     /**
+     * Represents general number of records at patient list page.
+     */
+    public static final String RECORDS_NUMBER = "recordsNumber";
+
+    /**
      * Represents flag for reserve sorting at user list page.
      */
     public static final String USER_LIST_REVERSE_SORTING = "userListReverseSorting";
@@ -167,6 +187,11 @@ public final class SessionAttribute {
      * Represents flag for reserve sorting at employee list page.
      */
     public static final String EMPLOYEE_LIST_REVERSE_SORTING = "employeeListReverseSorting";
+
+    /**
+     * Represents flag for reserve sorting at record list page.
+     */
+    public static final String RECORD_LIST_REVERSE_SORTING = "recordListReverseSorting";
 
     /**
      * Represents map of patient's fields at patient creating page.
@@ -287,4 +312,6 @@ public final class SessionAttribute {
      * Represents map of fields at record creating page.
      */
     public static final String RECORD_CREATING_FIELDS = "recordCreatingFields";
+
+
 }

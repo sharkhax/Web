@@ -453,11 +453,17 @@ public enum UserServiceImpl implements UserService {
     }
 
     private boolean checkSortingTag(String sortBy) {
-        return sortBy.equals(ColumnName.USER_ID)
-                || sortBy.equals(ColumnName.USER_ROLE)
-                || sortBy.equals(ColumnName.USER_STATUS)
-                || sortBy.equals(ColumnName.USER_LOGIN)
-                || sortBy.equals(ColumnName.USER_EMAIL)
-                || sortBy.equals(ColumnName.INTER_EMPLOYEE_ID);
+        boolean result = false;
+        if (sortBy != null) {
+            result = sortBy.equals(ColumnName.USER_ID)
+                    || sortBy.equals(ColumnName.USER_ROLE)
+                    || sortBy.equals(ColumnName.USER_STATUS)
+                    || sortBy.equals(ColumnName.USER_LOGIN)
+                    || sortBy.equals(ColumnName.USER_EMAIL)
+                    || sortBy.equals(ColumnName.INTER_EMPLOYEE_ID);
+        } else {
+            LOGGER.log(Level.DEBUG, "Sorting tag is null");
+        }
+        return result;
     }
 }

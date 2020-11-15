@@ -31,6 +31,10 @@ public class ChangePasswordCommand implements ActionCommand {
         String page;
         String currentPassword = request.getParameter(RequestParameter.CURRENT_PASSWORD);
         String newPassword = request.getParameter(RequestParameter.NEW_PASSWORD);
+        if (currentPassword == null || newPassword == null) {
+            LOGGER.log(Level.ERROR, "One of password values is null");
+            return null;
+        }
         Map<String, String> fields;
         HttpSession session = request.getSession();
         Map<String, String> loginInfo = (Map<String, String>) session.getAttribute(SessionAttribute.LOGIN_INFO);

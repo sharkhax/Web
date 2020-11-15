@@ -55,6 +55,7 @@ public class RedirectToUpdateEmployeeCommand implements ActionCommand {
                 page = sb.toString();
                 LOGGER.log(Level.DEBUG, "Flag \"EMPLOYEE_EXISTS\" has been set to true");
                 session.setAttribute(SessionAttribute.EMPLOYEE_EXISTS, true);
+                LOGGER.log(Level.INFO, "Redirecting to updating employee page");
             } else {
                 LOGGER.log(Level.DEBUG, "Employee with id " + stringEmployeeId + " doesn't exist, returning null");
                 page = null;

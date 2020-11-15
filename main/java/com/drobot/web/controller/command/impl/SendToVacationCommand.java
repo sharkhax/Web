@@ -27,7 +27,14 @@ public class SendToVacationCommand implements ActionCommand {
     @Override
     public String execute(HttpServletRequest request) throws CommandException {
         String page;
-        int employeeId = Integer.parseInt(request.getParameter(RequestParameter.EMPLOYEE_ID));
+        String stringEmployeeId = request.getParameter(RequestParameter.EMPLOYEE_ID);
+        int employeeId;
+        try {
+            employeeId = Integer.parseInt(stringEmployeeId);
+        } catch (NumberFormatException e) {
+            LOGGER.log(Level.ERROR, "Incorrect employee id value");
+            return null;
+        }
         try {
             EmployeeService employeeService = EmployeeServiceImpl.INSTANCE;
             if (employeeService.sendToVacation(employeeId)) {

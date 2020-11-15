@@ -33,7 +33,7 @@ public class EmployeeDataCommand implements ActionCommand {
         String stringEmployeeId = request.getParameter(RequestParameter.EMPLOYEE_INFO_ID);
         int employeeId;
         try {
-            employeeId = Integer.parseInt(stringEmployeeId != null ? stringEmployeeId : "");
+            employeeId = Integer.parseInt(stringEmployeeId);
         } catch (NumberFormatException e) {
             LOGGER.log(Level.ERROR, "Incorrect employee id value, returning null");
             return null;

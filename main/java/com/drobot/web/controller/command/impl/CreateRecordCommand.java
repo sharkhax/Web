@@ -39,7 +39,7 @@ public class CreateRecordCommand implements ActionCommand {
             patientId = Integer.parseInt(stringPatientId);
             doctorId = Integer.parseInt(stringDoctorId);
         } catch (NumberFormatException e) {
-            LOGGER.log(Level.ERROR, "Patient or doctor ids are not valid, returning null");
+            LOGGER.log(Level.ERROR, "One of id values is not valid, returning null");
             return null;
         }
         PatientService patientService = PatientServiceImpl.INSTANCE;

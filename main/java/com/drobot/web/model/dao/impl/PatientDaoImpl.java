@@ -29,7 +29,7 @@ public enum PatientDaoImpl implements PatientDao {
             .append("status_name, record_id FROM hospital.patients ")
             .append("INNER JOIN hospital.statuses ON patient_status = status_id ")
             .append("LEFT JOIN hospital.patient_records ON patient_id = patient_id_fk ")
-            .append("WHERE record_id = (SELECT MAX(record_id) FROM hospital.patient_records ")
+            .append("WHERE record_id IS NULL OR record_id = (SELECT MAX(record_id) FROM hospital.patient_records ")
             .append("WHERE patient_id_fk = patient_id) ORDER BY * LIMIT ?, ?;").toString();
     private final String COUNT_STATEMENT = "SELECT COUNT(*) AS label FROM hospital.patients;";
     private final String FIND_BY_ID_STATEMENT = new StringBuilder(

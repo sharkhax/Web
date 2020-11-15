@@ -15,11 +15,13 @@
 <jsp:include page="../supporting/background.jsp"/>
 <%@include file="../supporting/header.jsp"%>
 
-<div style="width: 1200px; margin: 13px 10px">
-    <ctg:record_list/>
+<label for="recordList"
+       style="font-weight: bold; background-color: #f4f4f4b8; font-family: 'Times New Roman', sans-serif; margin: 13px 10px">
+    <fmt:message key="table.patientIdLabel"/> ${patientId}
+</label>
+<div id="recordList" style="width: 1200px; margin: 13px 10px">
+    <ctg:record_list patientId="${patientId}"/>
 </div>
-
-<%@include file="../supporting/footer.jsp"%>
 
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
         integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
@@ -30,6 +32,11 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"
         integrity="sha384-B4gt1jrGC7Jh4AgTPSdUtOBvfO8shuf57BaghqFfPlYxofvL8/KUEfYiJOMMV+rV"
         crossorigin="anonymous"></script>
+<script type="text/javascript">
+    function goToRecordInfo(id) {
+        document.location.href = "${pageContext.request.contextPath}/mainController?command=record_data&requestedRecordInfoId=" + id;
+    }
+</script>
 
 </body>
 </html>

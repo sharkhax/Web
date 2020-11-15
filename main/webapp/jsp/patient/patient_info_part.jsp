@@ -94,7 +94,7 @@
         </dt>
         <dd class="col-sm-9">
             <c:choose>
-                <c:when test="${not patientDataFields.lastRecordId eq '-'}">
+                <c:when test="${patientDataFields.lastRecordId ne '-'}">
                     <a href="${pageContext.request.contextPath}/mainController?command=record_data&requestedRecordInfoId=${patientDataFields.lastRecordId}">
                         <span style="font-family: 'Times New Roman', sans-serif">${patientDataFields.lastRecordId}</span>
                     </a>

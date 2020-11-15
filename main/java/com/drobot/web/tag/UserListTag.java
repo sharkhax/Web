@@ -91,8 +91,10 @@ public class UserListTag extends TagSupport {
                 case ColumnName.USER_STATUS -> stringStatus = stringStatus + " " + alphaArrow;
                 case ColumnName.INTER_EMPLOYEE_ID -> employeeId = employeeId + " " + numericArrow;
             }
-            out.write("<form action=\"/mainController\" method=\"post\">");
-            out.write("<input type=\"hidden\" name=\"command\" value=\"user_list_command\"/>");
+            String contextPath = pageContext.getServletContext().getContextPath();
+            out.write("<form action=\"" + contextPath + "/mainController\" method=\"post\">");
+            out.write("<input type=\"hidden\" name=\"command\" value=\"");
+            out.write(CommandType.USER_LIST_COMMAND.toString() + "\"/>");
             out.write("<thead class=\"thead-light\"><tr>");
             out.write("<th scope=\"col\"><span style=\"font-weight: bold\">№</span></th>");
             TagUtil.createTableHeadButton(out, id, HEAD_BUTTON_STYLE, ColumnName.USER_ID);

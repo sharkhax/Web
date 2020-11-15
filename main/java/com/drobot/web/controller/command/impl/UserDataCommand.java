@@ -31,7 +31,7 @@ public class UserDataCommand implements ActionCommand {
         String stringUserId = request.getParameter(RequestParameter.USER_INFO_ID);
         int userId;
         try {
-            userId = Integer.parseInt(stringUserId != null ? stringUserId : "");
+            userId = Integer.parseInt(stringUserId);
         } catch (NumberFormatException e) {
             LOGGER.log(Level.ERROR, "Incorrect user id value, returning null");
             return null;

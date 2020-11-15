@@ -33,9 +33,9 @@ public interface UserService {
      */
     List<User> findAll(String sortBy, boolean reverse) throws ServiceException;
 
-    List<User> findAll(int start, int length, String sortBy, boolean reverse) throws ServiceException;
+    List<User> findAll(int start, int end, String sortBy, boolean reverse) throws ServiceException;
 
-    List<User> findAll(int start, int length) throws ServiceException;
+    List<User> findAll(int start, int end) throws ServiceException;
 
     Optional<User> findById(int userId) throws ServiceException;
 

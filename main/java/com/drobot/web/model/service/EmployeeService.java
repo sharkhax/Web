@@ -16,7 +16,7 @@ public interface EmployeeService {
 
     List<Employee> findAll(String sortBy, boolean reverse) throws ServiceException;
 
-    List<Employee> findAll(int start, int length, String sortBy, boolean reverse) throws ServiceException;
+    List<Employee> findAll(int start, int end, String sortBy, boolean reverse) throws ServiceException;
 
     Optional<Employee> findById(int employeeId) throws ServiceException;
 

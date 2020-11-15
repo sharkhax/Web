@@ -27,9 +27,16 @@ public class UnblockUserCommand implements ActionCommand {
     @Override
     public String execute(HttpServletRequest request) throws CommandException {
         String page;
+        String stringUserId = request.getParameter(RequestParameter.USER_ID);
+        int userId;
+        try {
+            userId = Integer.parseInt(stringUserId);
+        } catch (NumberFormatException e) {
+            LOGGER.log(Level.ERROR, "Incorrect user id value");
+            return null;
+        }
         HttpSession session = request.getSession();
         Map<String, String> userFields = (Map<String, String>) session.getAttribute(SessionAttribute.USER_DATA_FIELDS);
-        int userId = Integer.parseInt(userFields.get(RequestParameter.USER_ID));
         int employeeId = Integer.parseInt(userFields.get(RequestParameter.EMPLOYEE_ID));
         UserService userService = UserServiceImpl.INSTANCE;
         try {

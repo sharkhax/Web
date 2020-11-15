@@ -62,8 +62,8 @@ public class PatientListCommand implements ActionCommand {
         try {
             List<Patient> patientList = patientService.findAll(start, end, sortBy, reverseSorting);
             session.setAttribute(SessionAttribute.PATIENT_LIST, patientList);
-            int usersNumber = patientService.count();
-            session.setAttribute(SessionAttribute.PATIENTS_NUMBER, usersNumber);
+            int patientsNumber = patientService.count();
+            session.setAttribute(SessionAttribute.PATIENTS_NUMBER, patientsNumber);
         } catch (ServiceException e) {
             throw new CommandException(e);
         }

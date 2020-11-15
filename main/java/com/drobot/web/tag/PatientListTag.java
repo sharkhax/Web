@@ -68,7 +68,7 @@ public class PatientListTag extends TagSupport {
             out.write("</tbody></table>");
         } catch (IOException e) {
             LOGGER.log(Level.FATAL, "Error while creating user list", e);
-            throw new JspException(e);
+            throw new JspException("Error while creating user list", e);
         }
     }
 
@@ -94,12 +94,14 @@ public class PatientListTag extends TagSupport {
                 case ColumnName.PATIENT_SURNAME -> surname = surname + " " + alphaArrow;
                 case ColumnName.PATIENT_AGE -> age = age + " " + numericArrow;
                 case ColumnName.PATIENT_GENDER -> gender = gender + " " + alphaArrow;
-                case ColumnName.PATIENT_DIAGNOSIS -> diagnosis = diagnosis + " " + alphaArrow;
+                case ColumnName.DIAGNOSIS -> diagnosis = diagnosis + " " + alphaArrow;
                 case ColumnName.RECORD_ID -> currentRecordId = currentRecordId + " " + numericArrow;
                 case ColumnName.PATIENT_STATUS -> status = status + " " + numericArrow;
             }
-            out.write("<form action=\"/mainController\" method=\"post\">");
-            out.write("<input type=\"hidden\" name=\"command\" value=\"patient_list_command\"/>");
+            String contextPath = pageContext.getServletContext().getContextPath();
+            out.write("<form action=\"" + contextPath + "/mainController\" method=\"post\">");
+            out.write("<input type=\"hidden\" name=\"command\" value=\"");
+            out.write(CommandType.PATIENT_LIST_COMMAND.toString() + "\"/>");
             out.write("<thead class=\"thead-light\"><tr>");
             out.write("<th scope=\"col\"><span style=\"font-weight: bold\">№</span></th>");
             TagUtil.createTableHeadButton(out, id, HEAD_BUTTON_STYLE, ColumnName.PATIENT_ID);
@@ -107,13 +109,13 @@ public class PatientListTag extends TagSupport {
             TagUtil.createTableHeadButton(out, surname, HEAD_BUTTON_STYLE, ColumnName.PATIENT_SURNAME);
             TagUtil.createTableHeadButton(out, age, HEAD_BUTTON_STYLE, ColumnName.PATIENT_AGE);
             TagUtil.createTableHeadButton(out, gender, HEAD_BUTTON_STYLE, ColumnName.PATIENT_GENDER);
-            TagUtil.createTableHeadButton(out, diagnosis, HEAD_BUTTON_STYLE, ColumnName.PATIENT_DIAGNOSIS);
+            TagUtil.createTableHeadButton(out, diagnosis, HEAD_BUTTON_STYLE, ColumnName.DIAGNOSIS);
             TagUtil.createTableHeadButton(out, status, HEAD_BUTTON_STYLE, ColumnName.PATIENT_STATUS);
             TagUtil.createTableHeadButton(out, currentRecordId, HEAD_BUTTON_STYLE, ColumnName.RECORD_ID);
             out.write("</tr></thead></form>");
         } catch (IOException e) {
             LOGGER.log(Level.FATAL, "Error while creating patient list head", e);
-            throw new JspException(e);
+            throw new JspException("Error while creating patient list head", e);
         }
     }
 
@@ -160,7 +162,7 @@ public class PatientListTag extends TagSupport {
             }
         } catch (IOException e) {
             LOGGER.log(Level.FATAL, "Error while creating patient list rows", e);
-            throw new JspException(e);
+            throw new JspException("Error while creating patient list rows", e);
         }
     }
 
