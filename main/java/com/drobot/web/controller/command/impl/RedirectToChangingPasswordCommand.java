@@ -11,6 +11,11 @@ import org.apache.logging.log4j.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 
+/**
+ * Action command for redirecting to changing password page.
+ *
+ * @author Vladislav Drobot
+ */
 @CommandAccessLevel({AccessType.ADMIN, AccessType.DOCTOR, AccessType.ASSISTANT})
 public class RedirectToChangingPasswordCommand implements ActionCommand {
 

@@ -2,6 +2,8 @@ package com.drobot.web.controller;
 
 /**
  * Represents constant names of session attributes.
+ *
+ * @author Vladislav Drobot
  */
 public final class SessionAttribute {
 
@@ -322,6 +324,4 @@ public final class SessionAttribute {
      * Represents map of fields at record creating page.
      */
     public static final String RECORD_CREATING_FIELDS = "recordCreatingFields";
-
-
 }

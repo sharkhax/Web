@@ -17,6 +17,11 @@ import org.apache.logging.log4j.Logger;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+/**
+ * Action command for redirecting to the page of updating user's password by admin.
+ *
+ * @author Vladislav Drobot
+ */
 @CommandAccessLevel(AccessType.ADMIN)
 public class RedirectToUpdatingPasswordCommand implements ActionCommand {
 

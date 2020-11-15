@@ -20,6 +20,11 @@ import javax.servlet.http.HttpSession;
 import java.util.Map;
 import java.util.Optional;
 
+/**
+ * Action command for redirecting to updating an user page.
+ *
+ * @author Vladislav Drobot
+ */
 @CommandAccessLevel(AccessType.ADMIN)
 public class RedirectToUpdateUserCommand implements ActionCommand {
 

@@ -19,6 +19,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.Map;
 
+/**
+ * Action command for returning an employee from vacation.
+ *
+ * @author Vladislav Drobot
+ */
 @CommandAccessLevel(AccessType.ADMIN)
 public class ReturnFromVacationCommand implements ActionCommand {
 

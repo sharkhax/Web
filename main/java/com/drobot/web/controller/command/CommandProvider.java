@@ -8,6 +8,11 @@ import org.apache.logging.log4j.Logger;
 import javax.servlet.http.HttpServletRequest;
 import java.util.Optional;
 
+/**
+ * Class used to work with commands.
+ *
+ * @author Vladislav Drobot
+ */
 public class CommandProvider {
 
     private static final Logger LOGGER = LogManager.getLogger(CommandProvider.class);
@@ -15,6 +20,13 @@ public class CommandProvider {
     private CommandProvider() {
     }
 
+    /**
+     * Defines an ActionCommand from the request.
+     *
+     * @param request HttpServletRequest object, which may contain the ActionCommand.
+     * @return empty Optional object if command is empty or not present in the request,
+     * otherwise - Optional object of ActionCommand object.
+     */
     public static Optional<ActionCommand> defineCommand(HttpServletRequest request) {
         Optional<ActionCommand> result;
         String stringCommand = request.getParameter(RequestParameter.COMMAND);

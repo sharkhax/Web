@@ -8,11 +8,8 @@ import com.drobot.web.controller.command.ActionCommand;
 import com.drobot.web.controller.command.CommandAccessLevel;
 import com.drobot.web.exception.CommandException;
 import com.drobot.web.exception.ServiceException;
-import com.drobot.web.model.entity.Patient;
 import com.drobot.web.model.entity.PatientRecord;
-import com.drobot.web.model.service.PatientService;
 import com.drobot.web.model.service.RecordService;
-import com.drobot.web.model.service.impl.PatientServiceImpl;
 import com.drobot.web.model.service.impl.RecordServiceImpl;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -23,6 +20,11 @@ import javax.servlet.http.HttpSession;
 import java.util.Map;
 import java.util.Optional;
 
+/**
+ * Action command for loading record's data.
+ *
+ * @author Vladislav Drobot
+ */
 @CommandAccessLevel({AccessType.ADMIN, AccessType.DOCTOR, AccessType.ASSISTANT})
 public class RecordDataCommand implements ActionCommand {
 

@@ -21,6 +21,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+/**
+ * Action command for changing user's password.
+ *
+ * @author Vladislav Drobot
+ */
 @CommandAccessLevel({AccessType.ADMIN, AccessType.ASSISTANT, AccessType.DOCTOR})
 public class ChangePasswordCommand implements ActionCommand {
 
@@ -47,16 +52,16 @@ public class ChangePasswordCommand implements ActionCommand {
                 if (!currentPassword.equals(newPassword) && userService.updatePassword(userId, newPassword)) {
                     page = UrlPattern.PERSONAL_SETTINGS;
                     fields = null;
-                    LOGGER.log(Level.DEBUG, "Password has been changed");
+                    LOGGER.log(Level.INFO, "Password has been changed");
                 } else {
-                    LOGGER.log(Level.DEBUG, "New password is invalid");
+                    LOGGER.log(Level.INFO, "New password is invalid");
                     session.setAttribute(SessionAttribute.VALIDATED, true);
                     fields = new HashMap<>();
                     fields.put(RequestParameter.CURRENT_PASSWORD, currentPassword);
                     page = UrlPattern.CHANGING_PASSWORD;
                 }
             } else {
-                LOGGER.log(Level.DEBUG, "Current password is incorrect");
+                LOGGER.log(Level.INFO, "Current password is incorrect");
                 session.setAttribute(SessionAttribute.VALIDATED, true);
                 fields = new HashMap<>();
                 fields.put(RequestParameter.NEW_PASSWORD, newPassword);

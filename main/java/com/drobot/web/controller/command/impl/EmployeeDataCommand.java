@@ -11,17 +11,20 @@ import com.drobot.web.exception.ServiceException;
 import com.drobot.web.model.entity.Employee;
 import com.drobot.web.model.service.EmployeeService;
 import com.drobot.web.model.service.impl.EmployeeServiceImpl;
-import com.drobot.web.model.util.DateConverter;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+/**
+ * Action command for loading employee's data.
+ *
+ * @author Vladislav Drobot
+ */
 @CommandAccessLevel(AccessType.ADMIN)
 public class EmployeeDataCommand implements ActionCommand {
 

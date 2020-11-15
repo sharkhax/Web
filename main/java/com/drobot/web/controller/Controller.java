@@ -18,16 +18,23 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.Optional;
 
+/**
+ * Controller class used to process all requests from users.
+ *
+ * @author Vladislav Drobot
+ */
 @WebServlet(urlPatterns = {UrlPattern.MAIN_CONTROLLER})
 public class Controller extends HttpServlet {
 
     private static final Logger LOGGER = LogManager.getLogger(Controller.class);
 
+    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         processRequest(request, response);
     }
 
+    @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         processRequest(request, response);

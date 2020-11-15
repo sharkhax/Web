@@ -4,9 +4,6 @@ import com.drobot.web.controller.JspPath;
 import com.drobot.web.controller.RequestParameter;
 import com.drobot.web.controller.SessionAttribute;
 import com.drobot.web.controller.UrlPattern;
-import com.drobot.web.controller.command.CommandType;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -17,9 +14,12 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
+/**
+ * Web filter used to check access for requesting pages that available for admins only.
+ *
+ * @author Vladislav Drobot
+ */
 public class ServletSecurityAdminFilter extends AbstractSecurityFilter {
-
-    private static final Logger LOGGER = LogManager.getLogger(ServletSecurityAdminFilter.class);
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse,

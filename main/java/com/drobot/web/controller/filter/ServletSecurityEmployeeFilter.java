@@ -3,9 +3,6 @@ package com.drobot.web.controller.filter;
 import com.drobot.web.controller.JspPath;
 import com.drobot.web.controller.SessionAttribute;
 import com.drobot.web.controller.UrlPattern;
-import com.drobot.web.controller.command.CommandType;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -16,9 +13,12 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
+/**
+ * Web filter used to check access for requesting pages that available for employees or higher, except signing in.
+ *
+ * @author Vladislav Drobot
+ */
 public class ServletSecurityEmployeeFilter extends AbstractSecurityFilter {
-
-    private static final Logger LOGGER = LogManager.getLogger(ServletSecurityEmployeeFilter.class);
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse,
@@ -81,7 +81,7 @@ public class ServletSecurityEmployeeFilter extends AbstractSecurityFilter {
     }
 
     private void doCasePatientCreatingSuccess(HttpServletRequest request, HttpServletResponse response,
-                                           HttpSession session) throws IOException, ServletException {
+                                              HttpSession session) throws IOException, ServletException {
         request.setAttribute(SessionAttribute.PATIENT_CREATING_SUCCESS, true);
         session.setAttribute(SessionAttribute.VALIDATED, null);
         session.setAttribute(SessionAttribute.PATIENT_CREATING_EXISTING_FIELDS, null);
@@ -90,7 +90,7 @@ public class ServletSecurityEmployeeFilter extends AbstractSecurityFilter {
     }
 
     private void forwardToPatientCreating(HttpServletRequest request, HttpServletResponse response,
-                                              HttpSession session) throws IOException, ServletException {
+                                          HttpSession session) throws IOException, ServletException {
         String userRole = (String) session.getAttribute(SessionAttribute.USER_ROLE);
         String page = JspPath.PATIENT_CREATING;
         boolean condition = userRole != null && (userRole.equals(SessionAttribute.ADMIN_ROLE)

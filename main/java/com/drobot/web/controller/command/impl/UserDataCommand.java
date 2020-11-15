@@ -20,6 +20,11 @@ import javax.servlet.http.HttpSession;
 import java.util.Map;
 import java.util.Optional;
 
+/**
+ * Action command for loading user's data.
+ *
+ * @author Vladislav Drobot
+ */
 @CommandAccessLevel(AccessType.ADMIN)
 public class UserDataCommand implements ActionCommand {
 

@@ -4,7 +4,6 @@ import com.drobot.web.controller.JspPath;
 import com.drobot.web.controller.RequestParameter;
 import com.drobot.web.controller.SessionAttribute;
 import com.drobot.web.controller.UrlPattern;
-import com.drobot.web.controller.command.CommandType;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -17,26 +16,74 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Web filter used to check the access for requesting pages with dynamic URLs.
+ *
+ * @author Vladislav Drobot
+ */
 public class DynamicUrlFilter extends AbstractSecurityFilter {
 
     private static final Logger LOGGER = LogManager.getLogger(DynamicUrlFilter.class);
     private static final String NUMBER_REGEX = "[0-9]+";
 
+    /**
+     * Dynamic URL patterns enumeration.
+     *
+     * @author Vladislav Drobot
+     */
     enum DynamicUrl {
 
+        /**
+         * Represents dynamic URL pattern for user's info page.
+         */
         USER_INFO("/mainPage/users/[0-9]+"),
+
+        /**
+         * Represents dynamic URL pattern for employee's info page.
+         */
         EMPLOYEE_INFO("/mainPage/employees/[0-9]+"),
+
+        /**
+         * Represents dynamic URL pattern for patient's info page.
+         */
         PATIENT_INFO("/mainPage/patients/[0-9]+"),
+
+        /**
+         * Represents dynamic URL pattern for record's info page.
+         */
         RECORD_INFO("/mainPage/records/[0-9]+"),
+
+        /**
+         * Represents dynamic URL pattern for changing password page.
+         */
         CHANGING_PASSWORD("/mainPage/users/[0-9]+/changePassword"),
+
+        /**
+         * Represents dynamic URL pattern for updating user page.
+         */
         UPDATING_USER("/mainPage/users/[0-9]+/update"),
+
+        /**
+         * Represents dynamic URL pattern for updating employee page.
+         */
         UPDATING_EMPLOYEE("/mainPage/employees/[0-9]+/update"),
+
+        /**
+         * Represents dynamic URL pattern for updating patient page.
+         */
         UPDATING_PATIENT("/mainPage/patients/[0-9]+/update"),
+
+        /**
+         * Represents dynamic URL pattern for creating record page.
+         */
         CREATING_RECORD("/mainPage/patients/[0-9]+/createRecord"),
+
+        /**
+         * Represents dynamic URL pattern for record list page.
+         */
         RECORD_LIST("/mainPage/patients/[0-9]+/records");
 
         private final String pattern;
@@ -45,6 +92,11 @@ public class DynamicUrlFilter extends AbstractSecurityFilter {
             this.pattern = pattern;
         }
 
+        /**
+         * Getter method for dynamic URL patterns.
+         *
+         * @return String objects of dynamic URL patterns.
+         */
         public String getPattern() {
             return pattern;
         }
@@ -293,7 +345,7 @@ public class DynamicUrlFilter extends AbstractSecurityFilter {
     }
 
     private void doCaseRecordList(HttpServletRequest request, HttpServletResponse response,
-                                      HttpSession session) throws IOException, ServletException {
+                                  HttpSession session) throws IOException, ServletException {
         String page;
         int patientId = defineIdFromUri(request.getRequestURI());
         Boolean patientExists = (Boolean) session.getAttribute(SessionAttribute.PATIENT_EXISTS);

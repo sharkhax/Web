@@ -19,6 +19,11 @@ import javax.servlet.http.HttpSession;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Action command for registration a new patient.
+ *
+ * @author Vladislav Drobot
+ */
 @CommandAccessLevel({AccessType.ADMIN, AccessType.DOCTOR})
 public class RegisterPatientCommand implements ActionCommand {
 

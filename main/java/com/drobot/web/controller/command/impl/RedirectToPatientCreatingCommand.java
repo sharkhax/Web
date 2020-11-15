@@ -11,6 +11,11 @@ import org.apache.logging.log4j.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 
+/**
+ * Action command for redirecting to creating a new patient page.
+ *
+ * @author Vladislav Drobot
+ */
 @CommandAccessLevel({AccessType.ADMIN, AccessType.DOCTOR})
 public class RedirectToPatientCreatingCommand implements ActionCommand {
 

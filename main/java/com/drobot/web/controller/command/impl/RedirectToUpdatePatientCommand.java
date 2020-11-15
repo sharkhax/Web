@@ -20,6 +20,11 @@ import javax.servlet.http.HttpSession;
 import java.util.Map;
 import java.util.Optional;
 
+/**
+ * Action command for redirecting to updating a patient command.
+ *
+ * @author Vladislav Drobot
+ */
 @CommandAccessLevel({AccessType.ADMIN, AccessType.DOCTOR})
 public class RedirectToUpdatePatientCommand implements ActionCommand {
 

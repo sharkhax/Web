@@ -3,7 +3,6 @@ package com.drobot.web.controller.command.impl;
 import com.drobot.web.controller.SessionAttribute;
 import com.drobot.web.controller.command.ActionCommand;
 import com.drobot.web.controller.command.CommandAccessLevel;
-import com.drobot.web.controller.RequestParameter;
 import com.drobot.web.exception.CommandException;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -12,6 +11,11 @@ import org.apache.logging.log4j.Logger;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+/**
+ * Action command for changing user's locale.
+ *
+ * @author Vladislav Drobot
+ */
 @CommandAccessLevel
 public class ChangeLocaleCommand implements ActionCommand {
 

@@ -10,9 +10,7 @@ import com.drobot.web.exception.CommandException;
 import com.drobot.web.exception.ServiceException;
 import com.drobot.web.model.entity.Entity;
 import com.drobot.web.model.service.PatientService;
-import com.drobot.web.model.service.RecordService;
 import com.drobot.web.model.service.impl.PatientServiceImpl;
-import com.drobot.web.model.service.impl.RecordServiceImpl;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -21,6 +19,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.Map;
 
+/**
+ * Action command for discharging patient.
+ *
+ * @author Vladislav Drobot
+ */
 @CommandAccessLevel({AccessType.ADMIN, AccessType.DOCTOR})
 public class DischargePatientCommand implements ActionCommand {
 

@@ -2,6 +2,8 @@ package com.drobot.web.controller;
 
 /**
  * Represents constant names of request parameters and attributes.
+ *
+ * @author Vladislav Drobot
  */
 public final class RequestParameter {
 

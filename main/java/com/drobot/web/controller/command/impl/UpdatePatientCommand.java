@@ -21,6 +21,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+/**
+ * Action command for updating a patient.
+ *
+ * @author Vladislav Drobot
+ */
 @CommandAccessLevel({AccessType.ADMIN, AccessType.DOCTOR})
 public class UpdatePatientCommand implements ActionCommand {
 

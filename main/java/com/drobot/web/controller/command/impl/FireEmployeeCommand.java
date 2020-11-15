@@ -8,7 +8,6 @@ import com.drobot.web.controller.command.ActionCommand;
 import com.drobot.web.controller.command.CommandAccessLevel;
 import com.drobot.web.exception.CommandException;
 import com.drobot.web.exception.ServiceException;
-import com.drobot.web.model.entity.Employee;
 import com.drobot.web.model.entity.Entity;
 import com.drobot.web.model.service.EmployeeService;
 import com.drobot.web.model.service.impl.EmployeeServiceImpl;
@@ -19,8 +18,12 @@ import org.apache.logging.log4j.Logger;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.util.Map;
-import java.util.Optional;
 
+/**
+ * Action command for firing an employee.
+ *
+ * @author Vladislav Drobot
+ */
 @CommandAccessLevel(AccessType.ADMIN)
 public class FireEmployeeCommand implements ActionCommand {
 

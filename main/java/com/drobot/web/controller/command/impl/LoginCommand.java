@@ -20,6 +20,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+/**
+ * Action command for signing in.
+ *
+ * @author Vladislav Drobot
+ */
 @CommandAccessLevel({AccessType.GUEST})
 public class LoginCommand implements ActionCommand {
 

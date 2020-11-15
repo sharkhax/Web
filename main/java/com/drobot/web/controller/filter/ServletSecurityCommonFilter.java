@@ -1,7 +1,6 @@
 package com.drobot.web.controller.filter;
 
 import com.drobot.web.controller.JspPath;
-import com.drobot.web.controller.RequestParameter;
 import com.drobot.web.controller.SessionAttribute;
 import com.drobot.web.controller.UrlPattern;
 import com.drobot.web.controller.command.ActionCommand;
@@ -17,6 +16,11 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.Optional;
 
+/**
+ * Web filter used to check access for requesting pages that available for any user.
+ *
+ * @author Vladislav Drobot
+ */
 public class ServletSecurityCommonFilter extends AbstractSecurityFilter {
 
     private static final Logger LOGGER = LogManager.getLogger(ServletSecurityCommonFilter.class);

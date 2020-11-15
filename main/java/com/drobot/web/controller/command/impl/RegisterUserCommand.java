@@ -19,6 +19,11 @@ import javax.servlet.http.HttpSession;
 import java.util.HashMap;
 import java.util.Map;
 
+/**
+ * Action command for registration a new user.
+ *
+ * @author Vladislav Drobot
+ */
 @CommandAccessLevel({AccessType.ADMIN})
 public class RegisterUserCommand implements ActionCommand {
 

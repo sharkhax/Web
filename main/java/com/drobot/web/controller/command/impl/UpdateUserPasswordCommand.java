@@ -16,8 +16,12 @@ import org.apache.logging.log4j.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
-import java.util.HashMap;
 
+/**
+ * Action command for updating user's password by admin.
+ *
+ * @author Vladislav Drobot
+ */
 @CommandAccessLevel(AccessType.ADMIN)
 public class UpdateUserPasswordCommand implements ActionCommand {
 

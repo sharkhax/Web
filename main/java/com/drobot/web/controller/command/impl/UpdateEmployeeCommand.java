@@ -9,7 +9,6 @@ import com.drobot.web.controller.command.CommandAccessLevel;
 import com.drobot.web.exception.CommandException;
 import com.drobot.web.exception.ServiceException;
 import com.drobot.web.model.entity.Employee;
-import com.drobot.web.model.entity.User;
 import com.drobot.web.model.service.impl.EmployeeServiceImpl;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -21,6 +20,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+/**
+ * Action command for updating an employee.
+ *
+ * @author Vladislav Drobot
+ */
 @CommandAccessLevel(AccessType.ADMIN)
 public class UpdateEmployeeCommand implements ActionCommand {
 
