@@ -174,6 +174,11 @@ public final class RequestParameter {
     public static final String PATIENT_INFO_ID = "requestedPatientInfoId";
 
     /**
+     * Represents requested patient's ID at patient's info page.
+     */
+    public static final String RECORD_INFO_ID = "requestedRecordInfoId";
+
+    /**
      * Represents requested user's ID at user's info page.
      */
     public static final String USER_INFO_ID = "requestedUserInfoId";
@@ -198,8 +203,13 @@ public final class RequestParameter {
      */
     public static final String PATIENT_TREATMENT = "patientTreatment";
 
-//    /**
-//     * Represents a field of employee's name, who cured a patient, at record table page.
-//     */
-//    public static final String EXECUTOR_NAME = "executorName";
+    /**
+     * Represents record's ID field at appropriate info page.
+     */
+    public static final String RECORD_ID = "recordId";
+
+    /**
+     * Represents record's executor ID field at appropriate info page.
+     */
+    public static final String EXECUTOR_ID = "executorId";
 }

@@ -53,7 +53,7 @@ public enum UserServiceImpl implements UserService {
             if (checkSortingTag(sortBy)) {
                 result = userDao.findAll(sortBy, reverse);
             } else {
-                LOGGER.log(Level.ERROR, "Unsupported sorting tag");
+                LOGGER.log(Level.DEBUG, "Unsupported sorting tag");
                 result = List.of();
             }
         } catch (DaoException e) {
@@ -71,11 +71,11 @@ public enum UserServiceImpl implements UserService {
                     result = userDao.findAll(start, end, sortBy, reverse);
                 } else {
                     result = List.of();
-                    LOGGER.log(Level.ERROR, "Unsupported sorting tag");
+                    LOGGER.log(Level.DEBUG, "Unsupported sorting tag");
                 }
             } else {
                 result = List.of();
-                LOGGER.log(Level.ERROR, "Incorrect start or end values");
+                LOGGER.log(Level.DEBUG, "Incorrect start or end values");
             }
         } catch (DaoException e) {
             throw new ServiceException(e);
@@ -96,7 +96,7 @@ public enum UserServiceImpl implements UserService {
             if (userId > 0) {
                 result = userDao.findById(userId);
             } else {
-                LOGGER.log(Level.ERROR, "Incorrect user id: " + userId);
+                LOGGER.log(Level.DEBUG, "Incorrect user id: " + userId);
                 result = Optional.empty();
             }
         } catch (DaoException e) {
@@ -142,7 +142,7 @@ public enum UserServiceImpl implements UserService {
             if (checkSortingTag(sortBy)) {
                 result = userDao.findByRole(role, sortBy);
             } else {
-                LOGGER.log(Level.ERROR, "Unsupported sorting tag");
+                LOGGER.log(Level.DEBUG, "Unsupported sorting tag");
                 result = List.of();
             }
         } catch (DaoException e) {
@@ -158,7 +158,7 @@ public enum UserServiceImpl implements UserService {
             if (checkSortingTag(sortBy)) {
                 result = userDao.findByStatus(isActive, sortBy);
             } else {
-                LOGGER.log(Level.ERROR, "Unsupported sorting tag");
+                LOGGER.log(Level.DEBUG, "Unsupported sorting tag");
                 result = List.of();
             }
         } catch (DaoException e) {

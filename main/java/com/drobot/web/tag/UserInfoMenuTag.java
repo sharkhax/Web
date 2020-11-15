@@ -98,7 +98,6 @@ public class UserInfoMenuTag extends TagSupport {
                 switch (userStatus) {
                     case ACTIVE -> createBlockButton(out, bundle);
                     case BLOCKED -> createUnblockButton(out, bundle);
-                    default -> throw new EnumConstantNotPresentException(Entity.Status.class, userStatus.name());
                 }
             }
         } else {

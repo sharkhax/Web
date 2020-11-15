@@ -1,6 +1,7 @@
 package com.drobot.web.model.service;
 
 import com.drobot.web.exception.ServiceException;
+import com.drobot.web.model.entity.PatientRecord;
 import com.drobot.web.model.entity.SpecifiedRecord;
 import com.drobot.web.model.entity.Treatment;
 
@@ -24,4 +25,8 @@ public interface RecordService {
     boolean executeSurgery(int recordId, int executorUserId) throws ServiceException;
 
     int count(int patientId) throws ServiceException;
+
+    Optional<PatientRecord> findById(int recordId) throws ServiceException;
+
+    Map<String, String> packRecordIntoMap(PatientRecord record);
 }

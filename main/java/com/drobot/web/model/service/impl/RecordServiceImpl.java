@@ -48,7 +48,7 @@ public enum RecordServiceImpl implements RecordService {
         }
         if (isValid) {
             String diagnosis = fields.get(RequestParameter.PATIENT_DIAGNOSIS);
-            PatientRecord record = new PatientRecord(patientId, doctorId, treatment.getTreatmentId(), diagnosis);
+            PatientRecord record = new PatientRecord(patientId, doctorId, treatment, diagnosis);
             Entity.Status newPatientStatus = Entity.Status.WAITING_FOR_CURING;
             try {
                 result = recordDao.addAndUpdatePatient(record, newPatientStatus);
@@ -166,7 +166,7 @@ public enum RecordServiceImpl implements RecordService {
                         if (optionalEmployee.isPresent()) {
                             Employee employee = optionalEmployee.get();
                             int doctorId = employee.getId();
-                            if (record.getCuringId() == Treatment.PROCEDURE.getTreatmentId()) {
+                            if (record.getTreatment() == Treatment.PROCEDURE) {
                                 result = recordDao.setExecutorAndPatientStatus(recordId, doctorId,
                                         patientId, Entity.Status.WAITING_FOR_DECISION);
                             } else {
@@ -198,7 +198,7 @@ public enum RecordServiceImpl implements RecordService {
                     PatientRecord record = optional.get();
                     int recordId = record.getId();
                     if (record.getExecutorId() == 0) {
-                        if (record.getCuringId() == Treatment.SURGERY.getTreatmentId()) {
+                        if (record.getTreatment() == Treatment.SURGERY) {
                             EmployeeDao employeeDao = EmployeeDaoImpl.INSTANCE;
                             Optional<Employee> optionalEmployee = employeeDao.findByUserId(executorUserId);
                             if (optionalEmployee.isPresent()) {
@@ -243,6 +243,44 @@ public enum RecordServiceImpl implements RecordService {
             throw new ServiceException(e);
         }
         return result;
+    }
+
+    @Override
+    public Optional<PatientRecord> findById(int recordId) throws ServiceException {
+        Optional<PatientRecord> result;
+        try {
+            if (recordId > 0) {
+                result = recordDao.findById(recordId);
+            } else {
+                result = Optional.empty();
+                LOGGER.log(Level.DEBUG, "Invalid record id: " + recordId);
+            }
+        } catch (DaoException e) {
+            throw new ServiceException(e);
+        }
+        return result;
+    }
+
+    @Override
+    public Map<String, String> packRecordIntoMap(PatientRecord record) {
+        Map<String, String> fields = new HashMap<>();
+        if (record != null) {
+            int recordId = record.getId();
+            String stringRecordId = recordId != 0 ? String.valueOf(recordId) : "";
+            fields.put(RequestParameter.RECORD_ID, stringRecordId);
+            int patientId = record.getPatientId();
+            String stringPatientId = patientId != 0 ? String.valueOf(patientId) : "";
+            fields.put(RequestParameter.PATIENT_ID, stringPatientId);
+            int attendingDoctorId = record.getDoctorId();
+            String stringDoctorId = attendingDoctorId != 0 ? String.valueOf(attendingDoctorId) : "";
+            fields.put(RequestParameter.ATTENDING_DOCTOR_ID, stringDoctorId);
+            fields.put(RequestParameter.PATIENT_TREATMENT, record.getTreatment().toString());
+            int executorId = record.getExecutorId();
+            String stringExecutorId = executorId != 0 ? String.valueOf(executorId) : "";
+            fields.put(RequestParameter.EXECUTOR_ID, stringExecutorId);
+            fields.put(RequestParameter.PATIENT_DIAGNOSIS, record.getDiagnosis());
+        }
+        return fields;
     }
 
     private boolean checkSortingTagForSpecifiedRecord(String sortBy) {

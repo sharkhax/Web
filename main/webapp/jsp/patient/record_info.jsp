@@ -6,101 +6,87 @@
 <fmt:setBundle basename="locale.pagecontent"/>
 <html>
 <head>
-    <title>Title</title>
+    <title><fmt:message key="recordInfo.pageTitle"/></title>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
           integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
     <link href="${pageContext.request.contextPath}/css/custom.css" rel="stylesheet" type="text/css">
 </head>
 <body>
 
-<div style="background-color: #f4f4f4b8; width: 700px; margin-left: 2px">
+<jsp:include page="../supporting/background.jsp"/>
+<%@ include file="../supporting/header.jsp" %>
+
+<div style="background-color: #f4f4f4b8; width: 700px; margin: 230px 0">
     <dl class="row">
         <dt class="col-sm-3">
             <span style="font-family: 'Times New Roman', sans-serif; font-weight: bold">
-                <fmt:message key="patientInfo.patientId"/>
+                <fmt:message key="recordInfo.recordId"/>
             </span>
         </dt>
         <dd class="col-sm-9">
-            <span style="font-family: 'Times New Roman', sans-serif">${patientDataFields.patientId}</span>
+            <span style="font-family: 'Times New Roman', sans-serif">${recordDataFields.recordId}</span>
         </dd>
 
         <dt class="col-sm-3">
             <span style="font-family: 'Times New Roman', sans-serif; font-weight: bold">
-                <fmt:message key="patientInfo.name"/>
+                <fmt:message key="recordInfo.patientId"/>
             </span>
         </dt>
         <dd class="col-sm-9">
-            <span style="font-family: 'Times New Roman', sans-serif">${patientDataFields.patientName}</span>
+            <a href="${pageContext.request.contextPath}/mainController?command=patient_data&requestedPatientInfoId=${recordDataFields.patientId}">
+                <span style="font-family: 'Times New Roman', sans-serif">${recordDataFields.patientId}</span>
+            </a>
         </dd>
 
         <dt class="col-sm-3">
             <span style="font-family: 'Times New Roman', sans-serif; font-weight: bold">
-                <fmt:message key="patientInfo.surname"/>
+                <fmt:message key="recordInfo.attendingDoctorId"/>
             </span>
         </dt>
         <dd class="col-sm-9">
-            <span style="font-family: 'Times New Roman', sans-serif">${patientDataFields.patientSurname}</span>
+            <a href="${pageContext.request.contextPath}/mainController?command=employee_data&requestedEmployeeInfoId=${recordDataFields.doctorId}">
+                <span style="font-family: 'Times New Roman', sans-serif">${recordDataFields.doctorId}</span>
+            </a>
         </dd>
 
         <dt class="col-sm-3">
             <span style="font-family: 'Times New Roman', sans-serif; font-weight: bold">
-                <fmt:message key="patientInfo.age"/>
+                <fmt:message key="recordInfo.treatment"/>
             </span>
         </dt>
         <dd class="col-sm-9">
-            <span style="font-family: 'Times New Roman', sans-serif">${patientDataFields.patientAge}</span>
+            <span style="font-family: 'Times New Roman', sans-serif">${recordDataFields.patientTreatment}</span>
         </dd>
 
         <dt class="col-sm-3">
             <span style="font-family: 'Times New Roman', sans-serif; font-weight: bold">
-                <fmt:message key="patientInfo.gender"/>
-            </span>
-        </dt>
-        <dd class="col-sm-9">
-            <span style="font-family: 'Times New Roman', sans-serif">${patientDataFields.patientGender}</span>
-        </dd>
-
-        <dt class="col-sm-3">
-            <span style="font-family: 'Times New Roman', sans-serif; font-weight: bold">
-                <fmt:message key="patientInfo.diagnosis"/>
-            </span>
-        </dt>
-        <dd class="col-sm-9">
-            <span style="font-family: 'Times New Roman', sans-serif">
-                <c:choose>
-                    <c:when test="${not empty patientDataFields.patientDiagnosis}">
-                        <span style="font-family: 'Times New Roman', sans-serif">${patientDataFields.patientDiagnosis}</span>
-                    </c:when>
-                    <c:otherwise>
-                        <span style="font-family: 'Times New Roman', sans-serif">-</span>
-                    </c:otherwise>
-                </c:choose>
-            </span>
-        </dd>
-
-        <dt class="col-sm-3">
-            <span style="font-family: 'Times New Roman', sans-serif; font-weight: bold">
-                <fmt:message key="patientInfo.status"/>
-            </span>
-        </dt>
-        <dd class="col-sm-9">
-            <span style="font-family: 'Times New Roman', sans-serif">${patientDataFields.patientStatus}</span>
-        </dd>
-
-        <dt class="col-sm-3">
-            <span style="font-family: 'Times New Roman', sans-serif; font-weight: bold">
-                <fmt:message key="patientInfo.lastRecordId"/>
+                <fmt:message key="recordInfo.executorId"/>
             </span>
         </dt>
         <dd class="col-sm-9">
             <c:choose>
-                <c:when test="${patientDataFields.lastRecordId ne '-'}">
-                    <a href="${pageContext.request.contextPath}/mainController?command=record_data&requestedRecordInfoId=${patientDataFields.lastRecordId}">
-                        <span style="font-family: 'Times New Roman', sans-serif">${patientDataFields.lastRecordId}</span>
+                <c:when test="${not empty recordDataFields.executorId}">
+                    <a href="${pageContext.request.contextPath}/mainController?command=employee_data&requestedEmployeeInfoId=${recordDataFields.executorId}">
+                        <span style="font-family: 'Times New Roman', sans-serif">${recordDataFields.executorId}</span>
                     </a>
                 </c:when>
                 <c:otherwise>
-                    <span style="font-family: 'Times New Roman', sans-serif">${patientDataFields.lastRecordId}</span>
+                    <span style="font-family: 'Times New Roman', sans-serif">-</span>
+                </c:otherwise>
+            </c:choose>
+        </dd>
+        <dt class="col-sm-3">
+            <span style="font-family: 'Times New Roman', sans-serif; font-weight: bold">
+                <fmt:message key="recordInfo.diagnosis"/>
+            </span>
+        </dt>
+        <dd class="col-sm-9">
+            <c:choose>
+                <c:when test="${not empty recordDataFields.patientDiagnosis}">
+                    <span style="font-family: 'Times New Roman', sans-serif">${recordDataFields.patientDiagnosis}</span>
+                </c:when>
+                <c:otherwise>
+                    <span style="font-family: 'Times New Roman', sans-serif">-</span>
                 </c:otherwise>
             </c:choose>
         </dd>

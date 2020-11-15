@@ -214,6 +214,11 @@ public final class SessionAttribute {
     public static final String PATIENT_DATA_FIELDS = "patientDataFields";
 
     /**
+     * Represents map of record's fields at record's info page.
+     */
+    public static final String RECORD_DATA_FIELDS = "recordDataFields";
+
+    /**
      * Represents map of user's fields at user's info page.
      */
     public static final String USER_DATA_FIELDS = "userDataFields";
@@ -232,6 +237,11 @@ public final class SessionAttribute {
      * Represents patient's ID at patient's info page.
      */
     public static final String PATIENT_INFO_ID = "patientInfoId";
+
+    /**
+     * Represents record's ID at record's info page.
+     */
+    public static final String RECORD_INFO_ID = "recordInfoId";
 
     /**
      * Represents user's ID at user's info page.

@@ -30,8 +30,10 @@ public enum RecordDaoImpl implements RecordDao {
     private final String UPDATE_PATIENT_STATUS = "UPDATE hospital.patients SET patient_status = ? WHERE patient_id = ?";
     private final String FIND_TREATMENT = "SELECT treatment_name FROM hospital.patient_records " +
             "INNER JOIN hospital.treatments ON curing_id = treatment_id WHERE record_id = ?";
-    private final String FIND_BY_ID_STATEMENT = "SELECT record_id, patient_id_fk, attending_doctor_id, curing_id, " +
-            "executor_id, diagnosis FROM hospital.patient_records WHERE record_id = ?;";
+    private final String FIND_BY_ID_STATEMENT = new StringBuilder(
+            "SELECT record_id, patient_id_fk, attending_doctor_id, treatment_name, executor_id, diagnosis ")
+            .append("FROM hospital.patient_records INNER JOIN hospital.treatments ON curing_id = treatment_id ")
+            .append("WHERE record_id = ?;").toString();
     private final String UPDATE_EXECUTOR_STATEMENT =
             "UPDATE hospital.patient_records SET executor_id = ? WHERE record_id = ?;";
     private final String FIND_LAST_BY_PATIENT_ID_STATEMENT =
@@ -132,7 +134,7 @@ public enum RecordDaoImpl implements RecordDao {
             int patientId = record.getPatientId();
             statement.setInt(1, patientId);
             statement.setInt(2, record.getDoctorId());
-            statement.setInt(3, record.getCuringId());
+            statement.setInt(3, record.getTreatment().getTreatmentId());
             statement.setString(4, record.getDiagnosis());
             statement.execute();
             LOGGER.log(Level.DEBUG, "Record has been added successfully");
@@ -242,11 +244,12 @@ public enum RecordDaoImpl implements RecordDao {
                 int recordId = resultSet.getInt(1);
                 int patientId = resultSet.getInt(2);
                 int doctorId = resultSet.getInt(3);
-                int curingId = resultSet.getInt(4);
+                String stringTreatment = resultSet.getString(4);
                 int executorId = resultSet.getInt(5);
                 String diagnosis = resultSet.getString(6);
+                Treatment treatment = Treatment.valueOf(stringTreatment);
                 PatientRecord patientRecord =
-                        new PatientRecord(recordId, patientId, doctorId, curingId, executorId, diagnosis);
+                        new PatientRecord(recordId, patientId, doctorId, treatment, executorId, diagnosis);
                 result.add(patientRecord);
             } while (resultSet.next());
             LOGGER.log(Level.DEBUG, result.size() + " records have been found");

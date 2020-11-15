@@ -17,8 +17,10 @@
 <jsp:include page="../supporting/background.jsp"/>
 <%@ include file="../supporting/header.jsp" %>
 
-<div class="main-menu list-group">
-    <ctg:main_menu/>
+<div class="main-menu">
+    <div class="list-group">
+        <ctg:main_menu/>
+    </div>
 </div>
 
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"

@@ -31,6 +31,7 @@ public class DynamicUrlFilter extends AbstractSecurityFilter {
         USER_INFO("/mainPage/users/[0-9]+"),
         EMPLOYEE_INFO("/mainPage/employees/[0-9]+"),
         PATIENT_INFO("/mainPage/patients/[0-9]+"),
+        RECORD_INFO("/mainPage/records/[0-9]+"),
         CHANGING_PASSWORD("/mainPage/users/[0-9]+/changePassword"),
         UPDATING_USER("/mainPage/users/[0-9]+/update"),
         UPDATING_EMPLOYEE("/mainPage/employees/[0-9]+/update"),
@@ -62,6 +63,7 @@ public class DynamicUrlFilter extends AbstractSecurityFilter {
                 case USER_INFO -> doCaseUserInfo(request, response, session);
                 case PATIENT_INFO -> doCasePatientInfo(request, response, session);
                 case EMPLOYEE_INFO -> doCaseEmployeeInfo(request, response, session);
+                case RECORD_INFO -> doCaseRecordInfo(request, response, session);
                 case CHANGING_PASSWORD -> doCaseChangingPassword(request, response, session);
                 case UPDATING_USER -> doCaseUpdatingUser(request, response, session);
                 case UPDATING_EMPLOYEE -> doCaseUpdatingEmployee(request, response, session);
@@ -115,6 +117,7 @@ public class DynamicUrlFilter extends AbstractSecurityFilter {
             boolean condition = userRole != null && userRole.equals(SessionAttribute.ADMIN_ROLE);
             forwardOrError404(condition, page, request, response, session);
         } else {
+            LOGGER.log(Level.DEBUG, "Requesting the command to check user id");
             page = UrlPattern.USER_INFO_REQUEST + requestedUserId;
             forward(request, response, page);
         }
@@ -131,6 +134,7 @@ public class DynamicUrlFilter extends AbstractSecurityFilter {
             boolean condition = userRole != null && !userRole.equals(SessionAttribute.GUEST_ROLE);
             forwardOrError404(condition, page, request, response, session);
         } else {
+            LOGGER.log(Level.DEBUG, "Requesting the command to check patient id");
             page = UrlPattern.PATIENT_INFO_REQUEST + requestedPatientId;
             forward(request, response, page);
         }
@@ -147,7 +151,25 @@ public class DynamicUrlFilter extends AbstractSecurityFilter {
             boolean condition = userRole != null && userRole.equals(SessionAttribute.ADMIN_ROLE);
             forwardOrError404(condition, page, request, response, session);
         } else {
+            LOGGER.log(Level.DEBUG, "Requesting the command to check employee id");
             page = UrlPattern.EMPLOYEE_INFO_REQUEST + requestedEmployeeId;
+            forward(request, response, page);
+        }
+    }
+
+    private void doCaseRecordInfo(HttpServletRequest request, HttpServletResponse response,
+                                  HttpSession session) throws IOException, ServletException {
+        String page;
+        int requestedRecordId = defineIdFromUri(request.getRequestURI());
+        Integer currentRecordId = (Integer) session.getAttribute(SessionAttribute.RECORD_INFO_ID);
+        if (currentRecordId != null && requestedRecordId == currentRecordId) {
+            String userRole = (String) session.getAttribute(SessionAttribute.USER_ROLE);
+            page = JspPath.RECORD_INFO;
+            boolean condition = userRole != null && !userRole.equals(SessionAttribute.GUEST_ROLE);
+            forwardOrError404(condition, page, request, response, session);
+        } else {
+            LOGGER.log(Level.DEBUG, "Requesting the command to check record id");
+            page = UrlPattern.RECORD_INFO_REQUEST + requestedRecordId;
             forward(request, response, page);
         }
     }

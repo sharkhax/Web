@@ -87,18 +87,18 @@ public enum PatientServiceImpl implements PatientService {
 
     @Override
     public Optional<Patient> findById(int patientId) throws ServiceException {
-        Optional<Patient> optionalPatient;
+        Optional<Patient> result;
         try {
             if (patientId > 0) {
-                optionalPatient = patientDao.findById(patientId);
+                result = patientDao.findById(patientId);
             } else {
-                optionalPatient = Optional.empty();
+                result = Optional.empty();
                 LOGGER.log(Level.DEBUG, "Invalid patient id: " + patientId);
             }
         } catch (DaoException e) {
             throw new ServiceException(e);
         }
-        return optionalPatient;
+        return result;
     }
 
     @Override

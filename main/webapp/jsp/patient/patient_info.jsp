@@ -14,7 +14,7 @@
 <body>
 
 <jsp:include page="../supporting/background.jsp"/>
-<%@ include file="../supporting/header.jsp" %>
+<%@ include file="../supporting/header.jsp"%>
 
 <div class="main-menu">
     <div class="list-group">

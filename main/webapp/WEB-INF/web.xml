@@ -85,6 +85,7 @@
         <url-pattern>/mainPage/users/*</url-pattern>
         <url-pattern>/mainPage/employees/*</url-pattern>
         <url-pattern>/mainPage/patients/*</url-pattern>
+        <url-pattern>/mainPage/records/*</url-pattern>
     </filter-mapping>
 
     <filter-mapping>

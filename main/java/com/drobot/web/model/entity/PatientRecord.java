@@ -4,25 +4,26 @@ public class PatientRecord extends Entity {
 
     private int patientId;
     private int doctorId;
-    private int curingId;
+    private Treatment treatment;
     private int executorId;
     private String diagnosis;
 
     public PatientRecord() {
     }
 
-    public PatientRecord(int patientId, int doctorId, int curingId, String diagnosis) {
+    public PatientRecord(int patientId, int doctorId, Treatment treatment, String diagnosis) {
         this.patientId = patientId;
         this.doctorId = doctorId;
-        this.curingId = curingId;
+        this.treatment = treatment;
         this.diagnosis = diagnosis;
     }
 
-    public PatientRecord(int recordId, int patientId, int doctorId, int curingId, int executorId, String diagnosis) {
+    public PatientRecord(int recordId, int patientId, int doctorId, Treatment treatment,
+                         int executorId, String diagnosis) {
         super(recordId);
         this.patientId = patientId;
         this.doctorId = doctorId;
-        this.curingId = curingId;
+        this.treatment = treatment;
         this.executorId = executorId;
         this.diagnosis = diagnosis;
     }
@@ -43,12 +44,12 @@ public class PatientRecord extends Entity {
         this.doctorId = doctorId;
     }
 
-    public int getCuringId() {
-        return curingId;
+    public Treatment getTreatment() {
+        return treatment;
     }
 
-    public void setCuringId(int curingId) {
-        this.curingId = curingId;
+    public void setTreatment(Treatment treatment) {
+        this.treatment = treatment;
     }
 
     public String getDiagnosis() {
@@ -85,7 +86,7 @@ public class PatientRecord extends Entity {
         if (doctorId != record.doctorId) {
             return false;
         }
-        if (curingId != record.curingId) {
+        if (treatment != record.treatment) {
             return false;
         }
         if (executorId != record.executorId) {
@@ -99,7 +100,7 @@ public class PatientRecord extends Entity {
         int result = super.hashCode();
         result = 31 * result + patientId;
         result = 31 * result + doctorId;
-        result = 31 * result + curingId;
+        result = 31 * result + treatment.hashCode();
         result = 31 * result + executorId;
         result = 31 * result + (diagnosis != null ? diagnosis.hashCode() : 0);
         return result;
@@ -111,7 +112,7 @@ public class PatientRecord extends Entity {
         sb.append("id='").append(getId()).append('\'');
         sb.append(", patientId=").append(patientId);
         sb.append(", doctorId=").append(doctorId);
-        sb.append(", curingId=").append(curingId);
+        sb.append(", treatment=").append(treatment);
         sb.append(", executorId=").append(executorId);
         sb.append(", diagnosis=").append(diagnosis);
         sb.append('}');

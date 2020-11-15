@@ -13,7 +13,7 @@
 <body>
 
 <jsp:include page="../supporting/background.jsp"/>
-<%@include file="../supporting/header.jsp"%>
+<%@include file="../supporting/header.jsp" %>
 
 <label for="recordList"
        style="font-weight: bold; background-color: #f4f4f4b8; font-family: 'Times New Roman', sans-serif; margin: 13px 10px">

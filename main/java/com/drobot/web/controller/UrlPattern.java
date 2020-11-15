@@ -46,4 +46,6 @@ public final class UrlPattern {
     public static final String UPDATING_PATIENT_REQUEST =
             "/mainController?command=redirect_to_update_patient_page&patientId=";
     public static final String RECORD_LIST_REQUEST = "/mainController?command=record_list_command&patientId=";
+    public static final String RECORD_INFO = "/mainPage/records/*";
+    public static final String RECORD_INFO_REQUEST = "/mainController?command=record_data&requestedRecordInfoId=";
 }
