@@ -44,9 +44,16 @@
             </span>
         </dt>
         <dd class="col-sm-9">
-            <a href="${pageContext.request.contextPath}/mainController?command=employee_data&requestedEmployeeInfoId=${recordDataFields.doctorId}">
-                <span style="font-family: 'Times New Roman', sans-serif">${recordDataFields.doctorId}</span>
-            </a>
+            <c:choose>
+                <c:when test="${role eq 'admin_role'}">
+                    <a href="${pageContext.request.contextPath}/mainController?command=employee_data&requestedEmployeeInfoId=${recordDataFields.doctorId}">
+                        <span style="font-family: 'Times New Roman', sans-serif">${recordDataFields.doctorId}</span>
+                    </a>
+                </c:when>
+                <c:otherwise>
+                    <span style="font-family: 'Times New Roman', sans-serif">${recordDataFields.doctorId}</span>
+                </c:otherwise>
+            </c:choose>
         </dd>
 
         <dt class="col-sm-3">
@@ -65,10 +72,20 @@
         </dt>
         <dd class="col-sm-9">
             <c:choose>
+                <c:when test="${role eq 'admin_role'}">
+                    <c:choose>
+                        <c:when test="${not empty recordDataFields.executorId}">
+                            <a href="${pageContext.request.contextPath}/mainController?command=employee_data&requestedEmployeeInfoId=${recordDataFields.executorId}">
+                                <span style="font-family: 'Times New Roman', sans-serif">${recordDataFields.executorId}</span>
+                            </a>
+                        </c:when>
+                        <c:otherwise>
+                            <span style="font-family: 'Times New Roman', sans-serif">-</span>
+                        </c:otherwise>
+                    </c:choose>
+                </c:when>
                 <c:when test="${not empty recordDataFields.executorId}">
-                    <a href="${pageContext.request.contextPath}/mainController?command=employee_data&requestedEmployeeInfoId=${recordDataFields.executorId}">
-                        <span style="font-family: 'Times New Roman', sans-serif">${recordDataFields.executorId}</span>
-                    </a>
+                    <span style="font-family: 'Times New Roman', sans-serif">${recordDataFields.executorId}</span>
                 </c:when>
                 <c:otherwise>
                     <span style="font-family: 'Times New Roman', sans-serif">-</span>
