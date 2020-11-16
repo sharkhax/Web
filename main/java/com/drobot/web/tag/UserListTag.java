@@ -19,6 +19,8 @@ import java.util.ResourceBundle;
 
 /**
  * Custom tag that creates a table of users.
+ *
+ * @author Vladislav Drobot
  */
 public class UserListTag extends TagSupport {
 

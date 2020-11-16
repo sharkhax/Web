@@ -6,7 +6,7 @@ import com.drobot.web.model.entity.Entity;
 import com.drobot.web.model.pool.ConnectionPool;
 import com.drobot.web.model.dao.UserDao;
 import com.drobot.web.model.entity.User;
-import com.drobot.web.model.util.Encrypter;
+import com.drobot.web.util.Encrypter;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -20,8 +20,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * UserDao implementation.
+ *
+ * @author Vladislav Drobot
+ */
 public enum UserDaoImpl implements UserDao {
 
+    /**
+     * Represents a singleton pattern realization.
+     */
     INSTANCE;
 
     private final Logger LOGGER = LogManager.getLogger(UserDaoImpl.class);
@@ -33,46 +41,16 @@ public enum UserDaoImpl implements UserDao {
             "SELECT COUNT(*) as label FROM hospital.users WHERE email = ?;";
     private final String CONTAINS_LOGIN_STATEMENT =
             "SELECT COUNT(*) as label FROM hospital.users WHERE login = ?;";
-    private final String DELETE_STATEMENT =
-            "DELETE FROM hospital.users WHERE user_id = ?;";
-    private final String FIND_ALL_STATEMENT = new StringBuilder(
-            "SELECT user_id, login, email, role, status_name, inter_employee_id FROM hospital.users ")
-            .append("INNER JOIN hospital.statuses ON user_status = status_id ")
-            .append("INNER JOIN hospital.user_employee ON user_id = inter_user_id ORDER BY ")
-            .toString();
     private final String FIND_BY_ID_STATEMENT = new StringBuilder(
             "SELECT user_id, login, email, role, status_name, inter_employee_id FROM hospital.users ")
             .append("INNER JOIN hospital.statuses ON user_status = status_id ")
             .append("INNER JOIN hospital.user_employee ON user_id = inter_user_id WHERE user_id = ?;")
-            .toString();
-    private final String FIND_BY_LOGIN_STATEMENT = new StringBuilder(
-            "SELECT user_id, login, email, role, status_name, inter_employee_id FROM hospital.users ")
-            .append("INNER JOIN hospital.statuses ON user_status = status_id ")
-            .append("INNER JOIN hospital.user_employee ON user_id = inter_user_id WHERE login = ?;")
-            .toString();
-    private final String FIND_BY_EMAIL_STATEMENT = new StringBuilder(
-            "SELECT user_id, login, email, role, status_name, inter_employee_id FROM hospital.users ")
-            .append("INNER JOIN hospital.statuses ON user_status = status_id ")
-            .append("INNER JOIN hospital.user_employee ON user_id = inter_user_id WHERE email = ?;")
-            .toString();
-    private final String FIND_BY_ROLE_STATEMENT = new StringBuilder(
-            "SELECT user_id, login, email, role, status_name, inter_employee_id FROM hospital.users ")
-            .append("INNER JOIN hospital.statuses ON user_status = status_id ")
-            .append("INNER JOIN hospital.user_employee ON user_id = inter_user_id WHERE role = ? ORDER BY ")
-            .toString();
-    private final String FIND_BY_STATUS_STATEMENT = new StringBuilder(
-            "SELECT user_id, login, email, role, status_name, inter_employee_id FROM hospital.users ")
-            .append("INNER JOIN hospital.statuses ON user_status = status_id ")
-            .append("INNER JOIN hospital.user_employee ON user_id = inter_user_id WHERE user_status = ? ORDER BY ")
             .toString();
     private final String UPDATE_STATEMENT =
             "UPDATE hospital.users SET login = ?, email = ? WHERE user_id = ?;";
     private final String DEFINE_ROLE_STATEMENT =
             "SELECT user_id, password, role, status_name FROM hospital.users " +
                     "INNER JOIN hospital.statuses ON user_status = status_id WHERE login = ?;";
-    private final String GET_STATUS_STATEMENT =
-            "SELECT status_name FROM hospital.users INNER JOIN hospital.statuses ON user_status = status_id" +
-                    " WHERE user_id = ?;";
     private final String UPDATE_PASSWORD_STATEMENT =
             "UPDATE hospital.users SET password = ? WHERE user_id = ?;";
     private final String FIND_ALL_LIMIT_STATEMENT = new StringBuilder(
@@ -125,44 +103,6 @@ public enum UserDaoImpl implements UserDao {
     }
 
     @Override
-    public Optional<User> findByLogin(String login) throws DaoException {
-        return findBy(login, FIND_BY_LOGIN_STATEMENT);
-    }
-
-    @Override
-    public Optional<User> findByEmail(String email) throws DaoException {
-        return findBy(email, FIND_BY_EMAIL_STATEMENT);
-    }
-
-    @Override
-    public List<User> findByRole(User.Role role, String sortBy) throws DaoException {
-        return findByAndSort(role.toString(), sortBy, FIND_BY_ROLE_STATEMENT);
-    }
-
-    @Override
-    public List<User> findByStatus(boolean isActive, String sortBy) throws DaoException {
-        List<User> result;
-        Connection connection = null;
-        PreparedStatement statement = null;
-        try {
-            connection = ConnectionPool.INSTANCE.getConnection();
-            String sql = FIND_BY_STATUS_STATEMENT + sortBy + SEMICOLON;
-            statement = connection.prepareStatement(sql);
-            byte status = (byte) (isActive ? Entity.Status.ACTIVE.getStatusId()
-                            : Entity.Status.BLOCKED.getStatusId());
-            statement.setByte(1, status);
-            ResultSet resultSet = statement.executeQuery();
-            result = createUserListFromResultSet(resultSet);
-        } catch (SQLException | ConnectionPoolException e) {
-            throw new DaoException(e);
-        } finally {
-            close(statement);
-            close(connection);
-        }
-        return result;
-    }
-
-    @Override
     public Optional<User> checkPassword(String login, String password) throws DaoException {
         Optional<User> result;
         Connection connection = null;
@@ -201,12 +141,6 @@ public enum UserDaoImpl implements UserDao {
     }
 
     @Override
-    public boolean add(User entity) {
-        LOGGER.log(Level.ERROR, "It is not allowed to use this method to add a new user");
-        throw new UnsupportedOperationException("It is not allowed to use this method to add a new user");
-    }
-
-    @Override
     public boolean add(User user, String encPassword) throws DaoException {
         boolean result = false;
         Connection connection = null;
@@ -224,30 +158,6 @@ public enum UserDaoImpl implements UserDao {
             } else {
                 LOGGER.log(Level.DEBUG, "Cannot add user: such email or login already exist");
             }
-        } catch (SQLException | ConnectionPoolException e) {
-            throw new DaoException(e);
-        } finally {
-            close(statement);
-            close(connection);
-        }
-        return result;
-    }
-
-    @Override
-    public List<User> findAll(String sortBy, boolean reverse) throws DaoException {
-        List<User> result;
-        Connection connection = null;
-        PreparedStatement statement = null;
-        try {
-            connection = ConnectionPool.INSTANCE.getConnection();
-            StringBuilder sqlBuilder = new StringBuilder(FIND_ALL_STATEMENT).append(sortBy);
-            if (reverse) {
-                sqlBuilder.append(SPACE).append(DESC);
-            }
-            String sql = sqlBuilder.append(SEMICOLON).toString();
-            statement = connection.prepareStatement(sql);
-            ResultSet resultSet = statement.executeQuery();
-            result = createUserListFromResultSet(resultSet);
         } catch (SQLException | ConnectionPoolException e) {
             throw new DaoException(e);
         } finally {
@@ -308,37 +218,6 @@ public enum UserDaoImpl implements UserDao {
             close(connection);
         }
         return result;
-    }
-
-    public boolean update(User user) throws DaoException { // FIXME: 10.11.2020
-        /*boolean result;
-        Connection connection = null;
-        PreparedStatement statement = null;
-        try {
-            connection = ConnectionPool.INSTANCE.getConnection();
-            statement = connection.prepareStatement(UPDATE_STATEMENT);
-            String login = user.getLogin();
-            String email = user.getEmail();
-            String role = user.getRole().toString();
-            Entity.Status status = user.getStatus();
-            int statusId = status.getStatusId();
-            int userId = user.getId();
-            statement.setString(1, login);
-            statement.setString(2, email);
-            statement.setString(3, role);
-            statement.setByte(4, (byte) statusId);
-            statement.setInt(5, userId);
-            statement.execute();
-            result = true;
-            LOGGER.log(Level.DEBUG, "User has been updated");
-        } catch (SQLException | ConnectionPoolException e) {
-            throw new DaoException(e);
-        } finally {
-            close(statement);
-            close(connection);
-        }
-        return result;*/
-        return false;
     }
 
     @Override
@@ -512,77 +391,6 @@ public enum UserDaoImpl implements UserDao {
             LOGGER.log(Level.DEBUG, result.size() + " users have been found");
         } else {
             LOGGER.log(Level.WARN, "Result set is null or empty");
-        }
-        return result;
-    }
-
-    private Optional<User> findBy(String value, String sql) throws DaoException {
-        Optional<User> result = Optional.empty();
-        Connection connection = null;
-        PreparedStatement statement = null;
-        try {
-            connection = ConnectionPool.INSTANCE.getConnection();
-            statement = connection.prepareStatement(sql);
-            statement.setString(1, value);
-            ResultSet resultSet = statement.executeQuery();
-            List<User> userList = createUserListFromResultSet(resultSet);
-            if (!userList.isEmpty()) {
-                result = Optional.ofNullable(userList.get(0));
-            }
-        } catch (SQLException | ConnectionPoolException e) {
-            throw new DaoException(e);
-        } finally {
-            close(statement);
-            close(connection);
-        }
-        return result;
-    }
-
-    private List<User> findByAndSort(String value, String sortBy, String sql) throws DaoException {
-        List<User> result;
-        Connection connection = null;
-        PreparedStatement statement = null;
-        try {
-            connection = ConnectionPool.INSTANCE.getConnection();
-            sql = sql + sortBy + SEMICOLON;
-            statement = connection.prepareStatement(sql);
-            statement.setString(1, value);
-            ResultSet resultSet = statement.executeQuery();
-            result = createUserListFromResultSet(resultSet);
-        } catch (SQLException | ConnectionPoolException e) {
-            throw new DaoException(e);
-        } finally {
-            close(statement);
-            close(connection);
-        }
-        return result;
-    }
-
-    // FIXME: 13.11.2020
-    private Optional<Entity.Status> findAndGetStatus(int userId, Connection connection)
-            throws SQLException {
-        Optional<Entity.Status> result;
-        if (connection != null) {
-            PreparedStatement statement = null;
-            try {
-                statement = connection.prepareStatement(GET_STATUS_STATEMENT);
-                statement.setInt(1, userId);
-                ResultSet resultSet = statement.executeQuery();
-                if (resultSet.next()) {
-                    String stringStatus = resultSet.getString(1);
-                    Entity.Status status = Entity.Status.valueOf(stringStatus);
-                    result = Optional.of(status);
-                    LOGGER.log(Level.DEBUG, "User has been found, status: " + status);
-                } else {
-                    result = Optional.empty();
-                    LOGGER.log(Level.DEBUG, "User hasn't been found");
-                }
-            } finally {
-                close(statement);
-            }
-        } else {
-            LOGGER.log(Level.ERROR, "Connection is null");
-            result = Optional.empty();
         }
         return result;
     }

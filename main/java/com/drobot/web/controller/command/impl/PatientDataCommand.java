@@ -46,7 +46,7 @@ public class PatientDataCommand implements ActionCommand {
             Optional<Patient> optionalPatient = patientService.findById(patientId);
             if (optionalPatient.isPresent()) {
                 Patient patient = optionalPatient.get();
-                Map<String, String> fields = patientService.packPatientIntoMap(patient);
+                Map<String, String> fields = patientService.packIntoMap(patient);
                 HttpSession session = request.getSession();
                 session.setAttribute(SessionAttribute.PATIENT_DATA_FIELDS, fields);
                 session.setAttribute(SessionAttribute.PATIENT_INFO_ID, patientId);

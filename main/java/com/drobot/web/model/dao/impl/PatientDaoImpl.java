@@ -10,13 +10,25 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * UserDao implementation.
+ *
+ * @author Vladislav Drobot
+ */
 public enum PatientDaoImpl implements PatientDao {
 
+    /**
+     * Represents a singleton pattern realization.
+     */
     INSTANCE;
 
     private final Logger LOGGER = LogManager.getLogger(PatientDaoImpl.class);
@@ -40,14 +52,14 @@ public enum PatientDaoImpl implements PatientDao {
     private final String EXISTS_ID_STATEMENT = "SELECT COUNT(*) AS label FROM hospital.patients WHERE patient_id = ?;";
     private final String UPDATE_STATEMENT = "UPDATE hospital.patients SET patient_name = ?, " +
             "patient_surname = ?, patient_age = ?, patient_gender = ? WHERE patient_id = ?;";
-    private final String FIND_STATUS_STATEMENT =
-            "SELECT status_name FROM hospital.patients " +
-                    "INNER JOIN hospital.statuses ON patient_status = status_id WHERE patient_id = ?;";
-    private final String UPDATE_STATUS_STATEMENT = "UPDATE hospital.patients SET patient_status = ? WHERE patient_id = ?";
+    private final String FIND_STATUS_STATEMENT = "SELECT status_name FROM hospital.patients " +
+            "INNER JOIN hospital.statuses ON patient_status = status_id WHERE patient_id = ?;";
+    private final String UPDATE_STATUS_STATEMENT =
+            "UPDATE hospital.patients SET patient_status = ? WHERE patient_id = ?";
 
     @Override
     public boolean exists(String name, String surname) throws DaoException {
-        boolean result = false;
+        boolean result;
         Connection connection = null;
         PreparedStatement statement = null;
         try {
@@ -123,7 +135,7 @@ public enum PatientDaoImpl implements PatientDao {
 
     @Override
     public boolean updateStatus(int patientId, Entity.Status newStatus) throws DaoException {
-        boolean result = false;
+        boolean result;
         Connection connection = null;
         PreparedStatement statement = null;
         try {
@@ -196,11 +208,6 @@ public enum PatientDaoImpl implements PatientDao {
             close(connection);
         }
         return result;
-    }
-
-    @Override
-    public List<Patient> findAll(String sortBy, boolean reverse) throws DaoException {
-        return null;
     }
 
     @Override
@@ -302,6 +309,4 @@ public enum PatientDaoImpl implements PatientDao {
         }
         return result;
     }
-
-
 }

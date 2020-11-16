@@ -4,16 +4,20 @@ import com.drobot.web.controller.RequestParameter;
 import com.drobot.web.model.creator.Creator;
 import com.drobot.web.model.entity.Employee;
 import com.drobot.web.model.service.impl.EmployeeMapService;
-import com.drobot.web.model.util.DateConverter;
+import com.drobot.web.util.DateConverter;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.time.LocalDate;
-import java.time.temporal.ChronoField;
 import java.util.Map;
 import java.util.Optional;
 
+/**
+ * Creator implementation used to create an Employee object.
+ *
+ * @author Vladislav Drobot
+ */
 public class EmployeeCreator implements Creator<Employee> {
 
     private static final Logger LOGGER = LogManager.getLogger(EmployeeCreator.class);

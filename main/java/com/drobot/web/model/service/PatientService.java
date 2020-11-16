@@ -1,31 +1,33 @@
 package com.drobot.web.model.service;
 
 import com.drobot.web.exception.ServiceException;
-import com.drobot.web.model.entity.Entity;
 import com.drobot.web.model.entity.Patient;
 
-import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 
-public interface PatientService {
+/**
+ * Interface provides actions on patient.
+ *
+ * @author Vladislav Drobot
+ */
+public interface PatientService extends BaseService<Patient> {
 
+    /**
+     * Adds a patient into a datasource, if given fields are valid.
+     *
+     * @param fields         Map object with patient's fields with RequestParameter's constants as keys inside.
+     * @param existingFields empty Map object for existing patient's fields. They will be put there.
+     * @return true if patient has been added successfully, false otherwise.
+     * @throws ServiceException if an error occurs while processing.
+     */
     boolean add(Map<String, String> fields, Map<String, String> existingFields) throws ServiceException;
 
-    List<Patient> findAll(int start, int end, String sortBy, boolean reverse) throws ServiceException;
-
-    int count() throws ServiceException;
-
-    Optional<Patient> findById(int patientId) throws ServiceException;
-
-    boolean exists(int patientId) throws ServiceException;
-
-    Map<String, String> packPatientIntoMap(Patient patient);
-
-    boolean update(Map<String, String> newFields, Map<String, String> existingFields,
-                   Map<String, String> currentFields) throws ServiceException;
-
-    Optional<Entity.Status> findStatus(int patientId) throws ServiceException;
-
+    /**
+     * Discharges the patient with a given ID, if it is valid.
+     *
+     * @param patientId patient's ID int value.
+     * @return true if patient has been discharged successfully, false otherwise.
+     * @throws ServiceException if an error occurs while processing.
+     */
     boolean discharge(int patientId) throws ServiceException;
 }

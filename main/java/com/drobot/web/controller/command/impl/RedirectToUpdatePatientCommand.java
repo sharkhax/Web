@@ -49,7 +49,7 @@ public class RedirectToUpdatePatientCommand implements ActionCommand {
                 if (patientInfoId == null || patientId != patientInfoId) {
                     Optional<Patient> optionalPatient = patientService.findById(patientId);
                     Patient patient = optionalPatient.orElseThrow();
-                    Map<String, String> fields = patientService.packPatientIntoMap(patient);
+                    Map<String, String> fields = patientService.packIntoMap(patient);
                     session.setAttribute(SessionAttribute.PATIENT_DATA_FIELDS, fields);
                     session.setAttribute(SessionAttribute.PATIENT_INFO_ID, patientId);
                     LOGGER.log(Level.DEBUG, "User data fields have been refilled");

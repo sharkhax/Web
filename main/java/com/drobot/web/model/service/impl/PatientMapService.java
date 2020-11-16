@@ -6,8 +6,16 @@ import com.drobot.web.model.validator.PatientValidator;
 
 import java.util.Map;
 
+/**
+ * MapService implementation with public validation methods.
+ *
+ * @author Vladislav Drobot
+ */
 public enum PatientMapService implements MapService {
 
+    /**
+     * Represents a singleton pattern realization.
+     */
     INSTANCE;
 
     @Override
@@ -17,6 +25,12 @@ public enum PatientMapService implements MapService {
         return result;
     }
 
+    /**
+     * Checks if patient's name is valid.
+     *
+     * @param fields Map object with entity's fields with RequestParameter constants as keys.
+     * @return true if it is valid, false otherwise.
+     */
     public boolean checkName(Map<String, String> fields) {
         boolean result = false;
         if (fields != null && fields.containsKey(RequestParameter.PATIENT_NAME)) {
@@ -31,6 +45,12 @@ public enum PatientMapService implements MapService {
         return result;
     }
 
+    /**
+     * Checks if patient's surname is valid.
+     *
+     * @param fields Map object with entity's fields with RequestParameter constants as keys.
+     * @return true if it is valid, false otherwise.
+     */
     public boolean checkSurname(Map<String, String> fields) {
         boolean result = false;
         if (fields != null && fields.containsKey(RequestParameter.PATIENT_SURNAME)) {
@@ -45,6 +65,12 @@ public enum PatientMapService implements MapService {
         return result;
     }
 
+    /**
+     * Checks if patient's gender is valid.
+     *
+     * @param fields Map object with entity's fields with RequestParameter constants as keys.
+     * @return true if it is valid, false otherwise.
+     */
     public boolean checkGender(Map<String, String> fields) {
         boolean result = false;
         if (fields != null && fields.containsKey(RequestParameter.PATIENT_GENDER)) {
@@ -59,6 +85,12 @@ public enum PatientMapService implements MapService {
         return result;
     }
 
+    /**
+     * Checks if patient's age is valid.
+     *
+     * @param fields Map object with entity's fields with RequestParameter constants as keys.
+     * @return true if it is valid, false otherwise.
+     */
     public boolean checkAge(Map<String, String> fields) {
         boolean result = false;
         if (fields != null && fields.containsKey(RequestParameter.PATIENT_AGE)) {
@@ -73,6 +105,12 @@ public enum PatientMapService implements MapService {
         return result;
     }
 
+    /**
+     * Checks if patient's diagnosis is valid.
+     *
+     * @param fields Map object with entity's fields with RequestParameter constants as keys.
+     * @return true if it is valid, false otherwise.
+     */
     public boolean checkDiagnosis(Map<String, String> fields) {
         boolean result = false;
         if (fields != null && fields.containsKey(RequestParameter.PATIENT_DIAGNOSIS)) {

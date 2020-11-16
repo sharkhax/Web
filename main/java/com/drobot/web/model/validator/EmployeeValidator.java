@@ -1,6 +1,6 @@
 package com.drobot.web.model.validator;
 
-import com.drobot.web.model.util.DateConverter;
+import com.drobot.web.util.DateConverter;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -11,7 +11,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Employee validator class for checking employees' fields values.
+ * Employee validator class used to check employees' fields values.
+ *
+ * @author Vladislav Drobot
  */
 public class EmployeeValidator {
 
@@ -28,8 +30,9 @@ public class EmployeeValidator {
 
     /**
      * Checks if employee's name is valid.
+     *
      * @param name String representation of employee's name.
-     * @return True if value is valid, false otherwise.
+     * @return true if value is valid, false otherwise.
      */
     public static boolean isNameValid(String name) {
         boolean result = false;
@@ -47,8 +50,9 @@ public class EmployeeValidator {
 
     /**
      * Checks if employee's age is valid.
-     * @param age Int representation of employee's age.
-     * @return True if value is valid, false otherwise.
+     *
+     * @param age int value of employee's age.
+     * @return true if value is valid, false otherwise.
      */
     public static boolean isAgeValid(int age) {
         boolean result = age >= MIN_AGE && age <= MAX_AGE;
@@ -59,8 +63,9 @@ public class EmployeeValidator {
 
     /**
      * Checks if employee's age is valid.
+     *
      * @param stringAge String representation of employee's age.
-     * @return True if value is valid, false otherwise.
+     * @return true if value is valid, false otherwise.
      */
     public static boolean isAgeValid(String stringAge) {
         boolean result = false;
@@ -72,10 +77,12 @@ public class EmployeeValidator {
         }
         return result;
     }
+
     /**
      * Checks if employee's gender is valid.
-     * @param gender Char representation of employee's gender.
-     * @return True if value is valid, false otherwise.
+     *
+     * @param gender char value of employee's gender.
+     * @return true if value is valid, false otherwise.
      */
     public static boolean isGenderValid(char gender) {
         gender = Character.toUpperCase(gender);
@@ -93,8 +100,9 @@ public class EmployeeValidator {
 
     /**
      * Checks if employee's gender is valid.
+     *
      * @param stringGender String representation of employee's gender.
-     * @return True if value is valid, false otherwise.
+     * @return true if value is valid, false otherwise.
      */
     public static boolean isGenderValid(String stringGender) {
         boolean result = false;
@@ -108,8 +116,9 @@ public class EmployeeValidator {
 
     /**
      * Checks if employee's hire date is valid.
-     * @param hireDateMillis Long representation of employee's hire date in milliseconds.
-     * @return True if value is valid, false otherwise.
+     *
+     * @param hireDateMillis long value of employee's hire date in milliseconds.
+     * @return true if value is valid, false otherwise.
      */
     public static boolean isHireDateValid(long hireDateMillis) {
         boolean result = isDateValid(hireDateMillis, MIN_HIRE_DATE);
@@ -120,8 +129,9 @@ public class EmployeeValidator {
 
     /**
      * Checks if employee's hire date is valid.
+     *
      * @param stringHireDate String representation of employee's hire date in milliseconds.
-     * @return True if value is valid, false otherwise.
+     * @return true if value is valid, false otherwise.
      */
     public static boolean isHireDateValid(String stringHireDate) {
         boolean result = false;
@@ -136,9 +146,10 @@ public class EmployeeValidator {
 
     /**
      * Checks if employee's dismiss date is valid.
-     * @param dismissDateMillis Long representation of employee's dismiss date in milliseconds.
-     * @param hireDateMillis Long representation of employee's hire date in milliseconds.
-     * @return True if value is valid, false otherwise.
+     *
+     * @param dismissDateMillis long value of employee's dismiss date in milliseconds.
+     * @param hireDateMillis    long value of employee's hire date in milliseconds.
+     * @return true if value is valid, false otherwise.
      */
     public static boolean isDismissDateValid(long dismissDateMillis, long hireDateMillis) {
         boolean result = isDateValid(dismissDateMillis, MIN_DISMISS_DATE)
@@ -150,9 +161,10 @@ public class EmployeeValidator {
 
     /**
      * Checks if employee's dismiss date is valid.
+     *
      * @param stringDismissDate String representation of employee's dismiss date in milliseconds.
-     * @param hireDateMillis Long representation of employee's hire date in milliseconds.
-     * @return True if value is valid, false otherwise.
+     * @param hireDateMillis    long value of employee's hire date in milliseconds.
+     * @return true if value is valid, false otherwise.
      */
     public static boolean isDismissDateValid(String stringDismissDate, long hireDateMillis) {
         boolean result = false;

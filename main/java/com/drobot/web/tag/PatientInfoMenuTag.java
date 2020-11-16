@@ -24,6 +24,8 @@ import java.util.ResourceBundle;
 
 /**
  * Custom tag that creates patient info menu at appropriate page.
+ *
+ * @author Vladislav Drobot
  */
 public class PatientInfoMenuTag extends TagSupport {
 

@@ -82,7 +82,7 @@ public class UpdatePatientCommand implements ActionCommand {
                 if (patientService.update(newFields, existingFields, currentFields)) {
                     Optional<Patient> optionalPatient = patientService.findById(patientId);
                     Patient patient = optionalPatient.orElseThrow();
-                    Map<String, String> fields = patientService.packPatientIntoMap(patient);
+                    Map<String, String> fields = patientService.packIntoMap(patient);
                     session.setAttribute(SessionAttribute.PATIENT_DATA_FIELDS, fields);
                     LOGGER.log(Level.DEBUG, "Patient fields have been replaced");
                     StringBuilder sb = new StringBuilder(UrlPattern.PATIENT_INFO);

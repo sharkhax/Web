@@ -4,7 +4,7 @@ import com.drobot.web.controller.SessionAttribute;
 import com.drobot.web.controller.command.CommandType;
 import com.drobot.web.model.dao.ColumnName;
 import com.drobot.web.model.entity.Employee;
-import com.drobot.web.model.util.DateConverter;
+import com.drobot.web.util.DateConverter;
 import com.drobot.web.tag.util.TagUtil;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -20,6 +20,8 @@ import java.util.ResourceBundle;
 
 /**
  * Custom tag that creates a table of employees.
+ *
+ * @author Vladislav Drobot
  */
 public class EmployeeListTag extends TagSupport {
 

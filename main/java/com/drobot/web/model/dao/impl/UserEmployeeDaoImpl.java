@@ -2,7 +2,6 @@ package com.drobot.web.model.dao.impl;
 
 import com.drobot.web.exception.ConnectionPoolException;
 import com.drobot.web.exception.DaoException;
-import com.drobot.web.exception.ServiceException;
 import com.drobot.web.model.dao.UserEmployeeDao;
 import com.drobot.web.model.entity.Employee;
 import com.drobot.web.model.entity.Entity;
@@ -19,8 +18,16 @@ import java.sql.SQLException;
 import java.sql.Savepoint;
 import java.sql.Statement;
 
+/**
+ * UserEmployeeDao implementation.
+ *
+ * @author Vladislav Drobot
+ */
 public enum UserEmployeeDaoImpl implements UserEmployeeDao {
 
+    /**
+     * Represents a singleton pattern realization.
+     */
     INSTANCE;
 
     private final Logger LOGGER = LogManager.getLogger(UserEmployeeDaoImpl.class);
@@ -49,7 +56,7 @@ public enum UserEmployeeDaoImpl implements UserEmployeeDao {
 
     @Override
     public boolean register(User user, String password, Employee employee) throws DaoException {
-        boolean result = false;
+        boolean result;
         Connection connection = null;
         PreparedStatement statement = null;
         Savepoint savepoint = null;

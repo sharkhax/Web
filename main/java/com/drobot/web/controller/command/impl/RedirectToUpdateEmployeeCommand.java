@@ -49,7 +49,7 @@ public class RedirectToUpdateEmployeeCommand implements ActionCommand {
                 if (employeeInfoId == null || employeeId != employeeInfoId) {
                     Optional<Employee> optional = employeeService.findById(employeeId);
                     Employee employee = optional.orElseThrow();
-                    Map<String, String> fields = employeeService.packEmployeeIntoMap(employee);
+                    Map<String, String> fields = employeeService.packIntoMap(employee);
                     session.setAttribute(SessionAttribute.EMPLOYEE_DATA_FIELDS, fields);
                     session.setAttribute(SessionAttribute.EMPLOYEE_INFO_ID, employeeId);
                     LOGGER.log(Level.DEBUG, "Employee data fields have been refilled");

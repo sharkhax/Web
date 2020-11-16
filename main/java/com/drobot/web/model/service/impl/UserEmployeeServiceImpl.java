@@ -1,7 +1,6 @@
 package com.drobot.web.model.service.impl;
 
 import com.drobot.web.controller.RequestParameter;
-import com.drobot.web.controller.SessionAttribute;
 import com.drobot.web.exception.DaoException;
 import com.drobot.web.exception.ServiceException;
 import com.drobot.web.model.creator.Creator;
@@ -13,19 +12,26 @@ import com.drobot.web.model.dao.impl.EmployeeDaoImpl;
 import com.drobot.web.model.dao.impl.UserDaoImpl;
 import com.drobot.web.model.dao.impl.UserEmployeeDaoImpl;
 import com.drobot.web.model.entity.Employee;
-import com.drobot.web.model.entity.Entity;
 import com.drobot.web.model.entity.User;
 import com.drobot.web.model.service.UserEmployeeService;
-import com.drobot.web.model.util.DateConverter;
-import com.drobot.web.model.util.Encrypter;
+import com.drobot.web.util.DateConverter;
+import com.drobot.web.util.Encrypter;
 
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
+/**
+ * UserEmployeeService implementation.
+ *
+ * @author Vladislav Drobot
+ */
 public enum UserEmployeeServiceImpl implements UserEmployeeService {
 
+    /**
+     * Represents a singleton pattern realization.
+     */
     INSTANCE;
 
     @Override

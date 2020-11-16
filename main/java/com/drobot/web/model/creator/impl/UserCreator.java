@@ -11,6 +11,11 @@ import org.apache.logging.log4j.Logger;
 import java.util.Map;
 import java.util.Optional;
 
+/**
+ * Creator implementation used to create an User object.
+ *
+ * @author Vladislav Drobot
+ */
 public class UserCreator implements Creator<User> {
 
     private static final Logger LOGGER = LogManager.getLogger(UserCreator.class);

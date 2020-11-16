@@ -70,7 +70,7 @@ public class UpdateUserCommand implements ActionCommand {
                 if (userService.update(newFields, existingFields, currentFields)) {
                     Optional<User> optionalUser = userService.findById(userId);
                     User user = optionalUser.orElseThrow();
-                    Map<String, String> fields = userService.packUserIntoMap(user);
+                    Map<String, String> fields = userService.packIntoMap(user);
                     session.setAttribute(SessionAttribute.USER_DATA_FIELDS, fields);
                     LOGGER.log(Level.DEBUG, "User fields have been replaced");
                     StringBuilder sb = new StringBuilder(UrlPattern.USER_INFO);

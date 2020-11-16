@@ -11,7 +11,7 @@ import com.drobot.web.model.dao.impl.UserDaoImpl;
 import com.drobot.web.model.entity.Entity;
 import com.drobot.web.model.entity.User;
 import com.drobot.web.model.service.UserService;
-import com.drobot.web.model.util.Encrypter;
+import com.drobot.web.util.Encrypter;
 import com.drobot.web.model.validator.UserValidator;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -22,45 +22,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+/**
+ * UserService implementation.
+ *
+ * @author Vladislav Drobot
+ */
 public enum UserServiceImpl implements UserService {
 
+    /**
+     * Represents a singleton pattern realization.
+     */
     INSTANCE;
 
     private final Logger LOGGER = LogManager.getLogger(UserServiceImpl.class);
     private final UserDao userDao = UserDaoImpl.INSTANCE;
-
-    @Override
-    public boolean add(String login, String email, String password, User.Role role) throws ServiceException {
-        boolean result = false;
-        try {
-            if (UserValidator.isLoginValid(login)
-                    && UserValidator.isEmailValid(email)
-                    && UserValidator.isPasswordValid(password)) {
-                String encryptedPassword = Encrypter.encrypt(password);
-                User user = new User(login, email, role);
-                result = userDao.add(user, encryptedPassword);
-            }
-        } catch (DaoException e) {
-            throw new ServiceException(e);
-        }
-        return result;
-    }
-
-    @Override
-    public List<User> findAll(String sortBy, boolean reverse) throws ServiceException {
-        List<User> result;
-        try {
-            if (checkSortingTag(sortBy)) {
-                result = userDao.findAll(sortBy, reverse);
-            } else {
-                LOGGER.log(Level.DEBUG, "Unsupported sorting tag");
-                result = List.of();
-            }
-        } catch (DaoException e) {
-            throw new ServiceException(e);
-        }
-        return result;
-    }
 
     @Override
     public List<User> findAll(int start, int end, String sortBy, boolean reverse) throws ServiceException {
@@ -84,12 +59,6 @@ public enum UserServiceImpl implements UserService {
     }
 
     @Override
-    public List<User> findAll(int start, int end) throws ServiceException {
-        return findAll(start, end, ColumnName.USER_ID, false);
-    }
-
-
-    @Override
     public Optional<User> findById(int userId) throws ServiceException {
         Optional<User> result;
         try {
@@ -106,68 +75,6 @@ public enum UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional<User> findByLogin(String login) throws ServiceException {
-        Optional<User> result;
-        if (UserValidator.isLoginValid(login)) {
-            try {
-                result = userDao.findByLogin(login);
-            } catch (DaoException e) {
-                throw new ServiceException(e);
-            }
-        } else {
-            result = Optional.empty();
-        }
-        return result;
-    }
-
-    @Override
-    public Optional<User> findByEmail(String email) throws ServiceException {
-        Optional<User> result;
-        try {
-            if (UserValidator.isEmailValid(email)) {
-                result = userDao.findByEmail(email);
-            } else {
-                result = Optional.empty();
-            }
-        } catch (DaoException e) {
-            throw new ServiceException(e);
-        }
-        return result;
-    }
-
-    @Override
-    public List<User> findByRole(User.Role role, String sortBy) throws ServiceException {
-        List<User> result;
-        try {
-            if (checkSortingTag(sortBy)) {
-                result = userDao.findByRole(role, sortBy);
-            } else {
-                LOGGER.log(Level.DEBUG, "Unsupported sorting tag");
-                result = List.of();
-            }
-        } catch (DaoException e) {
-            throw new ServiceException(e);
-        }
-        return result;
-    }
-
-    @Override
-    public List<User> findByStatus(boolean isActive, String sortBy) throws ServiceException {
-        List<User> result;
-        try {
-            if (checkSortingTag(sortBy)) {
-                result = userDao.findByStatus(isActive, sortBy);
-            } else {
-                LOGGER.log(Level.DEBUG, "Unsupported sorting tag");
-                result = List.of();
-            }
-        } catch (DaoException e) {
-            throw new ServiceException(e);
-        }
-        return result;
-    }
-
-    @Override
     public boolean exists(int userId) throws ServiceException {
         boolean result = false;
         try {
@@ -175,33 +82,6 @@ public enum UserServiceImpl implements UserService {
                 result = userDao.exists(userId);
             } else {
                 LOGGER.log(Level.DEBUG, "User id is not valid");
-            }
-        } catch (DaoException e) {
-            throw new ServiceException(e);
-        }
-        return result;
-    }
-
-
-    @Override
-    public boolean existsLogin(String login) throws ServiceException {
-        boolean result = false;
-        try {
-            if (UserValidator.isLoginValid(login)) {
-                result = userDao.existsLogin(login);
-            }
-        } catch (DaoException e) {
-            throw new ServiceException(e);
-        }
-        return result;
-    }
-
-    @Override
-    public boolean existsEmail(String email) throws ServiceException {
-        boolean result = false;
-        try {
-            if (UserValidator.isEmailValid(email)) {
-                result = userDao.existsEmail(email);
             }
         } catch (DaoException e) {
             throw new ServiceException(e);
@@ -240,90 +120,6 @@ public enum UserServiceImpl implements UserService {
         }
         return result;
     }
-// FIXME: 10.11.2020
-    /*@Override
-    public boolean updateLogin(int userId, String newLogin) throws ServiceException {
-        boolean result = false;
-        try {
-            if (UserValidator.isLoginValid(newLogin)) {
-                Optional<User> optional = userDao.findById(userId);
-                if (optional.isPresent()) {
-                    User user = optional.get();
-                    if (!user.getLogin().equals(newLogin)) {
-                        user.setLogin(newLogin);
-                        result = userDao.update(user);
-                    } else {
-                        LOGGER.log(Level.DEBUG, "Such user login is already set");
-                    }
-                }
-            }
-        } catch (DaoException e) {
-            throw new ServiceException(e);
-        }
-        return result;
-    }
-
-    @Override
-    public boolean updateEmail(int userId, String newEmail) throws ServiceException {
-        boolean result = false;
-        try {
-            if (UserValidator.isEmailValid(newEmail)) {
-                Optional<User> optional = userDao.findById(userId);
-                if (optional.isPresent()) {
-                    User user = optional.get();
-                    if (!user.getEmail().equals(newEmail)) {
-                        user.setEmail(newEmail);
-                        result = userDao.update(user);
-                    } else {
-                        LOGGER.log(Level.DEBUG, "Such user email is already set");
-                    }
-                }
-            }
-        } catch (DaoException e) {
-            throw new ServiceException(e);
-        }
-        return result;
-    }
-
-    @Override
-    public boolean updateRole(int userId, User.Role newRole) throws ServiceException {
-        boolean result = false;
-        try {
-            Optional<User> optional = userDao.findById(userId);
-            if (optional.isPresent()) {
-                User user = optional.get();
-                if (!user.getRole().equals(newRole)) {
-                    user.setRole(newRole);
-                    result = userDao.update(user);
-                } else {
-                    LOGGER.log(Level.DEBUG, "Such user role is already set");
-                }
-            }
-        } catch (DaoException e) {
-            throw new ServiceException(e);
-        }
-        return result;
-    }
-
-    @Override
-    public boolean updateStatus(int userId, Entity.Status newStatus) throws ServiceException {
-        boolean result = false;
-        try {
-            Optional<User> optional = userDao.findById(userId);
-            if (optional.isPresent()) {
-                User user = optional.get();
-                if (user.getStatus() != newStatus) {
-                    user.setStatus(newStatus);
-                    result = userDao.update(user);
-                } else {
-                    LOGGER.log(Level.DEBUG, "Such user status is already set");
-                }
-            }
-        } catch (DaoException e) {
-            throw new ServiceException(e);
-        }
-        return result;
-    }*/
 
     @Override
     public int count() throws ServiceException {
@@ -338,7 +134,7 @@ public enum UserServiceImpl implements UserService {
     }
 
     @Override
-    public Map<String, String> packUserIntoMap(User user) {
+    public Map<String, String> packIntoMap(User user) {
         Map<String, String> result = new HashMap<>();
         if (user != null) {
             int userId = user.getId();

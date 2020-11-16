@@ -14,7 +14,16 @@ import java.util.Queue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingDeque;
 
+/**
+ * Enumeration with a single object in it (thread-safe singleton) used to contain, give and manage Connection objects.
+ *
+ * @author Vladislav Drobot
+ */
 public enum ConnectionPool {
+
+    /**
+     * Represents a singleton pattern realization.
+     */
     INSTANCE;
 
     private final Logger LOGGER = LogManager.getLogger(ConnectionPool.class);
@@ -44,6 +53,12 @@ public enum ConnectionPool {
         LOGGER.log(Level.INFO, "Connection pool has been filled");
     }
 
+    /**
+     * Gives a Connection object from the pool.
+     *
+     * @return Connection object.
+     * @throws ConnectionPoolException if InterruptedException was thrown while processing.
+     */
     public Connection getConnection() throws ConnectionPoolException {
         ProxyConnection connection;
         try {
@@ -57,6 +72,11 @@ public enum ConnectionPool {
         return connection;
     }
 
+    /**
+     * Puts a Connection object back in the pool.
+     *
+     * @param connection Connection object that should be an instance of ProxyConnection.
+     */
     public void releaseConnection(Connection connection) {
         if (connection instanceof ProxyConnection
                 && givenConnections.remove(connection)) {
@@ -67,6 +87,11 @@ public enum ConnectionPool {
         }
     }
 
+    /**
+     * Destroys a connection pool. Should be called before finishing the program.
+     *
+     * @throws ConnectionPoolException if InterruptedException or SQLException were thrown while processing.
+     */
     public void destroyPool() throws ConnectionPoolException {
         try {
             for (int i = 0; i < DEFAULT_POOL_SIZE; i++) {

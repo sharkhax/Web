@@ -8,7 +8,9 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * Patient validator class for checking patients' fields values.
+ * Patient validator class used to check patients' fields values.
+ *
+ * @author Vladislav Drobot
  */
 public class PatientValidator {
 
@@ -24,8 +26,9 @@ public class PatientValidator {
 
     /**
      * Checks if patient's name is valid.
+     *
      * @param name String representation of patient's name.
-     * @return True if value is valid, false otherwise.
+     * @return true if value is valid, false otherwise.
      */
     public static boolean isNameValid(String name) {
         boolean result = false;
@@ -43,8 +46,9 @@ public class PatientValidator {
 
     /**
      * Checks if patient's age is valid.
+     *
      * @param stringAge String representation of patient's age.
-     * @return True if value is valid, false otherwise.
+     * @return true if value is valid, false otherwise.
      */
     public static boolean isAgeValid(String stringAge) {
         boolean result = false;
@@ -59,8 +63,9 @@ public class PatientValidator {
 
     /**
      * Checks if patient's age is valid.
-     * @param age Int representation of patient's age.
-     * @return True if value is valid, false otherwise.
+     *
+     * @param age int values of patient's age.
+     * @return true if value is valid, false otherwise.
      */
     public static boolean isAgeValid(int age) {
         boolean result = age >= MIN_AGE && age <= MAX_AGE;
@@ -71,8 +76,9 @@ public class PatientValidator {
 
     /**
      * Checks if patient's gender is valid.
-     * @param gender Char representation of patient's gender.
-     * @return True if value is valid, false otherwise.
+     *
+     * @param gender char values of patient's gender.
+     * @return true if value is valid, false otherwise.
      */
     public static boolean isGenderValid(char gender) {
         boolean result = false;
@@ -90,8 +96,9 @@ public class PatientValidator {
 
     /**
      * Checks if patient's gender is valid.
+     *
      * @param gender String representation of patient's gender.
-     * @return True if value is valid, false otherwise.
+     * @return true if value is valid, false otherwise.
      */
     public static boolean isGenderValid(String gender) {
         boolean result = false;
@@ -105,8 +112,9 @@ public class PatientValidator {
 
     /**
      * Checks if patient's diagnosis is valid.
+     *
      * @param diagnosis String representation of patient's diagnosis.
-     * @return True if value is valid, false otherwise.
+     * @return true if value is valid, false otherwise.
      */
     public static boolean isDiagnosisValid(String diagnosis) {
         boolean result = false;

@@ -11,6 +11,11 @@ import org.apache.logging.log4j.Logger;
 import java.util.Map;
 import java.util.Optional;
 
+/**
+ * Creator implementation used to create a Patient object.
+ *
+ * @author Vladislav Drobot
+ */
 public class PatientCreator implements Creator<Patient> {
 
     private static final Logger LOGGER = LogManager.getLogger(PatientCreator.class);

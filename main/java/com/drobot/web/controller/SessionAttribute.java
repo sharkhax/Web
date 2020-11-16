@@ -1,7 +1,7 @@
 package com.drobot.web.controller;
 
 /**
- * Represents constant names of session attributes.
+ * Class represents constant names of session attributes.
  *
  * @author Vladislav Drobot
  */

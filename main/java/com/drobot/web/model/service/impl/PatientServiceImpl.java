@@ -20,8 +20,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+/**
+ * PatientService implementation.
+ *
+ * @author Vladislav Drobot
+ */
 public enum PatientServiceImpl implements PatientService {
 
+    /**
+     * Represents a singleton pattern realization.
+     */
     INSTANCE;
 
     private final Logger LOGGER = LogManager.getLogger(PatientServiceImpl.class);
@@ -117,7 +125,7 @@ public enum PatientServiceImpl implements PatientService {
     }
 
     @Override
-    public Map<String, String> packPatientIntoMap(Patient patient) {
+    public Map<String, String> packIntoMap(Patient patient) {
         Map<String, String> fields = new HashMap<>();
         if (patient != null) {
             int patientId = patient.getId();

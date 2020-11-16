@@ -20,8 +20,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * RecordDao implementation.
+ *
+ * @author Vladislav Drobot
+ */
 public enum RecordDaoImpl implements RecordDao {
 
+    /**
+     * Represents a singleton pattern realization.
+     */
     INSTANCE;
 
     private final Logger LOGGER = LogManager.getLogger(RecordDaoImpl.class);
@@ -52,20 +60,9 @@ public enum RecordDaoImpl implements RecordDao {
             "SELECT COUNT(*) AS label FROM hospital.patient_records WHERE patient_id_fk = ?;";
 
     @Override
-    public boolean add(PatientRecord record) {
-        LOGGER.log(Level.FATAL,
-                "This method is not supported, use add(PatientRecord, String, Entity.Status) instead");
-        throw new UnsupportedOperationException("Use add(PatientRecord, String, Entity.Status) instead");
-    }
-
-    @Override
-    public List<PatientRecord> findAll(String sortBy, boolean reverse) throws DaoException {
-        return null;
-    }
-
-    @Override
     public List<PatientRecord> findAll(int start, int end, String sortBy, boolean reverse) throws DaoException {
-        return null;
+        LOGGER.log(Level.ERROR, "The method is unsupported.");
+        throw new UnsupportedOperationException("The method is unsupported.");
     }
 
     @Override
@@ -76,15 +73,15 @@ public enum RecordDaoImpl implements RecordDao {
 
     @Override
     public boolean exists(int recordId) throws DaoException {
-        return false;
+        LOGGER.log(Level.ERROR, "The method is unsupported.");
+        throw new UnsupportedOperationException("The method is unsupported.");
     }
 
     @Override
     public int count() throws DaoException {
-        return 0;
+        LOGGER.log(Level.ERROR, "The method is unsupported.");
+        throw new UnsupportedOperationException("The method is unsupported.");
     }
-
-
 
     @Override
     public Optional<PatientRecord> findLast(int patientId) throws DaoException {

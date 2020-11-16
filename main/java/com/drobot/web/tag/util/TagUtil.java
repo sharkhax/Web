@@ -13,6 +13,8 @@ import java.util.ResourceBundle;
 
 /**
  * Utility class for custom tags.
+ *
+ * @author Vladislav Drobot
  */
 public class TagUtil {
 
@@ -87,6 +89,7 @@ public class TagUtil {
 
     /**
      * Returns a ResourceBundle object by chosen locale.
+     *
      * @param stringLocale String representation of Locale object.
      * @return ResourceBundle object
      */
@@ -99,12 +102,13 @@ public class TagUtil {
 
     /**
      * Creates a navigation for a specified table.
+     *
      * @param pageContext PageContext object of the specified page.
-     * @param currentPage Integer value of the current number of page of the specified table.
-     * @param pagesNumber Integer value of total number of pages of the specified table.
-     * @param command String representation of a command,
-     *                which could be requested by clicking on the specific page button.
-     * @throws JspException If IOException was thrown while creating a pagination.
+     * @param currentPage int value of the current number of page of the specified table.
+     * @param pagesNumber int value of total number of pages of the specified table.
+     * @param command     String representation of a command,
+     *                    which should be requested by clicking on the specific page button.
+     * @throws JspException if IOException was thrown while creating a pagination.
      */
     public static void createPagination(PageContext pageContext, int currentPage, int pagesNumber,
                                         String command) throws JspException {
@@ -167,11 +171,12 @@ public class TagUtil {
 
     /**
      * Creates a button for the head of a table for its sorting.
-     * @param out JspWriter object for the specified page.
+     *
+     * @param out     JspWriter object for the specified page.
      * @param content String representation of button's content (text inside a <button> tag).
-     * @param style String representation of button's style attribute.
+     * @param style   String representation of button's style attribute.
      * @param sortTag String representation of sorting tag to be requested by clicking on the button.
-     * @throws JspException If IOException was thrown while creating the button.
+     * @throws JspException if IOException was thrown while creating the button.
      */
     public static void createTableHeadButton(JspWriter out, String content, String style, String sortTag)
             throws JspException {

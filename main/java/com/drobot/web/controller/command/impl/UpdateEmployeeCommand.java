@@ -93,7 +93,7 @@ public class UpdateEmployeeCommand implements ActionCommand {
                 if (service.update(newFields, existingFields, currentFields)) {
                     Optional<Employee> optionalEmployee = service.findById(employeeId);
                     Employee employee = optionalEmployee.orElseThrow();
-                    Map<String, String> fields = service.packEmployeeIntoMap(employee);
+                    Map<String, String> fields = service.packIntoMap(employee);
                     session.setAttribute(SessionAttribute.EMPLOYEE_DATA_FIELDS, fields);
                     LOGGER.log(Level.DEBUG, "Employee fields have been replaced");
                     StringBuilder sb = new StringBuilder(UrlPattern.EMPLOYEE_INFO);

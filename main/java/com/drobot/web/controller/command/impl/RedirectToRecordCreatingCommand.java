@@ -59,7 +59,7 @@ public class RedirectToRecordCreatingCommand implements ActionCommand {
                     PatientService patientService = PatientServiceImpl.INSTANCE;
                     Optional<Patient> optionalPatient = patientService.findById(patientId);
                     Patient patient = optionalPatient.orElseThrow();
-                    Map<String, String> fields = patientService.packPatientIntoMap(patient);
+                    Map<String, String> fields = patientService.packIntoMap(patient);
                     session.setAttribute(SessionAttribute.PATIENT_DATA_FIELDS, fields);
                     session.setAttribute(SessionAttribute.PATIENT_INFO_ID, patientId);
                     LOGGER.log(Level.DEBUG, "Patient data has been refilled");

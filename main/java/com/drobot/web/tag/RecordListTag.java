@@ -3,7 +3,6 @@ package com.drobot.web.tag;
 import com.drobot.web.controller.SessionAttribute;
 import com.drobot.web.controller.command.CommandType;
 import com.drobot.web.model.dao.ColumnName;
-import com.drobot.web.model.entity.Patient;
 import com.drobot.web.model.entity.SpecifiedRecord;
 import com.drobot.web.tag.util.TagUtil;
 import org.apache.logging.log4j.Level;
@@ -20,6 +19,8 @@ import java.util.ResourceBundle;
 
 /**
  * Custom tag that creates a table of records.
+ *
+ * @author Vladislav Drobot
  */
 public class RecordListTag extends TagSupport {
 

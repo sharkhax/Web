@@ -4,7 +4,7 @@ import com.drobot.web.controller.RequestParameter;
 import com.drobot.web.model.entity.Employee;
 import com.drobot.web.model.entity.Entity;
 import com.drobot.web.model.service.MapService;
-import com.drobot.web.model.util.DateConverter;
+import com.drobot.web.util.DateConverter;
 import com.drobot.web.model.validator.EmployeeValidator;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -14,8 +14,16 @@ import java.time.LocalDate;
 import java.time.format.DateTimeParseException;
 import java.util.Map;
 
+/**
+ * MapService implementation with public validation methods.
+ *
+ * @author Vladislav Drobot
+ */
 public enum EmployeeMapService implements MapService {
 
+    /**
+     * Represents a singleton pattern realization.
+     */
     INSTANCE;
 
     private final Logger LOGGER = LogManager.getLogger(EmployeeMapService.class);
@@ -28,14 +36,32 @@ public enum EmployeeMapService implements MapService {
         return result;
     }
 
+    /**
+     * Checks if employee's name is valid.
+     *
+     * @param fields Map object with entity's fields with RequestParameter constants as keys.
+     * @return true if it is valid, false otherwise.
+     */
     public boolean checkName(Map<String, String> fields) {
         return checkNameOrSurname(fields, RequestParameter.EMPLOYEE_NAME);
     }
 
+    /**
+     * Checks if employee's surname is valid.
+     *
+     * @param fields Map object with entity's fields with RequestParameter constants as keys.
+     * @return true if it is valid, false otherwise.
+     */
     public boolean checkSurname(Map<String, String> fields) {
         return checkNameOrSurname(fields, RequestParameter.EMPLOYEE_SURNAME);
     }
-    
+
+    /**
+     * Checks if employee's age is valid.
+     *
+     * @param fields Map object with entity's fields with RequestParameter constants as keys.
+     * @return true if it is valid, false otherwise.
+     */
     public boolean checkAge(Map<String, String> fields) {
         boolean result = false;
         if (fields != null && fields.containsKey(RequestParameter.EMPLOYEE_AGE)) {
@@ -48,7 +74,13 @@ public enum EmployeeMapService implements MapService {
         }
         return result;
     }
-    
+
+    /**
+     * Checks if employee's gender is valid.
+     *
+     * @param fields Map object with entity's fields with RequestParameter constants as keys.
+     * @return true if it is valid, false otherwise.
+     */
     public boolean checkGender(Map<String, String> fields) {
         boolean result = false;
         if (fields != null && fields.containsKey(RequestParameter.EMPLOYEE_GENDER)) {
@@ -61,7 +93,13 @@ public enum EmployeeMapService implements MapService {
         }
         return result;
     }
-    
+
+    /**
+     * Checks if employee's position is valid.
+     *
+     * @param fields Map object with entity's fields with RequestParameter constants as keys.
+     * @return true if it is valid, false otherwise.
+     */
     public boolean checkPosition(Map<String, String> fields) {
         boolean result = false;
         if (fields != null && fields.containsKey(RequestParameter.EMPLOYEE_POSITION)) {
@@ -77,7 +115,13 @@ public enum EmployeeMapService implements MapService {
         }
         return result;
     }
-    
+
+    /**
+     * Checks if employee's hire date is valid.
+     *
+     * @param fields Map object with entity's fields with RequestParameter constants as keys.
+     * @return true if it is valid, false otherwise.
+     */
     public boolean checkHireDate(Map<String, String> fields) {
         boolean result = false;
         if (fields != null && fields.containsKey(RequestParameter.HIRE_DATE)) {
@@ -98,6 +142,12 @@ public enum EmployeeMapService implements MapService {
         return result;
     }
 
+    /**
+     * Checks if employee's dismiss date is valid.
+     *
+     * @param fields Map object with entity's fields with RequestParameter constants as keys.
+     * @return true if it is valid, false otherwise.
+     */
     public boolean checkDismissDate(Map<String, String> fields) {
         boolean result = false;
         if (fields != null && fields.containsKey(RequestParameter.DISMISS_DATE)
@@ -127,7 +177,12 @@ public enum EmployeeMapService implements MapService {
         return result;
     }
 
-
+    /**
+     * Checks if employee's status is valid.
+     *
+     * @param fields Map object with entity's fields with RequestParameter constants as keys.
+     * @return true if it is valid, false otherwise.
+     */
     public boolean checkStatus(Map<String, String> fields) {
         boolean result = false;
         if (fields != null && fields.containsKey(RequestParameter.EMPLOYEE_STATUS)) {
@@ -142,7 +197,7 @@ public enum EmployeeMapService implements MapService {
         }
         return result;
     }
-    
+
     private boolean checkNameOrSurname(Map<String, String> fields, String fieldName) {
         boolean result = false;
         if (fields != null && fields.containsKey(fieldName)) {

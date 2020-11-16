@@ -1,4 +1,4 @@
-package com.drobot.web.model.util;
+package com.drobot.web.util;
 
 import java.time.LocalDate;
 

@@ -1,10 +1,30 @@
 package com.drobot.web.model.pool;
 
-import java.sql.*;
+import java.sql.Array;
+import java.sql.Blob;
+import java.sql.CallableStatement;
+import java.sql.Clob;
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.NClob;
+import java.sql.PreparedStatement;
+import java.sql.SQLClientInfoException;
+import java.sql.SQLException;
+import java.sql.SQLWarning;
+import java.sql.SQLXML;
+import java.sql.Savepoint;
+import java.sql.ShardingKey;
+import java.sql.Statement;
+import java.sql.Struct;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.Executor;
 
+/**
+ * A proxy Connection object with an overridden close() method. Used in ConnectionPool.
+ *
+ * @author Vladislav Drobot
+ */
 public class ProxyConnection implements Connection {
 
     private Connection connection;
@@ -58,6 +78,11 @@ public class ProxyConnection implements Connection {
         ConnectionPool.INSTANCE.releaseConnection(this);
     }
 
+    /**
+     * Really closes a Connection object.
+     *
+     * @throws SQLException if a database access error occurs.
+     */
     void reallyClose() throws SQLException {
         connection.close();
     }

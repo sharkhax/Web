@@ -9,22 +9,25 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 /**
- * User validator class for checking users' fields values.
+ * User validator class used to check users' fields values.
+ *
+ * @author Vladislav Drobot
  */
 public class UserValidator {
 
     private static final Logger LOGGER = LogManager.getLogger(UserValidator.class);
     private static final String PASSWORD_REGEX = "[\\w~!-]{5,16}";
-    private static final String LOGIN_REGEX1 = "[\\w-.]{5,16}"; // здесь проверка на длину и разрешенные символы
-    private static final String LOGIN_REGEX2 = "[a-zA-Z\\-._]+"; // не может состоять только из цифр
+    private static final String LOGIN_REGEX1 = "[\\w-.]{5,16}";
+    private static final String LOGIN_REGEX2 = "[a-zA-Z\\-._]+";
 
     private UserValidator() {
     }
 
     /**
      * Checks if user's password is valid.
+     *
      * @param password String representation of non-encrypted password.
-     * @return True if value is valid, false otherwise.
+     * @return true if value is valid, false otherwise.
      */
     public static boolean isPasswordValid(String password) {
         Pattern pattern = Pattern.compile(PASSWORD_REGEX);
@@ -37,8 +40,9 @@ public class UserValidator {
 
     /**
      * Checks if user's login is valid.
+     *
      * @param login String representation of user's login.
-     * @return True if value is valid, false otherwise.
+     * @return true if value is valid, false otherwise.
      */
     public static boolean isLoginValid(String login) {
         boolean result = false;
@@ -56,8 +60,9 @@ public class UserValidator {
 
     /**
      * Checks if user's email is valid.
+     *
      * @param email String representation of user's email.
-     * @return True if value is valid, false otherwise.
+     * @return true if value is valid, false otherwise.
      */
     public static boolean isEmailValid(String email) {
         EmailValidator validator = EmailValidator.getInstance();

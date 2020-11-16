@@ -19,6 +19,8 @@ import java.util.ResourceBundle;
 
 /**
  * Custom tag that creates buttons for employee info page.
+ *
+ * @author Vladislav Drobot
  */
 public class EmployeeInfoMenuTag extends TagSupport {
 

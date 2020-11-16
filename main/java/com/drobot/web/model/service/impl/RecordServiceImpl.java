@@ -8,7 +8,12 @@ import com.drobot.web.model.dao.EmployeeDao;
 import com.drobot.web.model.dao.RecordDao;
 import com.drobot.web.model.dao.impl.EmployeeDaoImpl;
 import com.drobot.web.model.dao.impl.RecordDaoImpl;
-import com.drobot.web.model.entity.*;
+import com.drobot.web.model.entity.Employee;
+import com.drobot.web.model.entity.Entity;
+import com.drobot.web.model.entity.Patient;
+import com.drobot.web.model.entity.PatientRecord;
+import com.drobot.web.model.entity.SpecifiedRecord;
+import com.drobot.web.model.entity.Treatment;
 import com.drobot.web.model.service.EmployeeService;
 import com.drobot.web.model.service.PatientService;
 import com.drobot.web.model.service.RecordService;
@@ -21,8 +26,16 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+/**
+ * RecordService implementation.
+ *
+ * @author Vladislav Drobot
+ */
 public enum RecordServiceImpl implements RecordService {
 
+    /**
+     * Represents a singleton pattern realization.
+     */
     INSTANCE;
 
     private final Logger LOGGER = LogManager.getLogger(RecordServiceImpl.class);

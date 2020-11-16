@@ -15,6 +15,8 @@ import java.util.ResourceBundle;
 
 /**
  * Custom tag that creates main menu buttons.
+ *
+ * @author Vladislav Drobot
  */
 public class MainMenuTag extends TagSupport {
 

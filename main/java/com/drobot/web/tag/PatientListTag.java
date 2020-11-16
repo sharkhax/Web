@@ -20,6 +20,8 @@ import java.util.ResourceBundle;
 
 /**
  * Custom tag that creates a table of patients.
+ *
+ * @author Vladislav Drobot
  */
 public class PatientListTag extends TagSupport {
 

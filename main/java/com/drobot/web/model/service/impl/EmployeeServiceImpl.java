@@ -14,8 +14,7 @@ import com.drobot.web.model.entity.Employee;
 import com.drobot.web.model.entity.Entity;
 import com.drobot.web.model.entity.User;
 import com.drobot.web.model.service.EmployeeService;
-import com.drobot.web.model.util.DateConverter;
-import com.drobot.web.model.validator.EmployeeValidator;
+import com.drobot.web.util.DateConverter;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -27,25 +26,20 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+/**
+ * EmployeeService implementation.
+ *
+ * @author Vladislav Drobot
+ */
 public enum EmployeeServiceImpl implements EmployeeService {
 
+    /**
+     * Represents a singleton pattern realization.
+     */
     INSTANCE;
 
     private final Logger LOGGER = LogManager.getLogger(EmployeeServiceImpl.class);
     private final EmployeeDao employeeDao = EmployeeDaoImpl.INSTANCE;
-
-    @Override
-    public boolean exists(String name, String surname) throws ServiceException {
-        boolean result = false;
-        try {
-            if (EmployeeValidator.isNameValid(name) && EmployeeValidator.isNameValid(surname)) {
-                result = employeeDao.exists(name, surname);
-            }
-        } catch (DaoException e) {
-            throw new ServiceException(e);
-        }
-        return result;
-    }
 
     @Override
     public boolean exists(int employeeId) throws ServiceException {
@@ -60,11 +54,6 @@ public enum EmployeeServiceImpl implements EmployeeService {
             throw new ServiceException(e);
         }
         return result;
-    }
-
-    @Override
-    public List<Employee> findAll(String sortBy, boolean reverse) throws ServiceException {
-        return null;
     }
 
     @Override
@@ -224,7 +213,7 @@ public enum EmployeeServiceImpl implements EmployeeService {
     }
 
     @Override
-    public Map<String, String> packEmployeeIntoMap(Employee employee) {
+    public Map<String, String> packIntoMap(Employee employee) {
         Map<String, String> result = new HashMap<>();
         if (employee != null) {
             int employeeId = employee.getId();

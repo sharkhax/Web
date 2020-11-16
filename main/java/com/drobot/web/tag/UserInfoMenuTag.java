@@ -22,6 +22,8 @@ import java.util.ResourceBundle;
 
 /**
  * Custom tag that creates dynamic buttons for user info page.
+ *
+ * @author Vladislav Drobot
  */
 public class UserInfoMenuTag extends TagSupport {
 

@@ -46,7 +46,7 @@ public class EmployeeDataCommand implements ActionCommand {
             Optional<Employee> optionalEmployee = employeeService.findById(employeeId);
             if (optionalEmployee.isPresent()) {
                 Employee employee = optionalEmployee.get();
-                Map<String, String> fields = employeeService.packEmployeeIntoMap(employee);
+                Map<String, String> fields = employeeService.packIntoMap(employee);
                 HttpSession session = request.getSession();
                 session.setAttribute(SessionAttribute.EMPLOYEE_DATA_FIELDS, fields);
                 session.setAttribute(SessionAttribute.EMPLOYEE_INFO_ID, employeeId);

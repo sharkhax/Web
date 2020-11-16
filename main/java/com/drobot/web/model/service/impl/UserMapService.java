@@ -7,8 +7,16 @@ import com.drobot.web.model.validator.UserValidator;
 
 import java.util.Map;
 
+/**
+ * MapService implementation with public validation methods.
+ *
+ * @author Vladislav Drobot
+ */
 public enum UserMapService implements MapService {
 
+    /**
+     * Represents a singleton pattern realization.
+     */
     INSTANCE;
 
     @Override
@@ -18,6 +26,12 @@ public enum UserMapService implements MapService {
         return result;
     }
 
+    /**
+     * Checks if user's login is valid.
+     *
+     * @param fields Map object with entity's fields with RequestParameter constants as keys.
+     * @return true if it is valid, false otherwise.
+     */
     public boolean checkLogin(Map<String, String> fields) {
         boolean result = false;
         if (fields != null && fields.containsKey(RequestParameter.LOGIN)) {
@@ -31,6 +45,12 @@ public enum UserMapService implements MapService {
         return result;
     }
 
+    /**
+     * Checks if user's password is valid.
+     *
+     * @param fields Map object with entity's fields with RequestParameter constants as keys.
+     * @return true if it is valid, false otherwise.
+     */
     public boolean checkPassword(Map<String, String> fields) {
         boolean result = false;
         if (fields != null && fields.containsKey(RequestParameter.PASSWORD)) {
@@ -44,6 +64,12 @@ public enum UserMapService implements MapService {
         return result;
     }
 
+    /**
+     * Checks if user's email is valid.
+     *
+     * @param fields Map object with entity's fields with RequestParameter constants as keys.
+     * @return true if it is valid, false otherwise.
+     */
     public boolean checkEmail(Map<String, String> fields) {
         boolean result = false;
         if (fields != null && fields.containsKey(RequestParameter.EMAIL)) {
@@ -57,6 +83,12 @@ public enum UserMapService implements MapService {
         return result;
     }
 
+    /**
+     * Checks if user's role is valid.
+     *
+     * @param fields Map object with entity's fields with RequestParameter constants as keys.
+     * @return true if it is valid, false otherwise.
+     */
     public boolean checkRole(Map<String, String> fields) {
         boolean result = false;
         if (fields != null && fields.containsKey(RequestParameter.EMPLOYEE_POSITION)) {
@@ -71,6 +103,12 @@ public enum UserMapService implements MapService {
         return result;
     }
 
+    /**
+     * Checks if user's status is valid.
+     *
+     * @param fields Map object with entity's fields with RequestParameter constants as keys.
+     * @return true if it is valid, false otherwise.
+     */
     public boolean checkStatus(Map<String, String> fields) {
         boolean result = false;
         if (fields != null && fields.containsKey(RequestParameter.USER_STATUS)) {
