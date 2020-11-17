@@ -5,6 +5,6 @@
     <title>Title</title>
 </head>
 <body>
-<c:redirect url="/loginPage"/>
+<c:redirect url="${pageContext.request.contextPath}/loginPage"/>
 </body>
 </html>

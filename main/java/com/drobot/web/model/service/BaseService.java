@@ -9,7 +9,9 @@ import java.util.Optional;
 
 /**
  * Base service interface provides actions on entities.
+ *
  * @param <E> type of a given entity.
+ * @author Vladislav Drobot
  */
 public interface BaseService<E> {
 

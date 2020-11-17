@@ -1,4 +1,4 @@
-# Web
+# Web hospital
 # How it works:
 Doctor registers a new patient, creates a new record. In the record creation he can specify a diagnosis and choose one of the treatments - procedure or surgery are available. Surgery can be executed by doctor only, procedure - by assistant as well. After curing doctor decides to discharge a patient or to create a new record either.
 # Project features:

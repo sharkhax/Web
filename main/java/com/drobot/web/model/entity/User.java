@@ -191,27 +191,19 @@ public class User extends Entity {
             return false;
         }
         User user = (User) o;
-        if (status != null ? status != user.status : user.status != null) {
-            return false;
-        }
-        if (login != null) {
-            if (login.equals(user.login)) {
-                return false;
-            }
-        } else if (user.login != null) {
-            return false;
-        }
-        if (email != null) {
-            if (!email.equals(user.email)) {
-                return false;
-            }
-        } else if (user.email != null) {
-            return false;
-        }
         if (employeeId != user.employeeId) {
             return false;
         }
-        return role == user.role;
+        if (login != null ? !login.equals(user.login) : user.login != null) {
+            return false;
+        }
+        if (email != null ? !email.equals(user.email) : user.email != null) {
+            return false;
+        }
+        if (role != user.role) {
+            return false;
+        }
+        return status == user.status;
     }
 
     @Override
