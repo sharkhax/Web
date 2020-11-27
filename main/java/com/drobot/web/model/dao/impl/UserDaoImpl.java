@@ -66,11 +66,8 @@ public enum UserDaoImpl implements UserDao {
     @Override
     public boolean exists(int userId) throws DaoException {
         boolean result;
-        Connection connection = null;
-        PreparedStatement statement = null;
-        try {
-            connection = ConnectionPool.INSTANCE.getConnection();
-            statement = connection.prepareStatement(CONTAINS_ID_STATEMENT);
+        try (Connection connection = ConnectionPool.INSTANCE.getConnection();
+             PreparedStatement statement = connection.prepareStatement(CONTAINS_ID_STATEMENT)) {
             statement.setInt(1, userId);
             ResultSet resultSet = statement.executeQuery();
             resultSet.next();
@@ -79,9 +76,6 @@ public enum UserDaoImpl implements UserDao {
             LOGGER.log(Level.DEBUG, log);
         } catch (SQLException | ConnectionPoolException e) {
             throw new DaoException(e);
-        } finally {
-            close(statement);
-            close(connection);
         }
         return result;
     }
@@ -223,20 +217,14 @@ public enum UserDaoImpl implements UserDao {
     @Override
     public int count() throws DaoException {
         int result;
-        Connection connection = null;
-        Statement statement = null;
-        try {
-            connection = ConnectionPool.INSTANCE.getConnection();
-            statement = connection.createStatement();
+        try (Connection connection = ConnectionPool.INSTANCE.getConnection();
+             Statement statement = connection.createStatement();) {
             ResultSet resultSet = statement.executeQuery(COUNT_STATEMENT);
             resultSet.next();
             result = resultSet.getInt(1);
             LOGGER.log(Level.DEBUG, "Users have been counted");
         } catch (SQLException | ConnectionPoolException e) {
             throw new DaoException(e);
-        } finally {
-            close(statement);
-            close(connection);
         }
         return result;
     }
@@ -291,11 +279,8 @@ public enum UserDaoImpl implements UserDao {
     public boolean update(int userId, String newLogin, String newEmail)
             throws DaoException {
         boolean result;
-        Connection connection = null;
-        PreparedStatement statement = null;
-        try {
-            connection = ConnectionPool.INSTANCE.getConnection();
-            statement = connection.prepareStatement(UPDATE_STATEMENT);
+        try (Connection connection = ConnectionPool.INSTANCE.getConnection();
+             PreparedStatement statement = connection.prepareStatement(UPDATE_STATEMENT);) {
             statement.setString(1, newLogin);
             statement.setString(2, newEmail);
             statement.setInt(3, userId);
@@ -304,9 +289,6 @@ public enum UserDaoImpl implements UserDao {
             LOGGER.log(Level.DEBUG, "User has been updated");
         } catch (SQLException | ConnectionPoolException e) {
             throw new DaoException(e);
-        } finally {
-            close(statement);
-            close(connection);
         }
         return result;
     }
@@ -355,20 +337,14 @@ public enum UserDaoImpl implements UserDao {
 
     private boolean exists(String value, String sql) throws DaoException {
         boolean result;
-        Connection connection = null;
-        PreparedStatement statement = null;
-        try {
-            connection = ConnectionPool.INSTANCE.getConnection();
-            statement = connection.prepareStatement(sql);
+        try (Connection connection = ConnectionPool.INSTANCE.getConnection();
+             PreparedStatement statement = connection.prepareStatement(sql)) {
             statement.setString(1, value);
             ResultSet resultSet = statement.executeQuery();
             resultSet.next();
             result = resultSet.getInt(1) != 0;
         } catch (SQLException | ConnectionPoolException e) {
             throw new DaoException(e);
-        } finally {
-            close(statement);
-            close(connection);
         }
         return result;
     }

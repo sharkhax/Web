@@ -101,11 +101,8 @@ public enum UserEmployeeDaoImpl implements UserEmployeeDao {
     @Override
     public boolean loadUserEmployeeData(int userId, User user, Employee employee) throws DaoException {
         boolean result = false;
-        Connection connection = null;
-        PreparedStatement statement = null;
-        try {
-            connection = ConnectionPool.INSTANCE.getConnection();
-            statement = connection.prepareStatement(USER_EMPLOYEE_DATA_STATEMENT);
+        try (Connection connection = ConnectionPool.INSTANCE.getConnection();
+             PreparedStatement statement = connection.prepareStatement(USER_EMPLOYEE_DATA_STATEMENT)) {
             statement.setInt(1, userId);
             ResultSet resultSet = statement.executeQuery();
             if (resultSet.next()) {
@@ -142,9 +139,6 @@ public enum UserEmployeeDaoImpl implements UserEmployeeDao {
             }
         } catch (SQLException | ConnectionPoolException e) {
             throw new DaoException(e);
-        } finally {
-            close(statement);
-            close(connection);
         }
         return result;
     }
